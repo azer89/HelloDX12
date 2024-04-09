@@ -197,7 +197,7 @@ void AppSimple::LoadAssets()
 #else
 		UINT compileFlags = 0;
 #endif
-		std::wstring assetPath = L"C:/Users/azer/workspace/HelloDX12/HelloDX12/Shader/shaders.hlsl";
+		std::wstring assetPath = L"C:/Users/azer/workspace/HelloDX12/HelloDX12/Shader/Shader.hlsl";
 
 		ThrowIfFailed(D3DCompileFromFile(assetPath.c_str(), nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, nullptr));
 		ThrowIfFailed(D3DCompileFromFile(assetPath.c_str(), nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, nullptr));

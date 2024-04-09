@@ -7,6 +7,9 @@
     <Filter Include="Source">
       <UniqueIdentifier>{f9f4bb1b-3608-4d2c-867d-02fd656eb565}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{da3172c8-54c7-4486-a127-f0299c5f319d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\DXSample.h">
@@ -41,5 +44,10 @@
     <ClCompile Include="Source\AppSimple.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shader\Shader.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
