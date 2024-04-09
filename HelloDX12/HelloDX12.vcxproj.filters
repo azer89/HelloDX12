@@ -9,9 +9,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Header\D3D12HelloTexture.h">
-      <Filter>Header</Filter>
-    </ClInclude>
     <ClInclude Include="Header\DXSample.h">
       <Filter>Header</Filter>
     </ClInclude>
@@ -24,11 +21,11 @@
     <ClInclude Include="Header\Win32Application.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Header\AppSimple.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\D3D12HelloTexture.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\DXSample.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -39,6 +36,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Win32Application.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AppSimple.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
