@@ -46,8 +46,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shader\Shader.hlsl">
+    <Text Include="Shader\Shader.hlsl">
       <Filter>Shader</Filter>
-    </FxCompile>
+    </Text>
   </ItemGroup>
 </Project>
