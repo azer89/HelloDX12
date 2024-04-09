@@ -27,6 +27,12 @@
     <ClInclude Include="Header\AppSimple.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Header\ConsoleDisplay.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\DX12Context.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\DXSample.cpp">

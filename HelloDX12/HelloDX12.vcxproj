@@ -13,6 +13,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\AppSimple.h" />
+    <ClInclude Include="Header\ConsoleDisplay.h" />
+    <ClInclude Include="Header\DX12Context.h" />
     <ClInclude Include="Header\DXSample.h" />
     <ClInclude Include="Header\DXSampleHelper.h" />
     <ClInclude Include="Header\stdafx.h" />
