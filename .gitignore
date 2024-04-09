@@ -396,3 +396,15 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+#Rider
+.idea/
+
+#imgui
+*/imgui.ini
+
+#CMake files
+CMakeFiles/
+*.cmake
+
+CMakeCache.txt
