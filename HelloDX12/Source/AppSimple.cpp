@@ -278,17 +278,19 @@ void AppSimple::LoadAssets()
 	// Create the texture.
 	{
 		// Describe and create a Texture2D.
-		D3D12_RESOURCE_DESC textureDesc = {};
-		textureDesc.MipLevels = 1;
-		textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		textureDesc.Width = context_.TextureWidth;
-		textureDesc.Height = context_.TextureHeight;
-		textureDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+		D3D12_RESOURCE_DESC textureDesc = 
+		{
+			.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
+			.Width = context_.TextureWidth,
+			.Height = context_.TextureHeight,
+			.MipLevels = 1,
+			.Format = DXGI_FORMAT_R8G8B8A8_UNORM,
+			.Flags = D3D12_RESOURCE_FLAG_NONE
+		};
 		textureDesc.DepthOrArraySize = 1;
 		textureDesc.SampleDesc.Count = 1;
 		textureDesc.SampleDesc.Quality = 0;
-		textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-
+		
 		auto heapProperties1 = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 
 		ThrowIfFailed(context_.device_->CreateCommittedResource(
@@ -317,20 +319,24 @@ void AppSimple::LoadAssets()
 		// from the upload heap to the Texture2D.
 		std::vector<UINT8> texture = GenerateTextureData();
 
-		D3D12_SUBRESOURCE_DATA textureData = {};
-		textureData.pData = &texture[0];
-		textureData.RowPitch = context_.TextureWidth * context_.TexturePixelSize;
-		textureData.SlicePitch = textureData.RowPitch * context_.TextureHeight;
+		D3D12_SUBRESOURCE_DATA textureData = 
+		{
+			.pData = &texture[0],
+			.RowPitch = context_.TextureWidth * context_.TexturePixelSize,
+			.SlicePitch = textureData.RowPitch * context_.TextureHeight
+		};
 
 		UpdateSubresources(context_.commandList_.Get(), context_.texture_.Get(), textureUploadHeap.Get(), 0, 0, 1, &textureData);
 		auto resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(context_.texture_.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 		context_.commandList_->ResourceBarrier(1, &resourceBarrier);
 
 		// Describe and create a SRV for the texture.
-		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		srvDesc.Format = textureDesc.Format;
-		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = 
+		{
+			.Format = textureDesc.Format,
+			.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D,
+			.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
+		};
 		srvDesc.Texture2D.MipLevels = 1;
 		context_.device_->CreateShaderResourceView(context_.texture_.Get(), &srvDesc, context_.srvHeap_->GetCPUDescriptorHandleForHeapStart());
 	}
