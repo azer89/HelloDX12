@@ -37,8 +37,6 @@ public:
     void ParseCommandLineArgs(_In_reads_(argc) WCHAR* argv[], int argc);
 
 protected:
-    std::wstring GetAssetFullPath(LPCWSTR assetName);
-
     void GetHardwareAdapter(
         _In_ IDXGIFactory1* pFactory,
         _Outptr_result_maybenull_ IDXGIAdapter1** ppAdapter,
@@ -55,9 +53,6 @@ protected:
     bool m_useWarpDevice;
 
 private:
-    // Root assets path.
-    std::wstring m_assetsPath;
-
     // Window title.
     std::wstring m_title;
 };

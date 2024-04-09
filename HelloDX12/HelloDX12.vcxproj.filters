@@ -1,51 +1,45 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="D3D12HelloTexture.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="DXSample.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Win32Application.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="D3D12HelloTexture.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="DXSample.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="DXSampleHelper.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Win32Application.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="shaders.hlsl" />
-  </ItemGroup>
-  <ItemGroup>
     <Filter Include="Header">
-      <UniqueIdentifier>{8aeeb546-28fe-4000-8f87-508c6c262b2d}</UniqueIdentifier>
+      <UniqueIdentifier>{3b4433ea-2323-484a-a59e-42a39e6b82b6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source">
-      <UniqueIdentifier>{12a6f83c-7fa8-409b-8608-e8d12f4f986d}</UniqueIdentifier>
+      <UniqueIdentifier>{f9f4bb1b-3608-4d2c-867d-02fd656eb565}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ClInclude Include="Header\D3D12HelloTexture.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\DXSample.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\DXSampleHelper.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\stdafx.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Win32Application.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\D3D12HelloTexture.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXSample.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Main.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\stdafx.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Win32Application.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
