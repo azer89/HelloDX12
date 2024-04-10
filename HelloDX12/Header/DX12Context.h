@@ -37,21 +37,11 @@ public:
 	static const UINT FrameCount = 2;
 	
 	// Pipeline objects.
-	CD3DX12_VIEWPORT viewport_;
-	CD3DX12_RECT scissor_;
 	ComPtr<IDXGISwapChain3> swapchain_;
 	ComPtr<ID3D12Device> device_;
-	
 	ComPtr<ID3D12CommandAllocator> commandAllocator_;
 	ComPtr<ID3D12CommandQueue> commandQueue_;
 	ComPtr<ID3D12GraphicsCommandList> commandList_;
-
-	ComPtr<ID3D12PipelineState> pipelineState_;
-	ComPtr<ID3D12RootSignature> rootSignature_;
-	ComPtr<ID3D12DescriptorHeap> rtvHeap_;
-	ComPtr<ID3D12DescriptorHeap> srvHeap_;
-	UINT rtvDescriptorSize_;
-	ComPtr<ID3D12Resource> renderTargets_[FrameCount];
 
 	// Synchronization objects.
 	UINT frameIndex_;

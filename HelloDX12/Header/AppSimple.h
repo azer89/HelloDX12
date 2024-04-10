@@ -3,17 +3,12 @@
 
 #include "AppBase.h"
 #include "DX12Context.h"
+#include "PipelineSimple.h"
 #include "Scene.h"
 
 #include <memory>
 
 using namespace DirectX;
-
-// Note that while ComPtr is used to manage the lifetime of resources on the CPU,
-// it has no understanding of the lifetime of resources on the GPU. Apps must account
-// for the GPU lifetime of resources to avoid destroying objects that may still be
-// referenced by the GPU.
-// An example of this can be found in the class method: OnDestroy().
 using Microsoft::WRL::ComPtr;
 
 class AppSimple : public AppBase
@@ -29,12 +24,12 @@ public:
 private:
 	DX12Context context_;
 	std::unique_ptr<Scene> scene_ = nullptr;
+	std::unique_ptr<PipelineSimple> pip_ = nullptr;
 
 private:
 	void LoadPipeline();
 	void LoadAssets();
 	void PopulateCommandList();
-	//void WaitForPreviousFrame();
 };
 
 #endif

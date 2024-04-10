@@ -102,15 +102,6 @@ void Scene::Init(const DX12Context& ctx)
 			auto resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(texture_.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 			ctx.GetCommandList()->ResourceBarrier(1, &resourceBarrier);
 		}
-		// Describe and create a SRV for the texture.
-		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc =
-		{
-			.Format = textureDesc.Format,
-			.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D,
-			.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
-		};
-		srvDesc.Texture2D.MipLevels = 1;
-		ctx.GetDevice()->CreateShaderResourceView(texture_.Get(), &srvDesc, ctx.srvHeap_->GetCPUDescriptorHandleForHeapStart());
 	}
 }
 

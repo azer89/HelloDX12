@@ -7,9 +7,6 @@ void DX12Context::Init(UINT swapchainWidth, UINT swapchainHeight)
 	swapchainWidth_ = swapchainWidth;
 	swapchainHeight_ = swapchainHeight;
 	frameIndex_ = 0;
-	viewport_ = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(swapchainWidth_), static_cast<float>(swapchainHeight_));
-	scissor_ = CD3DX12_RECT(0, 0, static_cast<LONG>(swapchainWidth_), static_cast<LONG>(swapchainHeight_));
-	rtvDescriptorSize_ = 0;
 
 	UINT dxgiFactoryFlags = 0;
 
@@ -75,6 +72,8 @@ void DX12Context::Init(UINT swapchainWidth, UINT swapchainHeight)
 
 	ThrowIfFailed(swapChain.As(&swapchain_));
 	frameIndex_ = swapchain_->GetCurrentBackBufferIndex();
+
+	ThrowIfFailed(device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator_)));
 }
 
 void DX12Context::WaitForPreviousFrame()
