@@ -15,13 +15,13 @@ using Microsoft::WRL::ComPtr;
 
 class DX12Context
 {
+public:
+	[[nodiscard]] ID3D12Device* GetDevice() const { return device_.Get(); }
+	[[nodiscard]] ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
+
 // TODO Set to private
 public:
 	static const UINT FrameCount = 2;
-	
-	static const UINT TextureWidth = 256;
-	static const UINT TextureHeight = 256;
-	static const UINT TexturePixelSize = 4;
 	
 	// Pipeline objects.
 	CD3DX12_VIEWPORT viewport_;
@@ -39,11 +39,6 @@ public:
 	ComPtr<ID3D12DescriptorHeap> srvHeap_;
 	UINT rtvDescriptorSize_;
 	ComPtr<ID3D12Resource> renderTargets_[FrameCount];
-	
-	// App resources.
-	ComPtr<ID3D12Resource> vertexBuffer_;
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_;
-	ComPtr<ID3D12Resource> texture_;
 
 	// Synchronization objects.
 	UINT frameIndex_;

@@ -229,122 +229,10 @@ void AppSimple::LoadAssets()
 	// Create the command list.
 	ThrowIfFailed(context_.device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, context_.commandAllocator_.Get(), context_.pipelineState_.Get(), IID_PPV_ARGS(&context_.commandList_)));
 
-	// Create the vertex buffer.
-	{
-		// Define the geometry for a triangle.
-		Vertex triangleVertices[] =
-		{
-			{ { 0.0f, 0.5f, 0.0f }, { 0.5f, 0.0f } },
-			{ { 0.5f, -0.5f, 0.0f }, { 1.0f, 1.0f } },
-			{ { -0.5f, -0.5f, 0.0f }, { 0.0f, 1.0f } }
-		};
-
-		const UINT vertexBufferSize = sizeof(triangleVertices);
-
-		// Note: using upload heaps to transfer static data like vert buffers is not 
-		// recommended. Every time the GPU needs it, the upload heap will be marshalled 
-		// over. Please read up on Default Heap usage. An upload heap is used here for 
-		// code simplicity and because there are very few verts to actually transfer
-		{
-			auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-			auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
-			ThrowIfFailed(context_.device_->CreateCommittedResource(
-				&heapProperties,
-				D3D12_HEAP_FLAG_NONE,
-				&resourceDesc,
-				D3D12_RESOURCE_STATE_GENERIC_READ,
-				nullptr,
-				IID_PPV_ARGS(&context_.vertexBuffer_)));
-		}
-
-		// Copy the triangle data to the vertex buffer.
-		UINT8* pVertexDataBegin;
-		CD3DX12_RANGE readRange(0, 0);        // We do not intend to read from this resource on the CPU.
-		ThrowIfFailed(context_.vertexBuffer_->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
-		memcpy(pVertexDataBegin, triangleVertices, sizeof(triangleVertices));
-		context_.vertexBuffer_->Unmap(0, nullptr);
-
-		// Initialize the vertex buffer view.
-		context_.vertexBufferView_.BufferLocation = context_.vertexBuffer_->GetGPUVirtualAddress();
-		context_.vertexBufferView_.StrideInBytes = sizeof(Vertex);
-		context_.vertexBufferView_.SizeInBytes = vertexBufferSize;
-	}
-
-	// Note: ComPtr's are CPU objects but this resource needs to stay in scope until
-	// the command list that references it has finished executing on the GPU.
-	// We will flush the GPU at the end of this method to ensure the resource is not
-	// prematurely destroyed.
-	ComPtr<ID3D12Resource> textureUploadHeap;
-
-	// Create the texture.
-	{
-		// Describe and create a Texture2D.
-		D3D12_RESOURCE_DESC textureDesc = 
-		{
-			.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
-			.Width = context_.TextureWidth,
-			.Height = context_.TextureHeight,
-			.MipLevels = 1,
-			.Format = DXGI_FORMAT_R8G8B8A8_UNORM,
-			.Flags = D3D12_RESOURCE_FLAG_NONE
-		};
-		textureDesc.DepthOrArraySize = 1;
-		textureDesc.SampleDesc.Count = 1;
-		textureDesc.SampleDesc.Quality = 0;
-		
-		{
-			auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-			ThrowIfFailed(context_.device_->CreateCommittedResource(
-				&heapProperties,
-				D3D12_HEAP_FLAG_NONE,
-				&textureDesc,
-				D3D12_RESOURCE_STATE_COPY_DEST,
-				nullptr,
-				IID_PPV_ARGS(&context_.texture_)));
-		}
-
-		const UINT64 uploadBufferSize = GetRequiredIntermediateSize(context_.texture_.Get(), 0, 1);
-
-		// Create the GPU upload buffer
-		{
-			auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-			auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
-			ThrowIfFailed(context_.device_->CreateCommittedResource(
-				&heapProperties,
-				D3D12_HEAP_FLAG_NONE,
-				&resourceDesc,
-				D3D12_RESOURCE_STATE_GENERIC_READ,
-				nullptr,
-				IID_PPV_ARGS(&textureUploadHeap)));
-		}
-
-		// Copy data to the intermediate upload heap and then schedule a copy 
-		// from the upload heap to the Texture2D.
-		std::vector<UINT8> texture = GenerateTextureData();
-
-		D3D12_SUBRESOURCE_DATA textureData = 
-		{
-			.pData = &texture[0],
-			.RowPitch = context_.TextureWidth * context_.TexturePixelSize,
-			.SlicePitch = textureData.RowPitch * context_.TextureHeight
-		};
-
-		UpdateSubresources(context_.commandList_.Get(), context_.texture_.Get(), textureUploadHeap.Get(), 0, 0, 1, &textureData);
-		{
-			auto resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(context_.texture_.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-			context_.commandList_->ResourceBarrier(1, &resourceBarrier);
-		}
-		// Describe and create a SRV for the texture.
-		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = 
-		{
-			.Format = textureDesc.Format,
-			.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D,
-			.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
-		};
-		srvDesc.Texture2D.MipLevels = 1;
-		context_.device_->CreateShaderResourceView(context_.texture_.Get(), &srvDesc, context_.srvHeap_->GetCPUDescriptorHandleForHeapStart());
-	}
-
+	// Scene
+	scene_ = std::make_unique<Scene>();
+	scene_->Init(context_);
+	
 	// Close the command list and execute it to begin the initial GPU setup.
 	ThrowIfFailed(context_.commandList_->Close());
 	ID3D12CommandList* ppCommandLists[] = { context_.commandList_.Get() };
@@ -367,43 +255,6 @@ void AppSimple::LoadAssets()
 		// complete before continuing.
 		WaitForPreviousFrame();
 	}
-}
-
-// Generate a simple black and white checkerboard texture.
-std::vector<UINT8> AppSimple::GenerateTextureData()
-{
-	const UINT rowPitch = context_.TextureWidth * context_.TexturePixelSize;
-	const UINT cellPitch = rowPitch >> 3;        // The width of a cell in the checkboard texture.
-	const UINT cellHeight = context_.TextureWidth >> 3;    // The height of a cell in the checkerboard texture.
-	const UINT textureSize = rowPitch * context_.TextureHeight;
-
-	std::vector<UINT8> data(textureSize);
-	UINT8* pData = &data[0];
-
-	for (UINT n = 0; n < textureSize; n += context_.TexturePixelSize)
-	{
-		UINT x = n % rowPitch;
-		UINT y = n / rowPitch;
-		UINT i = x / cellPitch;
-		UINT j = y / cellHeight;
-
-		if (i % 2 == j % 2)
-		{
-			pData[n] = 0x00;        // R
-			pData[n + 1] = 0x00;    // G
-			pData[n + 2] = 0x00;    // B
-			pData[n + 3] = 0xff;    // A
-		}
-		else
-		{
-			pData[n] = 0xff;        // R
-			pData[n + 1] = 0xff;    // G
-			pData[n + 2] = 0xff;    // B
-			pData[n + 3] = 0xff;    // A
-		}
-	}
-
-	return data;
 }
 
 // Update frame-based values.
@@ -471,7 +322,7 @@ void AppSimple::PopulateCommandList()
 	const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
 	context_.commandList_->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 	context_.commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	context_.commandList_->IASetVertexBuffers(0, 1, &context_.vertexBufferView_);
+	context_.commandList_->IASetVertexBuffers(0, 1, &(scene_->vertexBufferView_));
 	context_.commandList_->DrawInstanced(3, 1, 0, 0);
 
 	// Indicate that the back buffer will now be used to present

@@ -5,6 +5,8 @@
 #include "DX12Context.h"
 #include "Scene.h"
 
+#include <memory>
+
 using namespace DirectX;
 
 // Note that while ComPtr is used to manage the lifetime of resources on the CPU,
@@ -25,13 +27,12 @@ public:
 	virtual void OnDestroy();
 
 private:
-	
-	DX12Context context_ = {};
+	DX12Context context_;
+	std::unique_ptr<Scene> scene_ = nullptr;
 
 private:
 	void LoadPipeline();
 	void LoadAssets();
-	std::vector<UINT8> GenerateTextureData();
 	void PopulateCommandList();
 	void WaitForPreviousFrame();
 };
