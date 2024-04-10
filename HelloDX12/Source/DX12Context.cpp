@@ -74,6 +74,9 @@ void DX12Context::Init(UINT swapchainWidth, UINT swapchainHeight)
 	frameIndex_ = swapchain_->GetCurrentBackBufferIndex();
 
 	ThrowIfFailed(device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator_)));
+
+	// Create the command list.
+	ThrowIfFailed(device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator_.Get(), nullptr, IID_PPV_ARGS(&commandList_)));
 }
 
 void DX12Context::WaitForPreviousFrame()

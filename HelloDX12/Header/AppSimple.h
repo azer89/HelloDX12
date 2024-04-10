@@ -27,8 +27,6 @@ private:
 	std::unique_ptr<PipelineSimple> pip_ = nullptr;
 
 private:
-	void LoadPipeline();
-	void LoadAssets();
 	void PopulateCommandList();
 };
 

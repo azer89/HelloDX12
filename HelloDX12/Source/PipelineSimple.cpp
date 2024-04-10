@@ -1,7 +1,7 @@
 #include "PipelineSimple.h"
 #include "DX12Exception.h"
 
-PipelineSimple::PipelineSimple(DX12Context& ctx, Scene* scene)
+PipelineSimple::PipelineSimple(DX12Context& ctx, Scene* scene) : scene_(scene)
 {
 	viewport_ = CD3DX12_VIEWPORT(
 		0.0f, 
@@ -147,5 +147,45 @@ PipelineSimple::PipelineSimple(DX12Context& ctx, Scene* scene)
 		psoDesc.DepthStencilState.StencilEnable = FALSE;
 		psoDesc.SampleDesc.Count = 1;
 		ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)));
+	}
+}
+
+void PipelineSimple::PopulateCommandList(DX12Context& ctx)
+{
+	// However, when ExecuteCommandList() is called on a particular command 
+	// list, that command list can then be reset at any time and must be before 
+	// re-recording.
+	ThrowIfFailed(ctx.commandList_->Reset(ctx.commandAllocator_.Get(), pipelineState_.Get()));
+
+	// Set necessary state.
+	ctx.commandList_->SetGraphicsRootSignature(rootSignature_.Get());
+
+	ID3D12DescriptorHeap* ppHeaps[] = { srvHeap_.Get() };
+	ctx.commandList_->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+
+	ctx.commandList_->SetGraphicsRootDescriptorTable(0, srvHeap_->GetGPUDescriptorHandleForHeapStart());
+	ctx.commandList_->RSSetViewports(1, &viewport_);
+	ctx.commandList_->RSSetScissorRects(1, &scissor_);
+
+	// Indicate that the back buffer will be used as a render target.
+	{
+		auto resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(renderTargets_[ctx.frameIndex_].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		ctx.commandList_->ResourceBarrier(1, &resourceBarrier);
+	}
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvHeap_->GetCPUDescriptorHandleForHeapStart(), ctx.frameIndex_, rtvDescriptorSize_);
+	ctx.commandList_->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+
+	// Record commands.
+	const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
+	ctx.commandList_->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+	ctx.commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	ctx.commandList_->IASetVertexBuffers(0, 1, &(scene_->vertexBufferView_));
+	ctx.commandList_->DrawInstanced(3, 1, 0, 0);
+
+	// Indicate that the back buffer will now be used to present
+	{
+		auto resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(renderTargets_[ctx.frameIndex_].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+		ctx.commandList_->ResourceBarrier(1, &resourceBarrier);
 	}
 }
