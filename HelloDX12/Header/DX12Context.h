@@ -21,6 +21,8 @@ public:
 
 	void Init(UINT swapchainWidth, UINT swapchainHeight);
 
+	void WaitForPreviousFrame();
+
 private:
 	void GetHardwareAdapter(
 		_In_ IDXGIFactory1* pFactory,

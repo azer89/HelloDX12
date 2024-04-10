@@ -6,6 +6,10 @@ void DX12Context::Init(UINT swapchainWidth, UINT swapchainHeight)
 {
 	swapchainWidth_ = swapchainWidth;
 	swapchainHeight_ = swapchainHeight;
+	frameIndex_ = 0;
+	viewport_ = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(swapchainWidth_), static_cast<float>(swapchainHeight_));
+	scissor_ = CD3DX12_RECT(0, 0, static_cast<LONG>(swapchainWidth_), static_cast<LONG>(swapchainHeight_));
+	rtvDescriptorSize_ = 0;
 
 	UINT dxgiFactoryFlags = 0;
 
@@ -70,6 +74,28 @@ void DX12Context::Init(UINT swapchainWidth, UINT swapchainHeight)
 	ThrowIfFailed(factory->MakeWindowAssociation(Win32Application::GetHwnd(), DXGI_MWA_NO_ALT_ENTER));
 
 	ThrowIfFailed(swapChain.As(&swapchain_));
+	frameIndex_ = swapchain_->GetCurrentBackBufferIndex();
+}
+
+void DX12Context::WaitForPreviousFrame()
+{
+	// WAITING FOR THE FRAME TO COMPLETE BEFORE CONTINUING IS NOT BEST PRACTICE.
+	// This is code implemented as such for simplicity. The D3D12HelloFrameBuffering
+	// sample illustrates how to use fences for efficient resource usage and to
+	// maximize GPU utilization.
+
+	// Signal and increment the fence value.
+	const UINT64 fence = fenceValue_;
+	ThrowIfFailed(commandQueue_->Signal(fence_.Get(), fence));
+	fenceValue_++;
+
+	// Wait until the previous frame is finished.
+	if (fence_->GetCompletedValue() < fence)
+	{
+		ThrowIfFailed(fence_->SetEventOnCompletion(fence, fenceEvent_));
+		WaitForSingleObject(fenceEvent_, INFINITE);
+	}
+
 	frameIndex_ = swapchain_->GetCurrentBackBufferIndex();
 }
 

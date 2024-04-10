@@ -4,10 +4,6 @@
 AppSimple::AppSimple(UINT width, UINT height, std::wstring name) :
 	AppBase(width, height, name)
 {
-	context_.frameIndex_ = 0;
-	context_.viewport_ = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height));
-	context_.scissor_ = CD3DX12_RECT(0, 0, static_cast<LONG>(width), static_cast<LONG>(height));
-	context_.rtvDescriptorSize_ = 0;
 }
 
 void AppSimple::OnInit()
@@ -178,7 +174,7 @@ void AppSimple::LoadAssets()
 		// Wait for the command list to execute; we are reusing the same command 
 		// list in our main loop but for now, we just want to wait for setup to 
 		// complete before continuing.
-		WaitForPreviousFrame();
+		context_.WaitForPreviousFrame();
 	}
 }
 
@@ -200,14 +196,14 @@ void AppSimple::OnRender()
 	// Present the frame.
 	ThrowIfFailed(context_.swapchain_->Present(1, 0));
 
-	WaitForPreviousFrame();
+	context_.WaitForPreviousFrame();
 }
 
 void AppSimple::OnDestroy()
 {
 	// Ensure that the GPU is no longer referencing resources that are about to be
 	// cleaned up by the destructor.
-	WaitForPreviousFrame();
+	context_.WaitForPreviousFrame();
 
 	CloseHandle(context_.fenceEvent_);
 }
@@ -257,26 +253,4 @@ void AppSimple::PopulateCommandList()
 	}
 	
 	ThrowIfFailed(context_.commandList_->Close());
-}
-
-void AppSimple::WaitForPreviousFrame()
-{
-	// WAITING FOR THE FRAME TO COMPLETE BEFORE CONTINUING IS NOT BEST PRACTICE.
-	// This is code implemented as such for simplicity. The D3D12HelloFrameBuffering
-	// sample illustrates how to use fences for efficient resource usage and to
-	// maximize GPU utilization.
-
-	// Signal and increment the fence value.
-	const UINT64 fence = context_.fenceValue_;
-	ThrowIfFailed(context_.commandQueue_->Signal(context_.fence_.Get(), fence));
-	context_.fenceValue_++;
-
-	// Wait until the previous frame is finished.
-	if (context_.fence_->GetCompletedValue() < fence)
-	{
-		ThrowIfFailed(context_.fence_->SetEventOnCompletion(fence, context_.fenceEvent_));
-		WaitForSingleObject(context_.fenceEvent_, INFINITE);
-	}
-
-	context_.frameIndex_ = context_.swapchain_->GetCurrentBackBufferIndex();
 }
