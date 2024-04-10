@@ -30,9 +30,9 @@ public:
 	virtual void OnKeyUp(UINT8 /*key*/) {}
 
 	// Accessors.
-	UINT GetWidth() const { return m_width; }
-	UINT GetHeight() const { return m_height; }
-	const WCHAR* GetTitle() const { return m_title.c_str(); }
+	UINT GetWidth() const { return width_; }
+	UINT GetHeight() const { return height_; }
+	const WCHAR* GetTitle() const { return title_.c_str(); }
 
 	void ParseCommandLineArgs(_In_reads_(argc) WCHAR* argv[], int argc);
 
@@ -45,14 +45,14 @@ protected:
 	void SetCustomWindowText(LPCWSTR text);
 
 	// Viewport dimensions.
-	UINT m_width;
-	UINT m_height;
-	float m_aspectRatio;
+	UINT width_;
+	UINT height_;
+	float aspectRatio_;
 
 	// Adapter info.
-	bool m_useWarpDevice;
+	bool useWarpDevice_;
 
 private:
 	// Window title.
-	std::wstring m_title;
+	std::wstring title_;
 };

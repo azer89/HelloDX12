@@ -40,7 +40,7 @@ void AppSimple::LoadPipeline()
 	ComPtr<IDXGIFactory4> factory;
 	ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory)));
 
-	if (m_useWarpDevice)
+	if (useWarpDevice_)
 	{
 		ComPtr<IDXGIAdapter> warpAdapter;
 		ThrowIfFailed(factory->EnumWarpAdapter(IID_PPV_ARGS(&warpAdapter)));
@@ -73,8 +73,8 @@ void AppSimple::LoadPipeline()
 	// Describe and create the swap chain.
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc =
 	{
-		.Width = m_width,
-		.Height = m_height,
+		.Width = width_,
+		.Height = height_,
 		.Format = DXGI_FORMAT_R8G8B8A8_UNORM,
 		.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
 		.BufferCount = context_.FrameCount,
@@ -235,9 +235,9 @@ void AppSimple::LoadAssets()
 		// Define the geometry for a triangle.
 		Vertex triangleVertices[] =
 		{
-			{ { 0.0f, 0.25f * m_aspectRatio, 0.0f }, { 0.5f, 0.0f } },
-			{ { 0.25f, -0.25f * m_aspectRatio, 0.0f }, { 1.0f, 1.0f } },
-			{ { -0.25f, -0.25f * m_aspectRatio, 0.0f }, { 0.0f, 1.0f } }
+			{ { 0.0f, 0.25f * aspectRatio_, 0.0f }, { 0.5f, 0.0f } },
+			{ { 0.25f, -0.25f * aspectRatio_, 0.0f }, { 1.0f, 1.0f } },
+			{ { -0.25f, -0.25f * aspectRatio_, 0.0f }, { 0.0f, 1.0f } }
 		};
 
 		const UINT vertexBufferSize = sizeof(triangleVertices);

@@ -1,6 +1,7 @@
 #ifndef HELLO_DX12_APP_SIMPLE
 #define HELLO_DX12_APP_SIMPLE
 
+#include "stdafx.h"
 #include "DXSample.h"
 #include "DX12Context.h"
 

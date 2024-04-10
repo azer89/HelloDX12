@@ -216,7 +216,6 @@ void ResetComPtrArray(T* comPtrArray)
 	}
 }
 
-
 // Resets all elements in a unique_ptr array.
 template<class T>
 void ResetUniquePtrArray(T* uniquePtrArray)

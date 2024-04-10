@@ -15,12 +15,12 @@
 using namespace Microsoft::WRL;
 
 DXSample::DXSample(UINT width, UINT height, std::wstring name) :
-	m_width(width),
-	m_height(height),
-	m_title(name),
-	m_useWarpDevice(false)
+	width_(width),
+	height_(height),
+	title_(name),
+	useWarpDevice_(false)
 {
-	m_aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+	aspectRatio_ = static_cast<float>(width) / static_cast<float>(height);
 }
 
 DXSample::~DXSample()
@@ -98,7 +98,7 @@ void DXSample::GetHardwareAdapter(
 // Helper function for setting the window's title text.
 void DXSample::SetCustomWindowText(LPCWSTR text)
 {
-	std::wstring windowText = m_title + L": " + text;
+	std::wstring windowText = title_ + L": " + text;
 	SetWindowText(Win32Application::GetHwnd(), windowText.c_str());
 }
 
@@ -111,8 +111,8 @@ void DXSample::ParseCommandLineArgs(WCHAR* argv[], int argc)
 		if (_wcsnicmp(argv[i], L"-warp", wcslen(argv[i])) == 0 ||
 			_wcsnicmp(argv[i], L"/warp", wcslen(argv[i])) == 0)
 		{
-			m_useWarpDevice = true;
-			m_title = m_title + L" (WARP)";
+			useWarpDevice_ = true;
+			title_ = title_ + L" (WARP)";
 		}
 	}
 }

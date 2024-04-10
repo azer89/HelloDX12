@@ -23,6 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\AppSimple.cpp" />
+    <ClCompile Include="Source\ConsoleDisplay.cpp" />
     <ClCompile Include="Source\DX12Exception.cpp" />
     <ClCompile Include="Source\DXSample.cpp" />
     <ClCompile Include="Source\Main.cpp" />

@@ -11,6 +11,7 @@ public:
 
 	std::wstring ToString()const;
 
+private:
 	HRESULT ErrorCode = S_OK;
 	std::wstring FunctionName;
 	std::wstring Filename;
