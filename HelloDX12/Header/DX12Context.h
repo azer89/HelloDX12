@@ -19,8 +19,19 @@ public:
 	[[nodiscard]] ID3D12Device* GetDevice() const { return device_.Get(); }
 	[[nodiscard]] ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
 
+	void Init(UINT swapchainWidth, UINT swapchainHeight);
+
+private:
+	void GetHardwareAdapter(
+		_In_ IDXGIFactory1* pFactory,
+		_Outptr_result_maybenull_ IDXGIAdapter1** ppAdapter,
+		bool requestHighPerformanceAdapter = false);
+
 // TODO Set to private
 public:
+	UINT swapchainWidth_ = 0;
+	UINT swapchainHeight_ = 0;
+
 	static const UINT FrameCount = 2;
 	
 	// Pipeline objects.

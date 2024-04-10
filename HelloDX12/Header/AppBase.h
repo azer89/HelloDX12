@@ -37,10 +37,6 @@ public:
 	void ParseCommandLineArgs(_In_reads_(argc) WCHAR* argv[], int argc);
 
 protected:
-	void GetHardwareAdapter(
-		_In_ IDXGIFactory1* pFactory,
-		_Outptr_result_maybenull_ IDXGIAdapter1** ppAdapter,
-		bool requestHighPerformanceAdapter = false);
 
 	void SetCustomWindowText(LPCWSTR text);
 
@@ -48,9 +44,6 @@ protected:
 	UINT width_;
 	UINT height_;
 	float aspectRatio_;
-
-	// Adapter info.
-	bool useWarpDevice_;
 
 private:
 	// Window title.

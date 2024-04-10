@@ -59,6 +59,9 @@
     <ClCompile Include="Source\AppBase.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\DX12Context.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Shader\Shader.hlsl">
