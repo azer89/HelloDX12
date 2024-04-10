@@ -11,14 +11,14 @@
 
 #pragma once
 
-#include "DXSampleHelper.h"
+#include "DX12Helper.h"
 #include "Win32Application.h"
 
-class DXSample
+class AppBase
 {
 public:
-	DXSample(UINT width, UINT height, std::wstring name);
-	virtual ~DXSample();
+	AppBase(UINT width, UINT height, std::wstring name);
+	virtual ~AppBase();
 
 	virtual void OnInit() = 0;
 	virtual void OnUpdate() = 0;

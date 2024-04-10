@@ -10,11 +10,11 @@
 //*********************************************************
 
 #include "stdafx.h"
-#include "DXSample.h"
+#include "AppBase.h"
 
 using namespace Microsoft::WRL;
 
-DXSample::DXSample(UINT width, UINT height, std::wstring name) :
+AppBase::AppBase(UINT width, UINT height, std::wstring name) :
 	width_(width),
 	height_(height),
 	title_(name),
@@ -23,14 +23,14 @@ DXSample::DXSample(UINT width, UINT height, std::wstring name) :
 	aspectRatio_ = static_cast<float>(width) / static_cast<float>(height);
 }
 
-DXSample::~DXSample()
+AppBase::~AppBase()
 {
 }
 
 // Helper function for acquiring the first available hardware adapter that supports Direct3D 12.
 // If no such adapter can be found, *ppAdapter will be set to nullptr.
 _Use_decl_annotations_
-void DXSample::GetHardwareAdapter(
+void AppBase::GetHardwareAdapter(
 	IDXGIFactory1* pFactory,
 	IDXGIAdapter1** ppAdapter,
 	bool requestHighPerformanceAdapter)
@@ -96,7 +96,7 @@ void DXSample::GetHardwareAdapter(
 }
 
 // Helper function for setting the window's title text.
-void DXSample::SetCustomWindowText(LPCWSTR text)
+void AppBase::SetCustomWindowText(LPCWSTR text)
 {
 	std::wstring windowText = title_ + L": " + text;
 	SetWindowText(Win32Application::GetHwnd(), windowText.c_str());
@@ -104,7 +104,7 @@ void DXSample::SetCustomWindowText(LPCWSTR text)
 
 // Helper function for parsing any supplied command line args.
 _Use_decl_annotations_
-void DXSample::ParseCommandLineArgs(WCHAR* argv[], int argc)
+void AppBase::ParseCommandLineArgs(WCHAR* argv[], int argc)
 {
 	for (int i = 1; i < argc; ++i)
 	{

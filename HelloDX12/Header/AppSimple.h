@@ -2,7 +2,7 @@
 #define HELLO_DX12_APP_SIMPLE
 
 #include "stdafx.h"
-#include "DXSample.h"
+#include "AppBase.h"
 #include "DX12Context.h"
 
 using namespace DirectX;
@@ -14,7 +14,7 @@ using namespace DirectX;
 // An example of this can be found in the class method: OnDestroy().
 using Microsoft::WRL::ComPtr;
 
-class AppSimple : public DXSample
+class AppSimple : public AppBase
 {
 public:
 	AppSimple(UINT width, UINT height, std::wstring name);

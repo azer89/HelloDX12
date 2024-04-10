@@ -16,8 +16,8 @@
     <ClInclude Include="Header\ConsoleDisplay.h" />
     <ClInclude Include="Header\DX12Context.h" />
     <ClInclude Include="Header\DX12Exception.h" />
-    <ClInclude Include="Header\DXSample.h" />
-    <ClInclude Include="Header\DXSampleHelper.h" />
+    <ClInclude Include="Header\AppBase.h" />
+    <ClInclude Include="Header\DX12Helper.h" />
     <ClInclude Include="Header\stdafx.h" />
     <ClInclude Include="Header\Win32Application.h" />
   </ItemGroup>
@@ -25,7 +25,7 @@
     <ClCompile Include="Source\AppSimple.cpp" />
     <ClCompile Include="Source\ConsoleDisplay.cpp" />
     <ClCompile Include="Source\DX12Exception.cpp" />
-    <ClCompile Include="Source\DXSample.cpp" />
+    <ClCompile Include="Source\AppBase.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\stdafx.cpp" />
     <ClCompile Include="Source\Win32Application.cpp" />

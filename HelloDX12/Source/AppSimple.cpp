@@ -3,7 +3,7 @@
 #include "DX12Exception.h"
 
 AppSimple::AppSimple(UINT width, UINT height, std::wstring name) :
-	DXSample(width, height, name)
+	AppBase(width, height, name)
 {
 	context_.frameIndex_ = 0;
 	context_.viewport_ = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height));
