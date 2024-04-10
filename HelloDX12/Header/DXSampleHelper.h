@@ -10,7 +10,11 @@
 //*********************************************************
 
 #pragma once
+
+#include "stdafx.h"
 #include <stdexcept>
+
+#include "DX12Exception.h"
 
 // Note that while ComPtr is used to manage the lifetime of resources on the CPU,
 // it has no understanding of the lifetime of resources on the GPU. Apps must account
@@ -36,13 +40,29 @@ private:
 
 #define SAFE_RELEASE(p) if (p) (p)->Release()
 
-inline void ThrowIfFailed(HRESULT hr)
+/*inline void ThrowIfFailed(HRESULT hr)
 {
 	if (FAILED(hr))
 	{
 		throw HrException(hr);
 	}
+}*/
+
+inline std::wstring AnsiToWString(const std::string& str)
+{
+	WCHAR buffer[512];
+	MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, buffer, 512);
+	return std::wstring(buffer);
 }
+
+#ifndef ThrowIfFailed
+#define ThrowIfFailed(x) \
+{ \
+	HRESULT hr__ = (x); \
+	std::wstring wfn = AnsiToWString(__FILE__); \
+	if(FAILED(hr__)) { throw DxException(hr__, L#x, wfn, __LINE__); } \
+}
+#endif
 
 inline HRESULT ReadDataFromFile(LPCWSTR filename, byte** data, UINT* size)
 {

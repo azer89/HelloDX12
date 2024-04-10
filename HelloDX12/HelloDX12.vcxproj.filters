@@ -33,6 +33,9 @@
     <ClInclude Include="Header\DX12Context.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Header\DX12Exception.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\DXSample.cpp">
@@ -48,6 +51,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\AppSimple.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DX12Exception.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
