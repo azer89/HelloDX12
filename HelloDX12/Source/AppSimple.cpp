@@ -241,20 +241,21 @@ void AppSimple::LoadAssets()
 
 		const UINT vertexBufferSize = sizeof(triangleVertices);
 
-		auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-		auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
-
 		// Note: using upload heaps to transfer static data like vert buffers is not 
 		// recommended. Every time the GPU needs it, the upload heap will be marshalled 
 		// over. Please read up on Default Heap usage. An upload heap is used here for 
-		// code simplicity and because there are very few verts to actually transfer.
-		ThrowIfFailed(context_.device_->CreateCommittedResource(
-			&heapProperties,
-			D3D12_HEAP_FLAG_NONE,
-			&resourceDesc,
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			nullptr,
-			IID_PPV_ARGS(&context_.vertexBuffer_)));
+		// code simplicity and because there are very few verts to actually transfer
+		{
+			auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+			auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
+			ThrowIfFailed(context_.device_->CreateCommittedResource(
+				&heapProperties,
+				D3D12_HEAP_FLAG_NONE,
+				&resourceDesc,
+				D3D12_RESOURCE_STATE_GENERIC_READ,
+				nullptr,
+				IID_PPV_ARGS(&context_.vertexBuffer_)));
+		}
 
 		// Copy the triangle data to the vertex buffer.
 		UINT8* pVertexDataBegin;
@@ -291,29 +292,31 @@ void AppSimple::LoadAssets()
 		textureDesc.SampleDesc.Count = 1;
 		textureDesc.SampleDesc.Quality = 0;
 		
-		auto heapProperties1 = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-
-		ThrowIfFailed(context_.device_->CreateCommittedResource(
-			&heapProperties1,
-			D3D12_HEAP_FLAG_NONE,
-			&textureDesc,
-			D3D12_RESOURCE_STATE_COPY_DEST,
-			nullptr,
-			IID_PPV_ARGS(&context_.texture_)));
+		{
+			auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+			ThrowIfFailed(context_.device_->CreateCommittedResource(
+				&heapProperties,
+				D3D12_HEAP_FLAG_NONE,
+				&textureDesc,
+				D3D12_RESOURCE_STATE_COPY_DEST,
+				nullptr,
+				IID_PPV_ARGS(&context_.texture_)));
+		}
 
 		const UINT64 uploadBufferSize = GetRequiredIntermediateSize(context_.texture_.Get(), 0, 1);
 
-		auto heapProperties2 = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-		auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
-
-		// Create the GPU upload buffer.
-		ThrowIfFailed(context_.device_->CreateCommittedResource(
-			&heapProperties2,
-			D3D12_HEAP_FLAG_NONE,
-			&resourceDesc,
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			nullptr,
-			IID_PPV_ARGS(&textureUploadHeap)));
+		// Create the GPU upload buffer
+		{
+			auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+			auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
+			ThrowIfFailed(context_.device_->CreateCommittedResource(
+				&heapProperties,
+				D3D12_HEAP_FLAG_NONE,
+				&resourceDesc,
+				D3D12_RESOURCE_STATE_GENERIC_READ,
+				nullptr,
+				IID_PPV_ARGS(&textureUploadHeap)));
+		}
 
 		// Copy data to the intermediate upload heap and then schedule a copy 
 		// from the upload heap to the Texture2D.
@@ -327,9 +330,10 @@ void AppSimple::LoadAssets()
 		};
 
 		UpdateSubresources(context_.commandList_.Get(), context_.texture_.Get(), textureUploadHeap.Get(), 0, 0, 1, &textureData);
-		auto resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(context_.texture_.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-		context_.commandList_->ResourceBarrier(1, &resourceBarrier);
-
+		{
+			auto resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(context_.texture_.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+			context_.commandList_->ResourceBarrier(1, &resourceBarrier);
+		}
 		// Describe and create a SRV for the texture.
 		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = 
 		{
@@ -455,8 +459,10 @@ void AppSimple::PopulateCommandList()
 	context_.commandList_->RSSetScissorRects(1, &context_.scissor_);
 
 	// Indicate that the back buffer will be used as a render target.
-	auto resourceBarrier1 = CD3DX12_RESOURCE_BARRIER::Transition(context_.renderTargets_[context_.frameIndex_].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-	context_.commandList_->ResourceBarrier(1, &resourceBarrier1);
+	{
+		auto resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(context_.renderTargets_[context_.frameIndex_].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		context_.commandList_->ResourceBarrier(1, &resourceBarrier);
+	}
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(context_.rtvHeap_->GetCPUDescriptorHandleForHeapStart(), context_.frameIndex_, context_.rtvDescriptorSize_);
 	context_.commandList_->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
@@ -468,9 +474,12 @@ void AppSimple::PopulateCommandList()
 	context_.commandList_->IASetVertexBuffers(0, 1, &context_.vertexBufferView_);
 	context_.commandList_->DrawInstanced(3, 1, 0, 0);
 
-	// Indicate that the back buffer will now be used to present.
-	auto resourceBarrier2 = CD3DX12_RESOURCE_BARRIER::Transition(context_.renderTargets_[context_.frameIndex_].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-	context_.commandList_->ResourceBarrier(1, &resourceBarrier2);
+	// Indicate that the back buffer will now be used to present
+	{
+		auto resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(context_.renderTargets_[context_.frameIndex_].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+		context_.commandList_->ResourceBarrier(1, &resourceBarrier);
+	}
+	
 	ThrowIfFailed(context_.commandList_->Close());
 }
 
