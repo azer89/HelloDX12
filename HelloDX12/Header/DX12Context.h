@@ -1,7 +1,15 @@
 #ifndef HELLO_DX12_CONTEXT
 #define HELLO_DX12_CONTEXT
 
-#include "stdafx.h"
+#include <d3d12.h>
+#include <dxgi1_6.h>
+#include <D3Dcompiler.h>
+#include <DirectXMath.h>
+#include "include/d3dx12/d3dx12.h"
+
+#include <windows.h>
+#include <wrl.h>
+#include <shellapi.h>
 
 using Microsoft::WRL::ComPtr;
 

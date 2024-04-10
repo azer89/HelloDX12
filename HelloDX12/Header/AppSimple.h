@@ -1,9 +1,9 @@
 #ifndef HELLO_DX12_APP_SIMPLE
 #define HELLO_DX12_APP_SIMPLE
 
-#include "stdafx.h"
 #include "AppBase.h"
 #include "DX12Context.h"
+#include "Scene.h"
 
 using namespace DirectX;
 
@@ -25,12 +25,7 @@ public:
 	virtual void OnDestroy();
 
 private:
-	struct Vertex
-	{
-		XMFLOAT3 position;
-		XMFLOAT2 uv;
-	};
-
+	
 	DX12Context context_ = {};
 
 private:

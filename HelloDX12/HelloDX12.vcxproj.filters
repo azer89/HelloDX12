@@ -12,15 +12,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Header\DXSample.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\DXSampleHelper.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\stdafx.h">
-      <Filter>Header</Filter>
-    </ClInclude>
     <ClInclude Include="Header\Win32Application.h">
       <Filter>Header</Filter>
     </ClInclude>
@@ -36,15 +27,18 @@
     <ClInclude Include="Header\DX12Exception.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Header\Scene.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\AppBase.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\DX12Helper.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\DXSample.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Main.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\stdafx.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Win32Application.cpp">
@@ -57,6 +51,12 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\ConsoleDisplay.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AppBase.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

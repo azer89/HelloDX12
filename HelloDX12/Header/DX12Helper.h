@@ -11,7 +11,6 @@
 
 #pragma once
 
-#include "stdafx.h"
 #include <stdexcept>
 
 #include "DX12Exception.h"

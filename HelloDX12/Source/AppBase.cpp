@@ -8,8 +8,6 @@
 // PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 //
 //*********************************************************
-
-#include "stdafx.h"
 #include "AppBase.h"
 
 using namespace Microsoft::WRL;

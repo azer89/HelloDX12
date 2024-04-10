@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "DX12Exception.h"
 
 #include <comdef.h>

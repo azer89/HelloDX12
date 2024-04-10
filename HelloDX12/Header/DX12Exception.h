@@ -1,7 +1,7 @@
 #ifndef HELLO_DX12_EXCEPTION
 #define HELLO_DX12_EXCEPTION
 
-#include "stdafx.h"
+#include "DX12Context.h"
 
 class DxException
 {

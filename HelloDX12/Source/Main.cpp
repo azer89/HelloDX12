@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "AppSimple.h"
 #include "ConsoleDisplay.h"
 

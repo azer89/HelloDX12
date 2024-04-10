@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "AppSimple.h"
 #include "DX12Exception.h"
 
@@ -235,9 +234,9 @@ void AppSimple::LoadAssets()
 		// Define the geometry for a triangle.
 		Vertex triangleVertices[] =
 		{
-			{ { 0.0f, 0.25f * aspectRatio_, 0.0f }, { 0.5f, 0.0f } },
-			{ { 0.25f, -0.25f * aspectRatio_, 0.0f }, { 1.0f, 1.0f } },
-			{ { -0.25f, -0.25f * aspectRatio_, 0.0f }, { 0.0f, 1.0f } }
+			{ { 0.0f, 0.5f, 0.0f }, { 0.5f, 0.0f } },
+			{ { 0.5f, -0.5f, 0.0f }, { 1.0f, 1.0f } },
+			{ { -0.5f, -0.5f, 0.0f }, { 0.0f, 1.0f } }
 		};
 
 		const UINT vertexBufferSize = sizeof(triangleVertices);
