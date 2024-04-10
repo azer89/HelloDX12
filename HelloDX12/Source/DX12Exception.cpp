@@ -10,7 +10,7 @@ DxException::DxException(HRESULT hr, const std::wstring& functionName, const std
 	Filename(filename),
 	LineNumber(lineNumber)
 {
-	auto wstr = this->ToString();
+	auto wstr = ToString();
 	std::wcout << wstr.c_str() << '\n';
 }
 
