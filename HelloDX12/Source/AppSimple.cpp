@@ -1,8 +1,7 @@
 #include "AppSimple.h"
 #include "DX12Exception.h"
 
-AppSimple::AppSimple(UINT width, UINT height, std::wstring name) :
-	AppBase(width, height, name)
+AppSimple::AppSimple() : AppBase()
 {
 }
 

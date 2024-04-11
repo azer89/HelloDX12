@@ -9,15 +9,17 @@
 //
 //*********************************************************
 #include "AppBase.h"
+#include "Configs.h"
+#include "Utility.h"
 
 using namespace Microsoft::WRL;
 
-AppBase::AppBase(UINT width, UINT height, std::wstring name) :
-	width_(width),
-	height_(height),
-	title_(name)
+AppBase::AppBase() :
+	width_(AppConfig::InitialScreenWidth),
+	height_(AppConfig::InitialScreenHeight),
+	title_(Utility::WStringConvert(AppConfig::ScreenTitle)),
+	aspectRatio_(static_cast<float>(AppConfig::InitialScreenWidth) / static_cast<float>(AppConfig::InitialScreenHeight))
 {
-	aspectRatio_ = static_cast<float>(width) / static_cast<float>(height);
 }
 
 AppBase::~AppBase()

@@ -17,7 +17,7 @@
 class AppBase
 {
 public:
-	AppBase(UINT width, UINT height, std::wstring name);
+	AppBase();
 	virtual ~AppBase();
 
 	virtual void OnInit() = 0;

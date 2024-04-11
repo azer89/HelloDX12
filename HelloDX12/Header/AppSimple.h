@@ -14,7 +14,7 @@ using Microsoft::WRL::ComPtr;
 class AppSimple : public AppBase
 {
 public:
-	AppSimple(UINT width, UINT height, std::wstring name);
+	AppSimple();
 
 	virtual void OnInit();
 	virtual void OnUpdate();

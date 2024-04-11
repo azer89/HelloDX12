@@ -5,8 +5,8 @@
 
 namespace AppConfig
 {
-	constexpr uint32_t InitialScreenWidth = 1600;
-	constexpr uint32_t InitialScreenHeight = 1200;
+	constexpr uint32_t InitialScreenWidth = 800;
+	constexpr uint32_t InitialScreenHeight = 600;
 
 	// Number of frame in flight
 	constexpr uint32_t FrameCount = 2;
