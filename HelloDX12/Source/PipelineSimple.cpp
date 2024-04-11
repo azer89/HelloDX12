@@ -46,7 +46,7 @@ void PipelineSimple::CreateRTV(DX12Context& ctx)
 	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
 	{
 		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
-		.NumDescriptors = ctx.FrameCount,
+		.NumDescriptors = AppConfig::FrameCount,
 		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
 	};
 	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&rtvHeap_)));
@@ -54,7 +54,7 @@ void PipelineSimple::CreateRTV(DX12Context& ctx)
 	// Create a RTV for each frame
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvHeap_->GetCPUDescriptorHandleForHeapStart());
 	rtvDescriptorSize_ = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	for (UINT n = 0; n < ctx.FrameCount; n++)
+	for (UINT n = 0; n < AppConfig::FrameCount; n++)
 	{
 		ThrowIfFailed(ctx.swapchain_->GetBuffer(n, IID_PPV_ARGS(&renderTargets_[n])));
 		ctx.GetDevice()->CreateRenderTargetView(renderTargets_[n].Get(), nullptr, rtvHandle);

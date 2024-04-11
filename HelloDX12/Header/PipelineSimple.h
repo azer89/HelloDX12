@@ -3,6 +3,7 @@
 
 #include "DX12Context.h"
 #include "Scene.h"
+#include "Configs.h"
 
 class PipelineSimple
 {
@@ -30,7 +31,7 @@ public:
 	ComPtr<ID3D12DescriptorHeap> srvHeap_; // Shader resource views
 	
 	UINT rtvDescriptorSize_;
-	ComPtr<ID3D12Resource> renderTargets_[DX12Context::FrameCount];
+	ComPtr<ID3D12Resource> renderTargets_[AppConfig::FrameCount];
 
 	Scene* scene_;
 

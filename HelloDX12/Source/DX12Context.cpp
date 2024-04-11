@@ -1,6 +1,7 @@
 #include "DX12Context.h"
 #include "DX12Exception.h"
 #include "Win32Application.h"
+#include "Configs.h"
 
 void DX12Context::Init(UINT swapchainWidth, UINT swapchainHeight)
 {
@@ -52,7 +53,7 @@ void DX12Context::Init(UINT swapchainWidth, UINT swapchainHeight)
 		.Height = swapchainHeight_,
 		.Format = DXGI_FORMAT_R8G8B8A8_UNORM,
 		.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
-		.BufferCount = FrameCount,
+		.BufferCount = AppConfig::FrameCount,
 		.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD
 	};
 	swapChainDesc.SampleDesc.Count = 1;

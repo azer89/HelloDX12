@@ -33,8 +33,6 @@ private:
 public:
 	UINT swapchainWidth_ = 0;
 	UINT swapchainHeight_ = 0;
-
-	static const UINT FrameCount = 2;
 	
 	// Pipeline objects.
 	ComPtr<IDXGISwapChain3> swapchain_;
