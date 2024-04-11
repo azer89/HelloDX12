@@ -14,7 +14,7 @@ namespace AppConfig
 	const std::string ScreenTitle = "Hello DX12";
 
 	// Need to change these absolute paths
-	const std::string ShaderFolder = "C:/Users/azer/workspace/HelloDX12/HelloDX12/Shaders/";
+	const std::string ShaderFolder = "C:/Users/azer/workspace/HelloDX12/HelloDX12/Shader/";
 	const std::string ModelFolder = "C:/Users/azer/workspace/HelloDX12/Assets/Models/";
 	const std::string TextureFolder = "C:/Users/azer/workspace/HelloDX12/Assets/Textures/";
 	const std::string FontFolder = "C:/Users/azer/workspace/HelloDX12/Assets/Fonts/";

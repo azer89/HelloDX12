@@ -2,6 +2,7 @@
 #define HELLO_DX12_PIPELINE_SIMPLE
 
 #include "DX12Context.h"
+#include "DX12Shader.h"
 #include "Scene.h"
 #include "Configs.h"
 
@@ -24,8 +25,8 @@ public:
 	ComPtr<ID3D12PipelineState> pipelineState_;
 	ComPtr<ID3D12RootSignature> rootSignature_;
 
-	ComPtr<ID3DBlob> vertexShader_;
-	ComPtr<ID3DBlob> pixelShader_;
+	DX12Shader vertexShader_;
+	DX12Shader fragmentShader_;
 
 	ComPtr<ID3D12DescriptorHeap> rtvHeap_; // Render target views
 	ComPtr<ID3D12DescriptorHeap> srvHeap_; // Shader resource views

@@ -48,6 +48,9 @@
     <ClInclude Include="Header\Utility.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Header\DX12Shader.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -81,6 +84,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Utility.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DX12Shader.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

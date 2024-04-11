@@ -111,16 +111,8 @@ void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 
 void PipelineSimple::CreateShaders(DX12Context& ctx)
 {
-#if defined(_DEBUG)
-	// Enable better shader debugging with the graphics debugging tools.
-	UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#else
-	UINT compileFlags = 0;
-#endif
-	std::wstring assetPath = L"C:/Users/azer/workspace/HelloDX12/HelloDX12/Shader/" + std::wstring(L"Shader.hlsl");
-
-	ThrowIfFailed(D3DCompileFromFile(assetPath.c_str(), nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader_, nullptr));
-	ThrowIfFailed(D3DCompileFromFile(assetPath.c_str(), nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader_, nullptr));
+	vertexShader_.Create(ctx, AppConfig::ShaderFolder + "Shader.hlsl", ShaderType::Vertex);
+	fragmentShader_.Create(ctx, AppConfig::ShaderFolder + "Shader.hlsl", ShaderType::Fragment);
 }
 
 void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
@@ -136,8 +128,8 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc =
 	{
 		.pRootSignature = rootSignature_.Get(),
-		.VS = CD3DX12_SHADER_BYTECODE(vertexShader_.Get()),
-		.PS = CD3DX12_SHADER_BYTECODE(pixelShader_.Get()),
+		.VS = CD3DX12_SHADER_BYTECODE(vertexShader_.GetHandle()),
+		.PS = CD3DX12_SHADER_BYTECODE(fragmentShader_.GetHandle()),
 		.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 		.SampleMask = UINT_MAX,
 		.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT),
