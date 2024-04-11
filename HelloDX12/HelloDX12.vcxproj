@@ -18,6 +18,7 @@
     <ClInclude Include="Header\DX12Exception.h" />
     <ClInclude Include="Header\AppBase.h" />
     <ClInclude Include="Header\DX12Helper.h" />
+    <ClInclude Include="Header\DX12Image.h" />
     <ClInclude Include="Header\PipelineSimple.h" />
     <ClInclude Include="Header\Scene.h" />
     <ClInclude Include="Header\Win32Application.h" />
@@ -28,6 +29,7 @@
     <ClCompile Include="Source\DX12Context.cpp" />
     <ClCompile Include="Source\DX12Exception.cpp" />
     <ClCompile Include="Source\AppBase.cpp" />
+    <ClCompile Include="Source\DX12Image.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\PipelineSimple.cpp" />
     <ClCompile Include="Source\Scene.cpp" />

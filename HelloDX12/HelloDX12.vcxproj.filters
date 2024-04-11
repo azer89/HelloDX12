@@ -39,6 +39,9 @@
     <ClInclude Include="Header\PipelineSimple.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Header\DX12Image.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -66,6 +69,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\PipelineSimple.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DX12Image.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

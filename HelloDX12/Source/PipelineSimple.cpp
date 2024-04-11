@@ -46,7 +46,7 @@ PipelineSimple::PipelineSimple(DX12Context& ctx, Scene* scene) : scene_(scene)
 			.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
 		};
 		srvDesc.Texture2D.MipLevels = 1;
-		ctx.GetDevice()->CreateShaderResourceView(scene->texture_.Get(), &srvDesc, srvHeap_->GetCPUDescriptorHandleForHeapStart());
+		ctx.GetDevice()->CreateShaderResourceView(scene->image_->image_.Get(), &srvDesc, srvHeap_->GetCPUDescriptorHandleForHeapStart());
 	}
 
 	// Create frame resources.
