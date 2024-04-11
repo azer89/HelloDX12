@@ -42,6 +42,12 @@
     <ClInclude Include="Header\DX12Image.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Header\Configs.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Utility.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -72,6 +78,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\DX12Image.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Utility.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
