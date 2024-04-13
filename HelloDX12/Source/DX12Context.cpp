@@ -3,13 +3,13 @@
 #include "Win32Application.h"
 #include "Configs.h"
 
-void DX12Context::Init(UINT swapchainWidth, UINT swapchainHeight)
+void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 {
 	swapchainWidth_ = swapchainWidth;
 	swapchainHeight_ = swapchainHeight;
 	frameIndex_ = 0;
 
-	UINT dxgiFactoryFlags = 0;
+	uint32_t dxgiFactoryFlags = 0;
 
 #if defined(_DEBUG)
 	// Enable the debug layer (requires the Graphics Tools "optional feature").
@@ -88,7 +88,7 @@ void DX12Context::WaitForPreviousFrame()
 	// maximize GPU utilization.
 
 	// Signal and increment the fence value.
-	const UINT64 fence = fenceValue_;
+	const uint64_t fence = fenceValue_;
 	ThrowIfFailed(commandQueue_->Signal(fence_.Get(), fence));
 	fenceValue_++;
 
@@ -118,7 +118,7 @@ void DX12Context::GetHardwareAdapter(
 	if (SUCCEEDED(pFactory->QueryInterface(IID_PPV_ARGS(&factory6))))
 	{
 		for (
-			UINT adapterIndex = 0;
+			uint32_t adapterIndex = 0;
 			SUCCEEDED(factory6->EnumAdapterByGpuPreference(
 				adapterIndex,
 				requestHighPerformanceAdapter == true ? DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE : DXGI_GPU_PREFERENCE_UNSPECIFIED,
@@ -146,7 +146,7 @@ void DX12Context::GetHardwareAdapter(
 
 	if (adapter.Get() == nullptr)
 	{
-		for (UINT adapterIndex = 0; SUCCEEDED(pFactory->EnumAdapters1(adapterIndex, &adapter)); ++adapterIndex)
+		for (uint32_t adapterIndex = 0; SUCCEEDED(pFactory->EnumAdapters1(adapterIndex, &adapter)); ++adapterIndex)
 		{
 			DXGI_ADAPTER_DESC1 desc;
 			adapter->GetDesc1(&desc);

@@ -35,7 +35,7 @@ DX12Image::DX12Image(DX12Context& ctx)
 				IID_PPV_ARGS(&image_)));
 		}
 
-		const UINT64 uploadBufferSize = GetRequiredIntermediateSize(image_.Get(), 0, 1);
+		const uint64_t uploadBufferSize = GetRequiredIntermediateSize(image_.Get(), 0, 1);
 
 		// Create the GPU upload buffer
 		{
@@ -52,7 +52,7 @@ DX12Image::DX12Image(DX12Context& ctx)
 
 		// Copy data to the intermediate upload heap and then schedule a copy 
 		// from the upload heap to the Texture2D.
-		std::vector<UINT8> texture = GenerateTextureData(ctx);
+		std::vector<uint8_t> texture = GenerateTextureData(ctx);
 
 		D3D12_SUBRESOURCE_DATA textureData =
 		{
@@ -72,20 +72,20 @@ DX12Image::DX12Image(DX12Context& ctx)
 // Generate a simple black and white checkerboard texture.
 std::vector<UINT8> DX12Image::GenerateTextureData(DX12Context& ctx)
 {
-	const UINT rowPitch = width_ * pixelSize_;
-	const UINT cellPitch = rowPitch >> 3;        // The width of a cell in the checkboard texture.
-	const UINT cellHeight = width_ >> 3;    // The height of a cell in the checkerboard texture.
-	const UINT textureSize = rowPitch * height_;
+	const uint32_t rowPitch = width_ * pixelSize_;
+	const uint32_t cellPitch = rowPitch >> 3;        // The width of a cell in the checkboard texture.
+	const uint32_t cellHeight = width_ >> 3;    // The height of a cell in the checkerboard texture.
+	const uint32_t textureSize = rowPitch * height_;
 
-	std::vector<UINT8> data(textureSize);
-	UINT8* pData = &data[0];
+	std::vector<uint8_t> data(textureSize);
+	uint8_t* pData = &data[0];
 
-	for (UINT n = 0; n < textureSize; n += pixelSize_)
+	for (uint32_t n = 0; n < textureSize; n += pixelSize_)
 	{
-		UINT x = n % rowPitch;
-		UINT y = n / rowPitch;
-		UINT i = x / cellPitch;
-		UINT j = y / cellHeight;
+		uint32_t x = n % rowPitch;
+		uint32_t y = n / rowPitch;
+		uint32_t i = x / cellPitch;
+		uint32_t j = y / cellHeight;
 
 		if (i % 2 == j % 2)
 		{

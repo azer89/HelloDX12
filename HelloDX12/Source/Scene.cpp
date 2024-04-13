@@ -13,7 +13,7 @@ void Scene::Init(DX12Context& ctx)
 			{ { -0.5f, -0.5f, 0.0f }, { 0.0f, 1.0f } }
 		};
 
-		const UINT vertexBufferSize = sizeof(triangleVertices);
+		const uint32_t vertexBufferSize = sizeof(triangleVertices);
 
 		// Note: using upload heaps to transfer static data like vert buffers is not 
 		// recommended. Every time the GPU needs it, the upload heap will be marshalled 
@@ -32,7 +32,7 @@ void Scene::Init(DX12Context& ctx)
 		}
 
 		// Copy the triangle data to the vertex buffer
-		UINT8* pVertexDataBegin;
+		uint8_t* pVertexDataBegin;
 		CD3DX12_RANGE readRange(0, 0);        // We do not intend to read from this resource on the CPU
 		ThrowIfFailed(vertexBuffer_->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
 		memcpy(pVertexDataBegin, triangleVertices, sizeof(triangleVertices));

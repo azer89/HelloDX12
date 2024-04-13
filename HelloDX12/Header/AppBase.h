@@ -26,12 +26,12 @@ public:
 	virtual void OnDestroy() = 0;
 
 	// Samples override the event handlers to handle specific messages.
-	virtual void OnKeyDown(UINT8 /*key*/) {}
-	virtual void OnKeyUp(UINT8 /*key*/) {}
+	virtual void OnKeyDown(uint8_t /*key*/) {}
+	virtual void OnKeyUp(uint8_t /*key*/) {}
 
 	// Accessors.
-	UINT GetWidth() const { return width_; }
-	UINT GetHeight() const { return height_; }
+	uint32_t GetWidth() const { return width_; }
+	uint32_t GetHeight() const { return height_; }
 	const WCHAR* GetTitle() const { return title_.c_str(); }
 
 	void ParseCommandLineArgs(_In_reads_(argc) WCHAR* argv[], int argc);
@@ -41,8 +41,8 @@ protected:
 	void SetCustomWindowText(LPCWSTR text);
 
 	// Viewport dimensions.
-	UINT width_;
-	UINT height_;
+	uint32_t width_;
+	uint32_t height_;
 	float aspectRatio_;
 
 private:

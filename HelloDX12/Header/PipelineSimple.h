@@ -31,7 +31,7 @@ public:
 	ComPtr<ID3D12DescriptorHeap> rtvHeap_; // Render target views
 	ComPtr<ID3D12DescriptorHeap> srvHeap_; // Shader resource views
 	
-	UINT rtvDescriptorSize_;
+	uint32_t rtvDescriptorSize_;
 	ComPtr<ID3D12Resource> renderTargets_[AppConfig::FrameCount];
 
 	Scene* scene_;

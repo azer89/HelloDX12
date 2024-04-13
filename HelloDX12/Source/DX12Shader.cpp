@@ -6,9 +6,9 @@ void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderTyp
 {
 #if defined(_DEBUG)
 	// Enable better shader debugging with the graphics debugging tools.
-	UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+	uint32_t compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #else
-	UINT compileFlags = 0;
+	uint32_t compileFlags = 0;
 #endif
 	std::wstring assetPath = Utility::WStringConvert(filename);
 

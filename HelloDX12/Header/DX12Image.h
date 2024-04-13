@@ -13,9 +13,9 @@ private:
 	std::vector<UINT8> GenerateTextureData(DX12Context& ctx);
 
 public:
-	UINT width_ = 0;
-	UINT height_ = 0;
-	UINT pixelSize_ = 0;
+	uint32_t width_ = 0;
+	uint32_t height_ = 0;
+	uint32_t pixelSize_ = 0;
 	ComPtr<ID3D12Resource> image_ = nullptr;
 
 private:

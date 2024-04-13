@@ -19,7 +19,7 @@ public:
 	[[nodiscard]] ID3D12Device* GetDevice() const { return device_.Get(); }
 	[[nodiscard]] ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
 
-	void Init(UINT swapchainWidth, UINT swapchainHeight);
+	void Init(uint32_t swapchainWidth, uint32_t swapchainHeight);
 
 	void WaitForPreviousFrame();
 
@@ -31,8 +31,8 @@ private:
 
 // TODO Set to private
 public:
-	UINT swapchainWidth_ = 0;
-	UINT swapchainHeight_ = 0;
+	uint32_t swapchainWidth_ = 0;
+	uint32_t swapchainHeight_ = 0;
 	
 	// Pipeline objects.
 	ComPtr<IDXGISwapChain3> swapchain_;
@@ -42,10 +42,10 @@ public:
 	ComPtr<ID3D12GraphicsCommandList> commandList_;
 
 	// Synchronization objects.
-	UINT frameIndex_;
+	uint32_t frameIndex_;
 	HANDLE fenceEvent_;
 	ComPtr<ID3D12Fence> fence_;
-	UINT64 fenceValue_;
+	uint64_t fenceValue_;
 };
 
 #endif
