@@ -19,7 +19,7 @@ void AppSimple::OnInit()
 	scene_->Init(context_);
 
 	// Pipelines
-	pip_ = std::make_unique<PipelineSimple>(context_, scene_.get());
+	pip_ = std::make_unique<PipelineSimple>(context_, scene_.get(), camera_.get());
 
 	// Close the command list and execute it to begin the initial GPU setup.
 	ThrowIfFailed(context_.commandList_->Close());
