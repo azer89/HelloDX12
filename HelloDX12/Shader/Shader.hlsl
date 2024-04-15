@@ -2,7 +2,7 @@ struct PSInput
 {
     float4 position : SV_POSITION;
     float2 uv : TEXCOORD;
-    float3 Normal : NORMAL;
+    float3 normal : NORMAL;
 };
 
 cbuffer Constants : register(b0)
@@ -15,12 +15,18 @@ cbuffer Constants : register(b0)
 Texture2D g_texture : register(t0);
 SamplerState g_sampler : register(s0);
 
-PSInput VSMain(float4 position : POSITION, float4 uv : TEXCOORD)
+PSInput VSMain(float4 position : POSITION, float4 uv : TEXCOORD, float3 normal : NORMAL)
 {
     PSInput result;
 
-    result.position = position;
+    //result.position = position;
+    result.position = mul(position, mWorld);
+    result.position = mul(result.position, mView);
+    result.position = mul(result.position, mProjection);
+    
     result.uv = uv;
+    
+    result.normal = mul(normal, ((float3x3) mWorld));
 
     return result;
 }
