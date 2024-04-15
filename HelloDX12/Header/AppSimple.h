@@ -8,7 +8,6 @@
 
 #include <memory>
 
-using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
 class AppSimple : public AppBase

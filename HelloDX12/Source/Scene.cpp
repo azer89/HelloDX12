@@ -6,11 +6,11 @@ void Scene::Init(DX12Context& ctx)
 	// Create the vertex buffer.
 	{
 		// Define the geometry for a triangle.
-		Vertex triangleVertices[] =
+		VertexData triangleVertices[] =
 		{
-			{ { 0.0f, 0.5f, 0.0f }, { 0.5f, 0.0f } },
-			{ { 0.5f, -0.5f, 0.0f }, { 1.0f, 1.0f } },
-			{ { -0.5f, -0.5f, 0.0f }, { 0.0f, 1.0f } }
+			{ glm::vec3( 0.0f,  0.5f, 0.0f), glm::vec2(0.5f, 0.0f) },
+			{ glm::vec3( 0.5f, -0.5f, 0.0f), glm::vec2(1.0f, 1.0f) },
+			{ glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec2(0.0f, 1.0f) }
 		};
 
 		const uint32_t vertexBufferSize = sizeof(triangleVertices);
@@ -40,7 +40,7 @@ void Scene::Init(DX12Context& ctx)
 
 		// Initialize the vertex buffer view
 		vertexBufferView_.BufferLocation = vertexBuffer_->GetGPUVirtualAddress();
-		vertexBufferView_.StrideInBytes = sizeof(Vertex);
+		vertexBufferView_.StrideInBytes = sizeof(VertexData);
 		vertexBufferView_.SizeInBytes = vertexBufferSize;
 	}
 

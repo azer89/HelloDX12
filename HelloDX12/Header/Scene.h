@@ -4,10 +4,12 @@
 #include "DX12Context.h"
 #include "DX12Image.h"
 
-struct Vertex
+#include "glm/glm.hpp"
+
+struct VertexData
 {
-	DirectX::XMFLOAT3 position;
-	DirectX::XMFLOAT2 uv;
+	glm::vec3 position;
+	glm::vec2 uv;
 };
 
 class Scene
