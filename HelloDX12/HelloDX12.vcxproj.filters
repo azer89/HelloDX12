@@ -51,6 +51,9 @@
     <ClInclude Include="Header\DX12Shader.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Header\Camera.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -87,6 +90,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\DX12Shader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Camera.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

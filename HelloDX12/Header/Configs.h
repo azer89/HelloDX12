@@ -20,4 +20,16 @@ namespace AppConfig
 	const std::string FontFolder = "C:/Users/azer/workspace/HelloDX12/Assets/Fonts/";
 };
 
+namespace CameraConfig
+{
+	constexpr float Yaw = -90.0f;
+	constexpr float Pitch = 0.0f;
+	constexpr float Speed = 2.5f;
+	constexpr float Sensitivity = 0.1f;
+	constexpr float Zoom = 45.0f;
+
+	constexpr float Near = 0.1f;
+	constexpr float Far = 100.0f;
+}
+
 #endif
