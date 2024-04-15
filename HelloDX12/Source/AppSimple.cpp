@@ -24,7 +24,7 @@ void AppSimple::OnInit()
 	// Create synchronization objects and wait until assets have been uploaded to the GPU.
 	{
 		ThrowIfFailed(context_.device_->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&context_.fence_)));
-		context_.fenceValue_ = 1;
+		context_.fenceValues_[context_.frameIndex_]++;
 
 		// Create an event handle to use for frame synchronization.
 		context_.fenceEvent_ = CreateEvent(nullptr, FALSE, FALSE, nullptr);
@@ -36,7 +36,7 @@ void AppSimple::OnInit()
 		// Wait for the command list to execute; we are reusing the same command 
 		// list in our main loop but for now, we just want to wait for setup to 
 		// complete before continuing.
-		context_.WaitForPreviousFrame();
+		context_.WaitForGpu();
 	}
 }
 
@@ -58,24 +58,19 @@ void AppSimple::OnRender()
 	// Present the frame.
 	ThrowIfFailed(context_.swapchain_->Present(1, 0));
 
-	context_.WaitForPreviousFrame();
+	context_.MoveToNextFrame();
 }
 
 void AppSimple::OnDestroy()
 {
-	// Ensure that the GPU is no longer referencing resources that are about to be
-	// cleaned up by the destructor.
-	context_.WaitForPreviousFrame();
+	context_.WaitForGpu();
 
 	CloseHandle(context_.fenceEvent_);
 }
 
 void AppSimple::PopulateCommandList()
 {
-	// Command list allocators can only be reset when the associated 
-	// command lists have finished execution on the GPU; apps should use 
-	// fences to determine GPU execution progress.
-	ThrowIfFailed(context_.commandAllocator_->Reset());
+	ThrowIfFailed(context_.commandAllocators_[context_.frameIndex_]->Reset());
 
 	pip_->PopulateCommandList(context_);
 	

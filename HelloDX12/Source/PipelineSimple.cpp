@@ -146,10 +146,7 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 
 void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 {
-	// However, when ExecuteCommandList() is called on a particular command 
-	// list, that command list can then be reset at any time and must be before 
-	// re-recording.
-	ThrowIfFailed(ctx.commandList_->Reset(ctx.commandAllocator_.Get(), pipelineState_.Get()));
+	ThrowIfFailed(ctx.commandList_->Reset(ctx.commandAllocators_[ctx.frameIndex_].Get(), pipelineState_.Get()));
 
 	// Set necessary state.
 	ctx.commandList_->SetGraphicsRootSignature(rootSignature_.Get());

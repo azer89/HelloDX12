@@ -74,32 +74,46 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 	ThrowIfFailed(swapChain.As(&swapchain_));
 	frameIndex_ = swapchain_->GetCurrentBackBufferIndex();
 
-	ThrowIfFailed(device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator_)));
-
-	// Create the command list.
-	ThrowIfFailed(device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator_.Get(), nullptr, IID_PPV_ARGS(&commandList_)));
-}
-
-void DX12Context::WaitForPreviousFrame()
-{
-	// WAITING FOR THE FRAME TO COMPLETE BEFORE CONTINUING IS NOT BEST PRACTICE.
-	// This is code implemented as such for simplicity. The D3D12HelloFrameBuffering
-	// sample illustrates how to use fences for efficient resource usage and to
-	// maximize GPU utilization.
-
-	// Signal and increment the fence value.
-	const uint64_t fence = fenceValue_;
-	ThrowIfFailed(commandQueue_->Signal(fence_.Get(), fence));
-	fenceValue_++;
-
-	// Wait until the previous frame is finished.
-	if (fence_->GetCompletedValue() < fence)
+	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
-		ThrowIfFailed(fence_->SetEventOnCompletion(fence, fenceEvent_));
-		WaitForSingleObject(fenceEvent_, INFINITE);
+		ThrowIfFailed(device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocators_[i])));
 	}
 
+	// TODO Why only one command list?
+	ThrowIfFailed(device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocators_[frameIndex_].Get(), nullptr, IID_PPV_ARGS(&commandList_)));
+}
+
+void DX12Context::WaitForGpu()
+{
+	// Schedule a Signal command in the queue.
+	ThrowIfFailed(commandQueue_->Signal(fence_.Get(), fenceValues_[frameIndex_]));
+
+	// Wait until the fence has been processed.
+	ThrowIfFailed(fence_->SetEventOnCompletion(fenceValues_[frameIndex_], fenceEvent_));
+	WaitForSingleObjectEx(fenceEvent_, INFINITE, FALSE);
+
+	// Increment the fence value for the current frame.
+	fenceValues_[frameIndex_]++;
+}
+
+void DX12Context::MoveToNextFrame()
+{
+	// Schedule a Signal command in the queue.
+	const UINT64 currentFenceValue = fenceValues_[frameIndex_];
+	ThrowIfFailed(commandQueue_->Signal(fence_.Get(), currentFenceValue));
+
+	// Update the frame index.
 	frameIndex_ = swapchain_->GetCurrentBackBufferIndex();
+
+	// If the next frame is not ready to be rendered yet, wait until it is ready.
+	if (fence_->GetCompletedValue() < fenceValues_[frameIndex_])
+	{
+		ThrowIfFailed(fence_->SetEventOnCompletion(fenceValues_[frameIndex_], fenceEvent_));
+		WaitForSingleObjectEx(fenceEvent_, INFINITE, FALSE);
+	}
+
+	// Set the fence value for the next frame.
+	fenceValues_[frameIndex_] = currentFenceValue + 1;
 }
 
 // Helper function for acquiring the first available hardware adapter that supports Direct3D 12.

@@ -10,6 +10,8 @@
 #include <wrl.h>
 #include <shellapi.h>
 
+#include "Configs.h"
+
 using Microsoft::WRL::ComPtr;
 
 class DX12Context
@@ -20,7 +22,8 @@ public:
 
 	void Init(uint32_t swapchainWidth, uint32_t swapchainHeight);
 
-	void WaitForPreviousFrame();
+	void WaitForGpu();
+	void MoveToNextFrame();
 
 private:
 	void GetHardwareAdapter(
@@ -36,15 +39,15 @@ public:
 	// Pipeline objects.
 	ComPtr<IDXGISwapChain3> swapchain_;
 	ComPtr<ID3D12Device> device_;
-	ComPtr<ID3D12CommandAllocator> commandAllocator_;
+	ComPtr<ID3D12CommandAllocator> commandAllocators_[AppConfig::FrameCount] = {};
 	ComPtr<ID3D12CommandQueue> commandQueue_;
 	ComPtr<ID3D12GraphicsCommandList> commandList_;
 
 	// Synchronization objects.
-	uint32_t frameIndex_;
-	HANDLE fenceEvent_;
-	ComPtr<ID3D12Fence> fence_;
-	uint64_t fenceValue_;
+	uint32_t frameIndex_ = 0;
+	HANDLE fenceEvent_ = nullptr;
+	ComPtr<ID3D12Fence> fence_ = nullptr;
+	uint64_t fenceValues_[AppConfig::FrameCount] = {};
 };
 
 #endif
