@@ -20,24 +20,8 @@ void AppSimple::OnInit()
 	ThrowIfFailed(context_.commandList_->Close());
 	ID3D12CommandList* ppCommandLists[] = { context_.commandList_.Get() };
 	context_.commandQueue_->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-
-	// Create synchronization objects and wait until assets have been uploaded to the GPU.
-	{
-		ThrowIfFailed(context_.device_->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&context_.fence_)));
-		context_.fenceValues_[context_.frameIndex_]++;
-
-		// Create an event handle to use for frame synchronization.
-		context_.fenceEvent_ = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-		if (context_.fenceEvent_ == nullptr)
-		{
-			ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()));
-		}
-
-		// Wait for the command list to execute; we are reusing the same command 
-		// list in our main loop but for now, we just want to wait for setup to 
-		// complete before continuing.
-		context_.WaitForGpu();
-	}
+	
+	context_.CreateFence();
 }
 
 // Update frame-based values.
@@ -70,7 +54,7 @@ void AppSimple::OnDestroy()
 
 void AppSimple::PopulateCommandList()
 {
-	ThrowIfFailed(context_.commandAllocators_[context_.frameIndex_]->Reset());
+	context_.ResetCommandAllocator();
 
 	pip_->PopulateCommandList(context_);
 	

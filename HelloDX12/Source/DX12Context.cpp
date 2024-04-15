@@ -116,6 +116,29 @@ void DX12Context::MoveToNextFrame()
 	fenceValues_[frameIndex_] = currentFenceValue + 1;
 }
 
+void DX12Context::ResetCommandAllocator()
+{
+	ThrowIfFailed(commandAllocators_[frameIndex_]->Reset());
+}
+
+void DX12Context::CreateFence()
+{
+	ThrowIfFailed(device_->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_)));
+	fenceValues_[frameIndex_]++;
+
+	// Create an event handle to use for frame synchronization.
+	fenceEvent_ = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	if (fenceEvent_ == nullptr)
+	{
+		ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()));
+	}
+
+	// Wait for the command list to execute; we are reusing the same command 
+	// list in our main loop but for now, we just want to wait for setup to 
+	// complete before continuing.
+	WaitForGpu();
+}
+
 // Helper function for acquiring the first available hardware adapter that supports Direct3D 12.
 // If no such adapter can be found, *ppAdapter will be set to nullptr.
 _Use_decl_annotations_

@@ -22,10 +22,16 @@ public:
 
 	void Init(uint32_t swapchainWidth, uint32_t swapchainHeight);
 
+	void CreateFence();
+
 	void WaitForGpu();
 	void MoveToNextFrame();
 
+	void ResetCommandAllocator();
+
 private:
+	
+
 	void GetHardwareAdapter(
 		_In_ IDXGIFactory1* pFactory,
 		_Outptr_result_maybenull_ IDXGIAdapter1** ppAdapter,
