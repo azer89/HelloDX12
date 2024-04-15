@@ -13,6 +13,9 @@
 
 #include "DX12Helper.h"
 #include "Win32Application.h"
+#include "Camera.h"
+
+#include <memory>
 
 class AppBase
 {
@@ -37,13 +40,14 @@ public:
 	void ParseCommandLineArgs(_In_reads_(argc) WCHAR* argv[], int argc);
 
 protected:
-
 	void SetCustomWindowText(LPCWSTR text);
 
-	// Viewport dimensions.
+protected:
 	uint32_t width_;
 	uint32_t height_;
 	float aspectRatio_;
+
+	std::unique_ptr<Camera> camera_;
 
 private:
 	// Window title.

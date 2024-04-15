@@ -10,10 +10,15 @@ void AppSimple::OnInit()
 	// Initialize Context
 	context_.Init(width_, height_);
 
+	// Camera
+	camera_ = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
+	camera_->SetPositionAndTarget(glm::vec3(0.0f, 3.0f, 5.0f), glm::vec3(0.0));
+
 	// Scene
 	scene_ = std::make_unique<Scene>();
 	scene_->Init(context_);
 
+	// Pipelines
 	pip_ = std::make_unique<PipelineSimple>(context_, scene_.get());
 
 	// Close the command list and execute it to begin the initial GPU setup.

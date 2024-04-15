@@ -22,6 +22,7 @@
     <ClInclude Include="Header\DX12Helper.h" />
     <ClInclude Include="Header\DX12Image.h" />
     <ClInclude Include="Header\DX12Shader.h" />
+    <ClInclude Include="Header\ResourcesLights.h" />
     <ClInclude Include="Header\Utility.h" />
     <ClInclude Include="Header\PipelineSimple.h" />
     <ClInclude Include="Header\Scene.h" />
@@ -36,6 +37,7 @@
     <ClCompile Include="Source\AppBase.cpp" />
     <ClCompile Include="Source\DX12Image.cpp" />
     <ClCompile Include="Source\DX12Shader.cpp" />
+    <ClCompile Include="Source\ResourcesLights.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\PipelineSimple.cpp" />
