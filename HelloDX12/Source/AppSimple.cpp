@@ -55,6 +55,7 @@ void AppSimple::OnDestroy()
 void AppSimple::PopulateCommandList()
 {
 	context_.ResetCommandAllocator();
+	context_.ResetCommandList();
 
 	pip_->PopulateCommandList(context_);
 	

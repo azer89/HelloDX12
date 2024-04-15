@@ -146,7 +146,7 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 
 void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 {
-	ThrowIfFailed(ctx.commandList_->Reset(ctx.commandAllocators_[ctx.frameIndex_].Get(), pipelineState_.Get()));
+	ctx.SetPipelineState(pipelineState_.Get());
 
 	// Set necessary state.
 	ctx.commandList_->SetGraphicsRootSignature(rootSignature_.Get());
@@ -176,7 +176,11 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 
 	// Indicate that the back buffer will now be used to present
 	{
-		auto resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(renderTargets_[ctx.frameIndex_].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+		auto resourceBarrier = 
+			CD3DX12_RESOURCE_BARRIER::Transition(
+				renderTargets_[ctx.frameIndex_].Get(),
+				D3D12_RESOURCE_STATE_RENDER_TARGET, 
+				D3D12_RESOURCE_STATE_PRESENT);
 		ctx.commandList_->ResourceBarrier(1, &resourceBarrier);
 	}
 }

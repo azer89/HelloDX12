@@ -121,6 +121,16 @@ void DX12Context::ResetCommandAllocator()
 	ThrowIfFailed(commandAllocators_[frameIndex_]->Reset());
 }
 
+void DX12Context::ResetCommandList()
+{
+	ThrowIfFailed(commandList_->Reset(commandAllocators_[frameIndex_].Get(), nullptr));
+}
+
+void DX12Context::SetPipelineState(ID3D12PipelineState* pipeline)
+{
+	commandList_->SetPipelineState(pipeline);
+}
+
 void DX12Context::CreateFence()
 {
 	ThrowIfFailed(device_->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_)));

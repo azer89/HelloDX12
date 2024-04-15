@@ -28,6 +28,8 @@ public:
 	void MoveToNextFrame();
 
 	void ResetCommandAllocator();
+	void ResetCommandList();
+	void SetPipelineState(ID3D12PipelineState* pipeline);
 
 private:
 	void GetHardwareAdapter(
