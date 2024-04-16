@@ -1,16 +1,16 @@
 struct VSInput
 {
     float4 position : POSITION;
-    float2 uv : TEXCOORD;
     float3 normal : NORMAL;
+    float2 uv : TEXCOORD;
 };
 
 
 struct PSInput
 {
     float4 position : SV_POSITION;
-    float2 uv : TEXCOORD;
     float3 normal : NORMAL;
+    float2 uv : TEXCOORD;
 };
 
 cbuffer Constants : register(b0)
@@ -32,9 +32,9 @@ PSInput VSMain(VSInput input)
     result.position = mul(result.position, mView);
     result.position = mul(result.position, mProjection);
     
-    result.uv = input.uv.xy;
-    
     result.normal = mul(input.normal, ((float3x3) mWorld));
+    
+    result.uv = input.uv.xy;
 
     return result;
 }
