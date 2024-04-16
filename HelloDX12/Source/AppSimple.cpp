@@ -11,7 +11,6 @@ void AppSimple::OnInit()
 	context_.Init(width_, height_);
 
 	// Camera
-	camera_ = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
 	camera_->SetPositionAndTarget(glm::vec3(1.0f, 3.0f, 5.0f), glm::vec3(0.0));
 
 	// Scene

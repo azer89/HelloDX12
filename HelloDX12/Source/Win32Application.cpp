@@ -11,6 +11,9 @@
 
 #include "Win32Application.h"
 
+#include <iostream>
+#include <WindowsX.h> // Mouse event
+
 HWND Win32Application::m_hwnd = nullptr;
 
 int Win32Application::Run(AppBase* pSample, HINSTANCE hInstance, int nCmdShow)
@@ -74,37 +77,61 @@ int Win32Application::Run(AppBase* pSample, HINSTANCE hInstance, int nCmdShow)
 // Main message handler for the sample.
 LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	AppBase* pSample = reinterpret_cast<AppBase*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+	AppBase* app = reinterpret_cast<AppBase*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+	LPPOINT mousePos = {};
 
 	switch (message)
 	{
 	case WM_CREATE:
-	{
-		// Save the DXSample* passed in to CreateWindow.
-		LPCREATESTRUCT pCreateStruct = reinterpret_cast<LPCREATESTRUCT>(lParam);
-		SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pCreateStruct->lpCreateParams));
-	}
-	return 0;
+		{
+			// Save the DXSample* passed in to CreateWindow.
+			LPCREATESTRUCT pCreateStruct = reinterpret_cast<LPCREATESTRUCT>(lParam);
+			SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pCreateStruct->lpCreateParams));
+		}
+		return 0;
 
 	case WM_KEYDOWN:
-		if (pSample)
+		if (app)
 		{
-			pSample->OnKeyDown(static_cast<uint8_t>(wParam));
+			app->OnKeyDown(static_cast<uint8_t>(wParam));
 		}
 		return 0;
 
 	case WM_KEYUP:
-		if (pSample)
+		if (app)
 		{
-			pSample->OnKeyUp(static_cast<uint8_t>(wParam));
+			app->OnKeyUp(static_cast<uint8_t>(wParam));
+		}
+		return 0;
+
+	case WM_MOUSEMOVE:
+		if (app)
+		{
+			int x = GET_X_LPARAM(lParam);
+			int y = GET_Y_LPARAM(lParam);
+			app->OnMouseMove(x, y);
+		}
+		return 0;
+
+	case WM_LBUTTONUP:
+		if (app)
+		{
+			app->OnMouseLeftRelease();
+		}
+		return 0;
+
+	case WM_LBUTTONDOWN:
+		if (app)
+		{
+			app->OnMouseLeftPressed();
 		}
 		return 0;
 
 	case WM_PAINT:
-		if (pSample)
+		if (app)
 		{
-			pSample->OnUpdate();
-			pSample->OnRender();
+			app->OnUpdate();
+			app->OnRender();
 		}
 		return 0;
 
