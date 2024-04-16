@@ -7,3 +7,6 @@
 [submodule "External/assimp"]
 	path = External/assimp
 	url = https://github.com/assimp/assimp
+[submodule "External/D3D12MemoryAllocator"]
+	path = External/D3D12MemoryAllocator
+	url = https://github.com/GPUOpen-LibrariesAndSDKs/D3D12MemoryAllocator
