@@ -23,7 +23,7 @@
     <ClInclude Include="Header\DirectX12\DX12Image.h" />
     <ClInclude Include="Header\DirectX12\DX12Shader.h" />
     <ClInclude Include="Header\ResourcesLights.h" />
-    <ClInclude Include="Header\UiData.h" />
+    <ClInclude Include="Header\UiData__.h" />
     <ClInclude Include="Header\Utility.h" />
     <ClInclude Include="Header\PipelineSimple.h" />
     <ClInclude Include="Header\Scene.h" />
