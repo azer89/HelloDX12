@@ -120,12 +120,12 @@ void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
 		&constantBufferDesc,
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
-		IID_PPV_ARGS(perFrameConstants_.ReleaseAndGetAddressOf())));
+		IID_PPV_ARGS(constantPerFrame_.ReleaseAndGetAddressOf())));
 
-	ThrowIfFailed(perFrameConstants_->Map(0, nullptr, reinterpret_cast<void**>(&mappedConstantData_)));
+	ThrowIfFailed(constantPerFrame_->Map(0, nullptr, reinterpret_cast<void**>(&constantMappedData_)));
 
 	// GPU virtual address of the resource
-	constantDataGpuAddr_ = perFrameConstants_->GetGPUVirtualAddress();
+	constantDataGpuAddr_ = constantPerFrame_->GetGPUVirtualAddress();
 }
 
 void PipelineSimple::CreateRootSignature(DX12Context& ctx)
@@ -217,7 +217,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 		.viewMatrix = glm::transpose(camera_->GetViewMatrix()),
 		.projectionMatrix = glm::transpose(camera_->GetProjectionMatrix())
 	};
-	memcpy(&mappedConstantData_[ctx.frameIndex_], &cb, sizeof(ConstantBuffer));
+	memcpy(&constantMappedData_[ctx.frameIndex_], &cb, sizeof(ConstantBuffer));
 	auto baseGpuAddress = constantDataGpuAddr_ + sizeof(PaddedConstantBuffer) * ctx.frameIndex_;
 	ctx.commandList_->SetGraphicsRootConstantBufferView(0, baseGpuAddress);
 

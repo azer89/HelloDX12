@@ -67,8 +67,8 @@ private:
 	// Check the exact size of the PaddedConstantBuffer to make sure it will align properly
 	static_assert(sizeof(PaddedConstantBuffer) == 2 * D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT, "PaddedConstantBuffer is not aligned properly");
 
-	PaddedConstantBuffer* mappedConstantData_;
-	ComPtr<ID3D12Resource> perFrameConstants_;
+	PaddedConstantBuffer* constantMappedData_;
+	ComPtr<ID3D12Resource> constantPerFrame_;
 	D3D12_GPU_VIRTUAL_ADDRESS constantDataGpuAddr_;
 };
 
