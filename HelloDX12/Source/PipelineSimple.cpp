@@ -249,7 +249,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	ctx.commandList_->IASetVertexBuffers(0, 1, &(scene_->vertexBufferView_));
 	//ctx.commandList_->DrawInstanced(3, 1, 0, 0);
 	ctx.commandList_->IASetIndexBuffer(&scene_->indexBufferView_);
-	ctx.commandList_->DrawIndexedInstanced(6, 1, 0, 0, 0);
+	ctx.commandList_->DrawIndexedInstanced(36, 1, 0, 0, 0);
 
 	// Indicate that the back buffer will now be used to present
 	{
