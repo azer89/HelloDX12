@@ -9,6 +9,7 @@ PipelineSimple::PipelineSimple(DX12Context& ctx, Scene* scene, Camera* camera) :
 {
 	CreateSRV(ctx);
 	CreateRTV(ctx);
+	CreateDSV(ctx);
 	CreateRootSignature(ctx);
 	CreateConstantBuffer(ctx);
 	CreateShaders(ctx);
@@ -54,6 +55,55 @@ void PipelineSimple::CreateRTV(DX12Context& ctx)
 		ctx.GetDevice()->CreateRenderTargetView(renderTargets_[n].Get(), nullptr, rtvHandle);
 		rtvHandle.Offset(1, rtvDescriptorSize_);
 	}
+}
+
+void PipelineSimple::CreateDSV(DX12Context& ctx)
+{
+	// Describe and create a depth stencil view (DSV) descriptor heap.
+	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = 
+	{
+		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV,
+		.NumDescriptors = 1,
+		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
+	};
+	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&dsvHeap_)));
+
+	D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = 
+	{
+		.Format = DXGI_FORMAT_D32_FLOAT,
+		.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D,
+		.Flags = D3D12_DSV_FLAG_NONE
+	};
+
+	CD3DX12_HEAP_PROPERTIES heapProperties = 
+		CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	// Performance tip: Deny shader resource access to resources that don't need shader resource views.
+	CD3DX12_RESOURCE_DESC resourceDescription = 
+		CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, 
+			ctx.swapchainWidth_, 
+			ctx.swapchainHeight_, 
+			1, 
+			0, 
+			1, 
+			0, 
+			D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL | D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE);
+	// Performance tip: Tell the runtime at resource creation the desired clear value.
+	CD3DX12_CLEAR_VALUE clearValue = 
+		CD3DX12_CLEAR_VALUE(DXGI_FORMAT_D32_FLOAT, 1.0f, 0); 
+
+	ThrowIfFailed(ctx.GetDevice()->CreateCommittedResource(
+		&heapProperties,
+		D3D12_HEAP_FLAG_NONE,
+		&resourceDescription,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		&clearValue,
+		IID_PPV_ARGS(&depthStencil_)
+	));
+
+	ctx.GetDevice()->CreateDepthStencilView(
+		depthStencil_.Get(), 
+		&depthStencilDesc, 
+		dsvHeap_->GetCPUDescriptorHandleForHeapStart());
 }
 
 void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
@@ -185,11 +235,13 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	}
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvHeap_->GetCPUDescriptorHandleForHeapStart(), ctx.frameIndex_, rtvDescriptorSize_);
-	ctx.commandList_->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(dsvHeap_->GetCPUDescriptorHandleForHeapStart());
+	ctx.commandList_->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
 
 	// Record commands.
 	const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
 	ctx.commandList_->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+	ctx.commandList_->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	ctx.commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	ctx.commandList_->IASetVertexBuffers(0, 1, &(scene_->vertexBufferView_));
 	//ctx.commandList_->DrawInstanced(3, 1, 0, 0);
