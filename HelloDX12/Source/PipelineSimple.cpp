@@ -247,9 +247,8 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	ctx.commandList_->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	ctx.commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	ctx.commandList_->IASetVertexBuffers(0, 1, &(scene_->vertexBufferView_));
-	//ctx.commandList_->DrawInstanced(3, 1, 0, 0);
 	ctx.commandList_->IASetIndexBuffer(&scene_->indexBufferView_);
-	ctx.commandList_->DrawIndexedInstanced(36, 1, 0, 0, 0);
+	ctx.commandList_->DrawIndexedInstanced(scene_->numVertices_, 1, 0, 0, 0);
 
 	// Indicate that the back buffer will now be used to present
 	{
