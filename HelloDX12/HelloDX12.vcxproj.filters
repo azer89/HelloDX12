@@ -16,24 +16,30 @@
     <Filter Include="Source\DirectX12">
       <UniqueIdentifier>{73945e71-d090-4af2-89ff-8b4060d07dda}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header\Apps">
+      <UniqueIdentifier>{2a6d88c5-0fe6-4386-b615-776401ed1716}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header\Pipelines">
+      <UniqueIdentifier>{db0dd86c-fe41-42f8-969d-c2054e69b1ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header\Scene">
+      <UniqueIdentifier>{67bba723-e0b9-493f-bce9-8e698d394d1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Apps">
+      <UniqueIdentifier>{5c20210f-acc3-4114-8a1a-daa8a388db6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Scene">
+      <UniqueIdentifier>{9210b8c0-ec0d-49b5-907b-71ada04e45b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Pipelines">
+      <UniqueIdentifier>{9905b90c-4bea-4722-879e-bd3ed211ce6d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\Win32Application.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Header\AppSimple.h">
-      <Filter>Header</Filter>
-    </ClInclude>
     <ClInclude Include="Header\ConsoleDisplay.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\Scene.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\AppBase.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\PipelineSimple.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Header\Configs.h">
@@ -63,11 +69,23 @@
     <ClInclude Include="Header\DirectX12\DX12Shader.h">
       <Filter>Header\DirectX12</Filter>
     </ClInclude>
-    <ClInclude Include="Header\VertexData.h">
-      <Filter>Header</Filter>
-    </ClInclude>
     <ClInclude Include="Header\UiData.h">
       <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Apps\AppBase.h">
+      <Filter>Header\Apps</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Apps\AppSimple.h">
+      <Filter>Header\Apps</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Scene\Scene.h">
+      <Filter>Header\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Scene\VertexData.h">
+      <Filter>Header\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Pipelines\PipelineSimple.h">
+      <Filter>Header\Pipelines</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -77,19 +95,7 @@
     <ClCompile Include="Source\Win32Application.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\AppSimple.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\ConsoleDisplay.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Scene.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\AppBase.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\PipelineSimple.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Utility.cpp">
@@ -112,6 +118,18 @@
     </ClCompile>
     <ClCompile Include="Source\DirectX12\DX12Shader.cpp">
       <Filter>Source\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Apps\AppBase.cpp">
+      <Filter>Source\Apps</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Apps\AppSimple.cpp">
+      <Filter>Source\Apps</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Pipelines\PipelineSimple.cpp">
+      <Filter>Source\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\Scene.cpp">
+      <Filter>Source\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
