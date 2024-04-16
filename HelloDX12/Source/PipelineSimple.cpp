@@ -103,22 +103,8 @@ void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 	rootParameters[0].InitAsConstantBufferView(0, 0);
 	rootParameters[1].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
 
-	D3D12_STATIC_SAMPLER_DESC sampler =
-	{
-		.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT,
-		.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER,
-		.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER,
-		.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER,
-		.MipLODBias = 0,
-		.MaxAnisotropy = 0,
-		.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER,
-		.BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK,
-		.MinLOD = 0.0f,
-		.MaxLOD = D3D12_FLOAT32_MAX,
-		.ShaderRegister = 0,
-		.RegisterSpace = 0,
-		.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL
-	};
+	// Image
+	D3D12_STATIC_SAMPLER_DESC sampler = scene_->image_->GetSampler();
 
 	// Allow input layout and deny uneccessary access to certain pipeline stages.
 	D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
@@ -218,7 +204,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	ctx.commandList_->IASetVertexBuffers(0, 1, &(scene_->vertexBufferView_));
 	//ctx.commandList_->DrawInstanced(3, 1, 0, 0);
 	ctx.commandList_->IASetIndexBuffer(&scene_->indexBufferView_);
-	ctx.commandList_->DrawIndexedInstanced(3, 1, 0, 0, 0);
+	ctx.commandList_->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
 	// Indicate that the back buffer will now be used to present
 	{

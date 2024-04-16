@@ -10,9 +10,14 @@ void Scene::Init(DX12Context& ctx)
 		// Define the geometry for a triangle.
 		VertexData triangleVertices[] =
 		{
+			{ glm::vec3(0.0f,  1.0f, -2.0f), glm::vec2(0.5f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f) },
+			{ glm::vec3(1.0f, -1.0f, -2.0f), glm::vec2(1.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f) },
+			{ glm::vec3(-1.0f, -1.0f, -2.0f), glm::vec2(0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f) },
+
+
 			{ glm::vec3( 0.0f,  0.5f, 0.0f), glm::vec2(0.5f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f) },
 			{ glm::vec3( 0.5f, -0.5f, 0.0f), glm::vec2(1.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f) },
-			{ glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec2(0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f) }
+			{ glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec2(0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f) },
 		};
 
 		// Define the geometry for a cube.
@@ -96,7 +101,9 @@ void Scene::Init(DX12Context& ctx)
 		static const uint16_t indices[] =
 		{
 			// TOP
-			0, 1, 2
+			0, 1, 2,
+
+			3, 4, 5
 			/*2,1,3,
 
 			// BOTTOM
