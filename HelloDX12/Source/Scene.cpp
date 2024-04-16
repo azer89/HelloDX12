@@ -8,15 +8,15 @@ void Scene::Init(DX12Context& ctx)
 	// Create the vertex buffer.
 	{
 		// Define the geometry for a triangle.
-		/*VertexData triangleVertices[] =
+		VertexData triangleVertices[] =
 		{
-			{ glm::vec3( 0.0f,  0.5f, 0.0f), glm::vec2(0.5f, 0.0f) },
-			{ glm::vec3( 0.5f, -0.5f, 0.0f), glm::vec2(1.0f, 1.0f) },
-			{ glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec2(0.0f, 1.0f) }
-		};*/
+			{ glm::vec3( 0.0f,  0.5f, 0.0f), glm::vec2(0.5f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f) },
+			{ glm::vec3( 0.5f, -0.5f, 0.0f), glm::vec2(1.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f) },
+			{ glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec2(0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f) }
+		};
 
 		// Define the geometry for a cube.
-		static const VertexData cubeVertices[] =
+		/*static const VertexData cubeVertices[] =
 		{
 			// Back face
 			{ glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec2(0.0f,  0.0f), glm::vec3(-1.0f, 0.0f, 0.0f) }, // bottom-left
@@ -60,9 +60,9 @@ void Scene::Init(DX12Context& ctx)
 			{ glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec2(0.0f,  1.0f),  glm::vec3(0.0f, 1.0f, 0.0f) }, // bottom-right
 			{ glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec2(0.0f,  1.0f),  glm::vec3(0.0f, 0.0f, 1.0f) }, // top-left
 			{ glm::vec3(-1.0f,  1.0f,  1.0f), glm::vec2(0.0f,  1.0f),  glm::vec3(0.0f, 0.0f, 0.0f) }  // bottom-left
-		};
+		};*/
 
-		const uint32_t vertexBufferSize = sizeof(cubeVertices);
+		const uint32_t vertexBufferSize = sizeof(triangleVertices);
 
 		// Note: using upload heaps to transfer static data like vert buffers is not 
 		// recommended. Every time the GPU needs it, the upload heap will be marshalled 
@@ -84,7 +84,7 @@ void Scene::Init(DX12Context& ctx)
 		uint8_t* pVertexDataBegin;
 		CD3DX12_RANGE readRange(0, 0);        // We do not intend to read from this resource on the CPU
 		ThrowIfFailed(vertexBuffer_->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
-		memcpy(pVertexDataBegin, cubeVertices, sizeof(cubeVertices));
+		memcpy(pVertexDataBegin, triangleVertices, sizeof(triangleVertices));
 		vertexBuffer_->Unmap(0, nullptr);
 
 		// Initialize the vertex buffer view
@@ -96,8 +96,8 @@ void Scene::Init(DX12Context& ctx)
 		static const uint16_t indices[] =
 		{
 			// TOP
-			3,1,0,
-			2,1,3,
+			0, 1, 2
+			/*2,1,3,
 
 			// BOTTOM
 			6,4,5,
@@ -117,7 +117,7 @@ void Scene::Init(DX12Context& ctx)
 
 			// BACK
 			22,20,21,
-			23,20,22
+			23,20,22*/
 		};
 
 		const UINT indexBufferSize = sizeof(indices);
