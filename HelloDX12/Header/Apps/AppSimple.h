@@ -15,10 +15,10 @@ class AppSimple : public AppBase
 public:
 	AppSimple();
 
-	virtual void OnInit();
-	virtual void OnUpdate();
-	virtual void OnRender();
-	virtual void OnDestroy();
+	void OnInit() override;
+	void OnUpdate() override;
+	void OnRender() override;
+	void OnDestroy() override;
 
 private:
 	DX12Context context_;

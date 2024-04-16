@@ -32,6 +32,8 @@ void AppSimple::OnInit()
 void AppSimple::OnUpdate()
 {
 	OnKeyboardInput();
+	
+	pip_->Update(context_);
 }
 
 // Render the scene.

@@ -15,6 +15,7 @@ public:
 	PipelineSimple(DX12Context& ctx, Scene* scene, Camera* camera);
 	~PipelineSimple() = default;
 
+	void Update(DX12Context& ctx);
 	void PopulateCommandList(DX12Context& ctx);
 
 private:

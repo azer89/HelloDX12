@@ -201,6 +201,16 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 	ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)));
 }
 
+void PipelineSimple::Update(DX12Context& ctx)
+{
+	ConstantBuffer cb = {
+		.worldMatrix = glm::transpose(glm::mat4(1.0)),
+		.viewMatrix = glm::transpose(camera_->GetViewMatrix()),
+		.projectionMatrix = glm::transpose(camera_->GetProjectionMatrix())
+	};
+	memcpy(&constantMappedData_[ctx.frameIndex_], &cb, sizeof(ConstantBuffer));
+}
+
 void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 {
 	ctx.SetPipelineState(pipelineState_.Get());
@@ -210,14 +220,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 
 	ID3D12DescriptorHeap* ppHeaps[] = { srvHeap_.Get() };
 	ctx.commandList_->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
-
-	// TODO Move to Update() function
-	ConstantBuffer cb = {
-		.worldMatrix = glm::transpose(glm::mat4(1.0)),
-		.viewMatrix = glm::transpose(camera_->GetViewMatrix()),
-		.projectionMatrix = glm::transpose(camera_->GetProjectionMatrix())
-	};
-	memcpy(&constantMappedData_[ctx.frameIndex_], &cb, sizeof(ConstantBuffer));
+	
 	auto baseGpuAddress = constantDataGpuAddr_ + sizeof(PaddedConstantBuffer) * ctx.frameIndex_;
 	ctx.commandList_->SetGraphicsRootConstantBufferView(0, baseGpuAddress);
 
