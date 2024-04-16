@@ -24,7 +24,7 @@ PSInput VSMain(float4 position : POSITION, float4 uv : TEXCOORD, float3 normal :
     result.position = mul(result.position, mView);
     result.position = mul(result.position, mProjection);
     
-    result.uv = uv;
+    result.uv = uv.xy;
     
     result.normal = mul(normal, ((float3x3) mWorld));
 
@@ -33,5 +33,7 @@ PSInput VSMain(float4 position : POSITION, float4 uv : TEXCOORD, float3 normal :
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    return g_texture.Sample(g_sampler, input.uv);
+   // return g_texture.Sample(g_sampler, input.uv);
+    return float4(1.0, 0.0, 0.0, 1.0);
+
 }
