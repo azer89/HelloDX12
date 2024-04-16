@@ -3,19 +3,10 @@
 
 PipelineSimple::PipelineSimple(DX12Context& ctx, Scene* scene, Camera* camera) : 
 	scene_(scene),
-	camera_(camera)
+	camera_(camera),
+	viewport_(ctx.GetViewport()),
+	scissor_(ctx.GetScissor())
 {
-	viewport_ = CD3DX12_VIEWPORT(
-		0.0f, 
-		0.0f, 
-		static_cast<float>(ctx.swapchainWidth_), 
-		static_cast<float>(ctx.swapchainHeight_));
-	scissor_ = CD3DX12_RECT(
-		0, 
-		0, 
-		static_cast<LONG>(ctx.swapchainWidth_),
-		static_cast<LONG>(ctx.swapchainHeight_));
-
 	CreateSRV(ctx);
 	CreateRTV(ctx);
 	CreateRootSignature(ctx);
@@ -180,7 +171,6 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 		.projectionMatrix = glm::transpose(camera_->GetProjectionMatrix())
 	};
 	memcpy(&mappedConstantData_[ctx.frameIndex_], &cb, sizeof(ConstantBuffer));
-	// Bind the constants to the shader
 	auto baseGpuAddress = constantDataGpuAddr_ + sizeof(PaddedConstantBuffer) * ctx.frameIndex_;
 	ctx.commandList_->SetGraphicsRootConstantBufferView(0, baseGpuAddress);
 
