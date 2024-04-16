@@ -56,21 +56,21 @@ void AppBase::OnMouseMove(int mousePositionX, int mousePositionY)
 {
 	if (uiData_.mouseFirstUse_)
 	{
-		uiData_.mousePositionX = mousePositionX;
-		uiData_.mousePositionY = mousePositionY;
+		uiData_.mousePositionX_ = mousePositionX;
+		uiData_.mousePositionY_ = mousePositionY;
 		uiData_.mouseFirstUse_ = false;
 		return;
 	}
 
 	if (uiData_.mouseLeftPressed_ || uiData_.mouseLeftHold_)
 	{
-		const float xOffset = mousePositionX - uiData_.mousePositionX;
-		const float yOffset = uiData_.mousePositionY - mousePositionY; // Reversed since y-coordinates go from bottom to top
+		const float xOffset = mousePositionX - uiData_.mousePositionX_;
+		const float yOffset = uiData_.mousePositionY_ - mousePositionY; // Reversed since y-coordinates go from bottom to top
 		camera_->ProcessMouseMovement(xOffset, yOffset);
 	}
 
-	uiData_.mousePositionX = mousePositionX;
-	uiData_.mousePositionY = mousePositionY;
+	uiData_.mousePositionX_ = mousePositionX;
+	uiData_.mousePositionY_ = mousePositionY;
 }
 
 void AppBase::OnMouseLeftPressed()

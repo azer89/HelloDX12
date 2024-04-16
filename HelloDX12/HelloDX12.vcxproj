@@ -12,38 +12,38 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Header\AppSimple.h" />
+    <ClInclude Include="Header\Apps\AppBase.h" />
+    <ClInclude Include="Header\Apps\AppSimple.h" />
     <ClInclude Include="Header\Camera.h" />
     <ClInclude Include="Header\Configs.h" />
     <ClInclude Include="Header\ConsoleDisplay.h" />
-    <ClInclude Include="Header\AppBase.h" />
     <ClInclude Include="Header\DirectX12\DX12Context.h" />
     <ClInclude Include="Header\DirectX12\DX12Exception.h" />
     <ClInclude Include="Header\DirectX12\DX12Helper.h" />
     <ClInclude Include="Header\DirectX12\DX12Image.h" />
     <ClInclude Include="Header\DirectX12\DX12Shader.h" />
+    <ClInclude Include="Header\Pipelines\PipelineSimple.h" />
     <ClInclude Include="Header\ResourcesLights.h" />
+    <ClInclude Include="Header\Scene\Scene.h" />
+    <ClInclude Include="Header\Scene\VertexData.h" />
     <ClInclude Include="Header\UIData.h" />
     <ClInclude Include="Header\Utility.h" />
-    <ClInclude Include="Header\PipelineSimple.h" />
-    <ClInclude Include="Header\Scene.h" />
-    <ClInclude Include="Header\VertexData.h" />
     <ClInclude Include="Header\Win32Application.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\AppSimple.cpp" />
+    <ClCompile Include="Source\Apps\AppBase.cpp" />
+    <ClCompile Include="Source\Apps\AppSimple.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\ConsoleDisplay.cpp" />
-    <ClCompile Include="Source\AppBase.cpp" />
     <ClCompile Include="Source\DirectX12\DX12Context.cpp" />
     <ClCompile Include="Source\DirectX12\DX12Exception.cpp" />
     <ClCompile Include="Source\DirectX12\DX12Image.cpp" />
     <ClCompile Include="Source\DirectX12\DX12Shader.cpp" />
+    <ClCompile Include="Source\Pipelines\PipelineSimple.cpp" />
     <ClCompile Include="Source\ResourcesLights.cpp" />
+    <ClCompile Include="Source\Scene\Scene.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
     <ClCompile Include="Source\Main.cpp" />
-    <ClCompile Include="Source\PipelineSimple.cpp" />
-    <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\Win32Application.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -111,7 +111,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;GLM_FORCE_DEPTH_ZERO_TO_ONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>Header;Header\DirectX12;..\External\stb;..\External\assimp\include;..\External\glm;..\External\Binaries\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Header;Header\Apps;Header\DirectX12;Header\Pipelines;Header\Scene;..\External\stb;..\External\assimp\include;..\External\glm;..\External\Binaries\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>false</CompileAsWinRT>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -145,7 +145,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;GLM_FORCE_DEPTH_ZERO_TO_ONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>Header;Header\DirectX12;..\External\stb;..\External\assimp\include;..\External\glm;..\External\Binaries\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Header;Header\Apps;Header\DirectX12;Header\Pipelines;Header\Scene;..\External\stb;..\External\assimp\include;..\External\glm;..\External\Binaries\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>false</CompileAsWinRT>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
