@@ -5,7 +5,6 @@ struct VSInput
     float2 uv : TEXCOORD;
 };
 
-
 struct PSInput
 {
     float4 position : SV_POSITION;
@@ -26,8 +25,7 @@ SamplerState g_sampler : register(s0);
 PSInput VSMain(VSInput input)
 {
     PSInput result;
-
-    //result.position = position;
+    
     result.position = mul(input.position, mWorld);
     result.position = mul(result.position, mView);
     result.position = mul(result.position, mProjection);
@@ -42,5 +40,4 @@ PSInput VSMain(VSInput input)
 float4 PSMain(PSInput input) : SV_TARGET
 {
     return g_texture.Sample(g_sampler, input.uv);
-    //return float4(1.0, 0.0, 0.0, 1.0);
 }
