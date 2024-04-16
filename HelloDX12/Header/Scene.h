@@ -15,6 +15,7 @@ public:
 
 public:
 	std::unique_ptr<DX12Image> image_;
+	uint32_t numVertices_;
 
 	ComPtr<ID3D12Resource> vertexBuffer_;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_;
