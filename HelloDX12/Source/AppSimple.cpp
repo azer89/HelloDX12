@@ -31,6 +31,7 @@ void AppSimple::OnInit()
 // Update frame-based values.
 void AppSimple::OnUpdate()
 {
+	OnKeyboardInput();
 }
 
 // Render the scene.

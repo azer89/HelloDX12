@@ -43,3 +43,53 @@ void AppBase::ParseCommandLineArgs(WCHAR* argv[], int argc)
 		// Empty
 	}
 }
+
+void AppBase::OnKeyDown(uint8_t key)
+{
+}
+
+void AppBase::OnKeyUp(uint8_t key)
+{
+}
+
+void AppBase::OnMouseMove(int mousePositionX, int mousePositionY)
+{
+	if (uiData_.mouseFirstUse_)
+	{
+		uiData_.mousePositionX = mousePositionX;
+		uiData_.mousePositionY = mousePositionY;
+		uiData_.mouseFirstUse_ = false;
+		return;
+	}
+
+	if (uiData_.mouseLeftPressed_ || uiData_.mouseLeftHold_)
+	{
+		const float xOffset = mousePositionX - uiData_.mousePositionX;
+		const float yOffset = uiData_.mousePositionY - mousePositionY; // Reversed since y-coordinates go from bottom to top
+		camera_->ProcessMouseMovement(xOffset, yOffset);
+	}
+
+	uiData_.mousePositionX = mousePositionX;
+	uiData_.mousePositionY = mousePositionY;
+}
+
+void AppBase::OnMouseLeftPressed()
+{
+	uiData_.mouseLeftPressed_ = true;
+}
+
+void AppBase::OnMouseLeftRelease()
+{
+	uiData_.mouseLeftPressed_ = false;
+}
+
+void AppBase::OnKeyboardInput()
+{
+	// TODO
+	float fpsTemp = 0.01f;
+
+	if (GetAsyncKeyState('W') & 0x8000) { camera_->ProcessKeyboard(CameraMovement::Forward, fpsTemp); }
+	if (GetAsyncKeyState('S') & 0x8000) { camera_->ProcessKeyboard(CameraMovement::Backward, fpsTemp); }
+	if (GetAsyncKeyState('A') & 0x8000) { camera_->ProcessKeyboard(CameraMovement::Left, fpsTemp); }
+	if (GetAsyncKeyState('D') & 0x8000) { camera_->ProcessKeyboard(CameraMovement::Right, fpsTemp); }
+}
