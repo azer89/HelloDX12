@@ -63,6 +63,9 @@
     <ClInclude Include="Header\DirectX12\DX12Shader.h">
       <Filter>Header\DirectX12</Filter>
     </ClInclude>
+    <ClInclude Include="Header\VertexData.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">

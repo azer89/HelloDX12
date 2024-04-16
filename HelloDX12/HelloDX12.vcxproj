@@ -26,6 +26,7 @@
     <ClInclude Include="Header\Utility.h" />
     <ClInclude Include="Header\PipelineSimple.h" />
     <ClInclude Include="Header\Scene.h" />
+    <ClInclude Include="Header\VertexData.h" />
     <ClInclude Include="Header\Win32Application.h" />
   </ItemGroup>
   <ItemGroup>

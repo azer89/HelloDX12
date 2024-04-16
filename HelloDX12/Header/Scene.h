@@ -3,15 +3,7 @@
 
 #include "DX12Context.h"
 #include "DX12Image.h"
-
-#include "glm/glm.hpp"
-
-struct VertexData
-{
-	glm::vec3 position;
-	glm::vec3 normal;
-	glm::vec2 uv;
-};
+#include "VertexData.h"
 
 class Scene
 {
