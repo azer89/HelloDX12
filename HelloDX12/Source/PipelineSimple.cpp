@@ -68,6 +68,8 @@ void PipelineSimple::CreateDSV(DX12Context& ctx)
 	};
 	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&dsvHeap_)));
 
+	rtvDescriptorSize_ = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+
 	D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = 
 	{
 		.Format = DXGI_FORMAT_D32_FLOAT,
@@ -193,13 +195,13 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 		.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 		.SampleMask = UINT_MAX,
 		.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT),
+		.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT),
 		.InputLayout = {inputElementDescs, _countof(inputElementDescs)},
 		.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 		.NumRenderTargets = 1,
+		.DSVFormat = DXGI_FORMAT_D32_FLOAT,
 	};
 	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-	psoDesc.DepthStencilState.DepthEnable = FALSE;
-	psoDesc.DepthStencilState.StencilEnable = FALSE;
 	psoDesc.SampleDesc.Count = 1;
 	ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)));
 }
