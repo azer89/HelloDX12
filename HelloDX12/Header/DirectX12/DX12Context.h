@@ -31,6 +31,9 @@ public:
 	void ResetCommandList();
 	void SetPipelineState(ID3D12PipelineState* pipeline);
 
+	CD3DX12_VIEWPORT GetViewport();
+	CD3DX12_RECT GetScissor();
+
 private:
 	void GetHardwareAdapter(
 		_In_ IDXGIFactory1* pFactory,

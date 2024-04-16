@@ -9,6 +9,8 @@ public:
 	DX12Image(DX12Context& ctx);
 	~DX12Image() = default;
 
+	D3D12_STATIC_SAMPLER_DESC GetSampler();
+
 private:
 	std::vector<UINT8> GenerateTextureData(DX12Context& ctx);
 

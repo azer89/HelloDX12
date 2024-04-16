@@ -3,14 +3,7 @@
 
 #include "DX12Context.h"
 #include "DX12Image.h"
-
-#include "glm/glm.hpp"
-
-struct VertexData
-{
-	glm::vec3 position;
-	glm::vec2 uv;
-};
+#include "VertexData.h"
 
 class Scene
 {
@@ -22,8 +15,12 @@ public:
 
 public:
 	std::unique_ptr<DX12Image> image_;
+
 	ComPtr<ID3D12Resource> vertexBuffer_;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_;
+
+	ComPtr<ID3D12Resource> indexBuffer_;
+	D3D12_INDEX_BUFFER_VIEW indexBufferView_;
 };
 
 #endif

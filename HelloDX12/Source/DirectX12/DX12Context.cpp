@@ -216,3 +216,23 @@ void DX12Context::GetHardwareAdapter(
 
 	*ppAdapter = adapter.Detach();
 }
+
+CD3DX12_VIEWPORT DX12Context::GetViewport()
+{
+	return
+		CD3DX12_VIEWPORT(
+			0.0f,
+			0.0f,
+			static_cast<float>(swapchainWidth_),
+			static_cast<float>(swapchainHeight_));
+}
+
+CD3DX12_RECT DX12Context::GetScissor()
+{
+	return
+		CD3DX12_RECT(
+			0,
+			0,
+			static_cast<LONG>(swapchainWidth_),
+			static_cast<LONG>(swapchainHeight_));
+}
