@@ -9,9 +9,7 @@ struct VertexData
 	glm::vec3 normal_;
 	glm::vec2 uv_;
 
-	VertexData()
-	{
-	}
+	VertexData() = default;
 
 	VertexData(
 		glm::vec3 position,

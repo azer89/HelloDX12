@@ -19,53 +19,6 @@ void Scene::Init(DX12Context& ctx)
 			{ glm::vec3(-1.0f, -1.0f, -2.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(0.0f, 1.0f) },
 		};
 
-		// Define the geometry for a cube.
-		/*static const VertexData cubeVertices[] =
-		{
-			// Back face
-			{ glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec2(0.0f,  0.0f), glm::vec3(-1.0f, 0.0f, 0.0f) }, // bottom-left
-			{ glm::vec3( 1.0f,  1.0f, -1.0f), glm::vec2(0.0f,  0.0f), glm::vec3(-1.0f, 1.0f, 1.0f) }, // top-right
-			{ glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec2(0.0f,  0.0f), glm::vec3(-1.0f, 1.0f, 0.0f) }, // bottom-right
-			{ glm::vec3( 1.0f,  1.0f, -1.0f), glm::vec2(0.0f,  0.0f), glm::vec3(-1.0f, 1.0f, 1.0f) }, // top-right
-			{ glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec2(0.0f,  0.0f), glm::vec3(-1.0f, 0.0f, 0.0f) }, // bottom-left
-			{ glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec2(0.0f,  0.0f), glm::vec3(-1.0f, 0.0f, 1.0f) }, // top-left
-			// Front face
-			{ glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec2(0.0f,  0.0f),  glm::vec3(1.0f, 0.0f, 0.0f) }, // bottom-left
-			{ glm::vec3( 1.0f, -1.0f,  1.0f), glm::vec2(0.0f,  0.0f),  glm::vec3(1.0f, 1.0f, 0.0f) }, // bottom-right
-			{ glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec2(0.0f,  0.0f),  glm::vec3(1.0f, 1.0f, 1.0f) }, // top-right
-			{ glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec2(0.0f,  0.0f),  glm::vec3(1.0f, 1.0f, 1.0f) }, // top-right
-			{ glm::vec3(-1.0f,  1.0f,  1.0f), glm::vec2(0.0f,  0.0f),  glm::vec3(1.0f, 0.0f, 1.0f) }, // top-left
-			{ glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec2(0.0f,  0.0f),  glm::vec3(1.0f, 0.0f, 0.0f) }, // bottom-left
-			// Left face
-			{ glm::vec3(-1.0f,  1.0f,  1.0f), glm::vec2(-1.0f,  0.0f),  glm::vec3(0.0f, 1.0f, 0.0f) }, // top-right
-			{ glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec2(-1.0f,  0.0f),  glm::vec3(0.0f, 1.0f, 1.0f) }, // top-left
-			{ glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec2(-1.0f,  0.0f),  glm::vec3(0.0f, 0.0f, 1.0f) }, // bottom-left
-			{ glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec2(-1.0f,  0.0f),  glm::vec3(0.0f, 0.0f, 1.0f) }, // bottom-left
-			{ glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec2(-1.0f,  0.0f),  glm::vec3(0.0f, 0.0f, 0.0f) }, // bottom-right
-			{ glm::vec3(-1.0f,  1.0f,  1.0f), glm::vec2(-1.0f,  0.0f),  glm::vec3(0.0f, 1.0f, 0.0f) }, // top-right
-			// Right face
-			{ glm::vec3(1.0f,  1.0f,  1.0f),  glm::vec2(1.0f,  0.0f),  glm::vec3(0.0f, 1.0f, 0.0f) }, // top-left
-			{ glm::vec3(1.0f, -1.0f, -1.0f),  glm::vec2(1.0f,  0.0f),  glm::vec3(0.0f, 0.0f, 1.0f) }, // bottom-right
-			{ glm::vec3(1.0f,  1.0f, -1.0f),  glm::vec2(1.0f,  0.0f),  glm::vec3(0.0f, 1.0f, 1.0f) }, // top-right
-			{ glm::vec3(1.0f, -1.0f, -1.0f),  glm::vec2(1.0f,  0.0f),  glm::vec3(0.0f, 0.0f, 1.0f) }, // bottom-right
-			{ glm::vec3(1.0f,  1.0f,  1.0f),  glm::vec2(1.0f,  0.0f),  glm::vec3(0.0f, 1.0f, 0.0f) }, // top-left
-			{ glm::vec3(1.0f, -1.0f,  1.0f),  glm::vec2(1.0f,  0.0f),  glm::vec3(0.0f, 0.0f, 0.0f) }, // bottom-left
-			// Bottom face
-			{ glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec2(0.0f, -1.0f),  glm::vec3(0.0f, 0.0f, 1.0f) }, // top-right
-			{ glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec2(0.0f, -1.0f),  glm::vec3(0.0f, 1.0f, 1.0f) }, // top-left
-			{ glm::vec3( 1.0f, -1.0f,  1.0f), glm::vec2(0.0f, -1.0f),  glm::vec3(0.0f, 1.0f, 0.0f) }, // bottom-left
-			{ glm::vec3( 1.0f, -1.0f,  1.0f), glm::vec2(0.0f, -1.0f),  glm::vec3(0.0f, 1.0f, 0.0f) }, // bottom-left
-			{ glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec2(0.0f, -1.0f),  glm::vec3(0.0f, 0.0f, 0.0f) }, // bottom-right
-			{ glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec2(0.0f, -1.0f),  glm::vec3(0.0f, 0.0f, 1.0f) }, // top-right
-			// Top face
-			{ glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec2(0.0f,  1.0f),  glm::vec3(0.0f, 0.0f, 1.0f) }, // top-left
-			{ glm::vec3( 1.0f,  1.0f , 1.0f), glm::vec2(0.0f,  1.0f),  glm::vec3(0.0f, 1.0f, 0.0f) }, // bottom-right
-			{ glm::vec3( 1.0f,  1.0f, -1.0f), glm::vec2(0.0f,  1.0f),  glm::vec3(0.0f, 1.0f, 1.0f) }, // top-right
-			{ glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec2(0.0f,  1.0f),  glm::vec3(0.0f, 1.0f, 0.0f) }, // bottom-right
-			{ glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec2(0.0f,  1.0f),  glm::vec3(0.0f, 0.0f, 1.0f) }, // top-left
-			{ glm::vec3(-1.0f,  1.0f,  1.0f), glm::vec2(0.0f,  1.0f),  glm::vec3(0.0f, 0.0f, 0.0f) }  // bottom-left
-		};*/
-
 		const uint32_t vertexBufferSize = sizeof(triangleVertices);
 
 		// Note: using upload heaps to transfer static data like vert buffers is not 
@@ -99,31 +52,8 @@ void Scene::Init(DX12Context& ctx)
 		// Create index buffer
 		static const uint16_t indices[] =
 		{
-			// TOP
 			0, 1, 2,
-
 			3, 4, 5
-			/*2,1,3,
-
-			// BOTTOM
-			6,4,5,
-			7,4,6,
-
-			// LEFT
-			11,9,8,
-			10,9,11,
-
-			// RIGHT
-			14,12,13,
-			15,12,14,
-
-			// FRONT
-			19,17,16,
-			18,17,19,
-
-			// BACK
-			22,20,21,
-			23,20,22*/
 		};
 
 		const UINT indexBufferSize = sizeof(indices);
