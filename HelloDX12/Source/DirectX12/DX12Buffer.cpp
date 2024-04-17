@@ -73,7 +73,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t buffe
 	bufferUploadHeapAllocation->SetName(L"Vertex Buffer_Upload_Heap_Allocation_DMA");
 
 	// Store vertex buffer in upload heap
-	D3D12_SUBRESOURCE_DATA vertexData = 
+	D3D12_SUBRESOURCE_DATA subresourceData = 
 	{
 		.pData = reinterpret_cast<BYTE*>(data), // Pointer to our vertex array
 		.RowPitch = bufferSize, // Size of all our triangle vertex data
@@ -91,7 +91,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t buffe
 		0, 
 		0, 
 		1, 
-		&vertexData);
+		&subresourceData);
 	assert(r);
 
 	// Transition the vertex buffer data from copy destination state to vertex buffer state
@@ -183,7 +183,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t buffer
 	bufferUploadHeapAllocation->SetName(L"Index_Buffer_Upload_Heap_Allocation");
 
 	// Store index buffer in upload heap
-	D3D12_SUBRESOURCE_DATA indexData = 
+	D3D12_SUBRESOURCE_DATA subresourceData = 
 	{
 		.pData = data, // Pointer to our index array
 		.RowPitch = bufferSize, // Size of all our index buffer
@@ -201,7 +201,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t buffer
 		0,
 		0,
 		1,
-		&indexData);
+		&subresourceData);
 	assert(r);
 
 	// Transition the index buffer data from copy destination state to vertex buffer state
@@ -235,9 +235,6 @@ void DX12Buffer::CreateImage(
 	uint32_t bytesPerPixel, 
 	DXGI_FORMAT imageFormat)
 {
-	uint32_t imageBytesPerRow = width * bytesPerPixel;
-	uint32_t imageSize = height * imageBytesPerRow;
-
 	D3D12_RESOURCE_DESC textureDesc = 
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
@@ -278,11 +275,11 @@ void DX12Buffer::CreateImage(
 		nullptr, // pRowSizeInBytes
 		&textureUploadBufferSize); // pTotalBytes
 
-	D3D12MA::ALLOCATION_DESC textureUploadAllocDesc = 
+	D3D12MA::ALLOCATION_DESC uploadAllocDesc = 
 	{
 		.HeapType = D3D12_HEAP_TYPE_UPLOAD
 	};
-	D3D12_RESOURCE_DESC textureUploadResourceDesc = 
+	D3D12_RESOURCE_DESC uploadResourceDesc = 
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,
@@ -294,26 +291,27 @@ void DX12Buffer::CreateImage(
 		.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
 		.Flags = D3D12_RESOURCE_FLAG_NONE
 	};
-	textureUploadResourceDesc.SampleDesc.Count = 1;
-	textureUploadResourceDesc.SampleDesc.Quality = 0;
+	uploadResourceDesc.SampleDesc.Count = 1;
+	uploadResourceDesc.SampleDesc.Quality = 0;
 
-	ComPtr<ID3D12Resource> textureUpload;
-	D3D12MA::Allocation* textureUploadAllocation;
+	ComPtr<ID3D12Resource> bufferUploadHeap;
+	D3D12MA::Allocation* bufferUploadHeapAllocation;
 	ThrowIfFailed(ctx.dmaAllocator_->CreateResource(
-		&textureUploadAllocDesc,
-		&textureUploadResourceDesc,
+		&uploadAllocDesc,
+		&uploadResourceDesc,
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr, // pOptimizedClearValue
-		&textureUploadAllocation,
-		IID_PPV_ARGS(&textureUpload)));
-	textureUpload->SetName(L"Upload_Heap");
-	textureUploadAllocation->SetName(L"Upload_Heap_Allocation");
+		&bufferUploadHeapAllocation,
+		IID_PPV_ARGS(&bufferUploadHeap)));
+	bufferUploadHeap->SetName(L"Upload_Heap");
+	bufferUploadHeapAllocation->SetName(L"Upload_Heap_Allocation");
 
-	D3D12_SUBRESOURCE_DATA textureSubresourceData = 
+	const uint32_t imageBytesPerRow = width * bytesPerPixel;
+	D3D12_SUBRESOURCE_DATA subresourceData = 
 	{
 		.pData = imageData,
 		.RowPitch = imageBytesPerRow,
-		.SlicePitch = imageBytesPerRow * textureDesc.Height
+		.SlicePitch = static_cast<LONG_PTR>(imageBytesPerRow * textureDesc.Height)
 	};
 
 	// Start recording 
@@ -322,25 +320,25 @@ void DX12Buffer::CreateImage(
 	UpdateSubresources(
 		ctx.GetCommandList(), 
 		resource_.Get(), 
-		textureUpload.Get(), 
+		bufferUploadHeap.Get(), 
 		0, 
 		0, 
 		1, 
-		&textureSubresourceData);
+		&subresourceData);
 
-	D3D12_RESOURCE_BARRIER textureBarrier = 
+	D3D12_RESOURCE_BARRIER barrier = 
 	{
 		.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION
 	};
-	textureBarrier.Transition.pResource = resource_.Get();
-	textureBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-	textureBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-	textureBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-	ctx.GetCommandList()->ResourceBarrier(1, &textureBarrier);
+	barrier.Transition.pResource = resource_.Get();
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	ctx.GetCommandList()->ResourceBarrier(1, &barrier);
 
 	// End recording 
 	ctx.EndCommandListRecordingAndSubmit();
 
 	// Release
-	textureUploadAllocation->Release();
+	bufferUploadHeapAllocation->Release();
 }
