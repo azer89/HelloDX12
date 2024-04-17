@@ -226,3 +226,121 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t buffer
 	indexBufferView_.Format = format;
 	indexBufferView_.SizeInBytes = static_cast<UINT>(bufferSize);
 }
+
+void DX12Buffer::CreateImage(
+	DX12Context& ctx, 
+	void* imageData, 
+	uint32_t width, 
+	uint32_t height, 
+	uint32_t bytesPerPixel, 
+	DXGI_FORMAT imageFormat)
+{
+	uint32_t imageBytesPerRow = width * bytesPerPixel;
+	uint32_t imageSize = height * imageBytesPerRow;
+
+	D3D12_RESOURCE_DESC textureDesc = 
+	{
+		.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
+		.Alignment = 0,
+		.Width = width,
+		.Height = height,
+		.DepthOrArraySize = 1,
+		.MipLevels = 1,
+		.Format = imageFormat,
+		.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN,
+		.Flags = D3D12_RESOURCE_FLAG_NONE
+	};
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.SampleDesc.Quality = 0;
+	
+	D3D12MA::ALLOCATION_DESC textureAllocDesc = 
+	{
+		.HeapType = D3D12_HEAP_TYPE_DEFAULT
+	};
+	ThrowIfFailed(ctx.dmaAllocator_->CreateResource(
+		&textureAllocDesc,
+		&textureDesc,
+		D3D12_RESOURCE_STATE_COPY_DEST,
+		nullptr, // pOptimizedClearValue
+		&dmaAllocation_,
+		IID_PPV_ARGS(&resource_)));
+	resource_->SetName(L"Texture");
+	dmaAllocation_->SetName(L"Texture_Allocation_DMA");
+
+	UINT64 textureUploadBufferSize;
+	ctx.GetDevice()->GetCopyableFootprints(
+		&textureDesc,
+		0, // FirstSubresource
+		1, // NumSubresources
+		0, // BaseOffset
+		nullptr, // pLayouts
+		nullptr, // pNumRows
+		nullptr, // pRowSizeInBytes
+		&textureUploadBufferSize); // pTotalBytes
+
+	D3D12MA::ALLOCATION_DESC textureUploadAllocDesc = 
+	{
+		.HeapType = D3D12_HEAP_TYPE_UPLOAD
+	};
+	D3D12_RESOURCE_DESC textureUploadResourceDesc = 
+	{
+		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
+		.Alignment = 0,
+		.Width = textureUploadBufferSize,
+		.Height = 1,
+		.DepthOrArraySize = 1,
+		.MipLevels = 1,
+		.Format = DXGI_FORMAT_UNKNOWN,
+		.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
+		.Flags = D3D12_RESOURCE_FLAG_NONE
+	};
+	textureUploadResourceDesc.SampleDesc.Count = 1;
+	textureUploadResourceDesc.SampleDesc.Quality = 0;
+
+	ComPtr<ID3D12Resource> textureUpload;
+	D3D12MA::Allocation* textureUploadAllocation;
+	ThrowIfFailed(ctx.dmaAllocator_->CreateResource(
+		&textureUploadAllocDesc,
+		&textureUploadResourceDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr, // pOptimizedClearValue
+		&textureUploadAllocation,
+		IID_PPV_ARGS(&textureUpload)));
+	textureUpload->SetName(L"Upload_Heap");
+	textureUploadAllocation->SetName(L"Upload_Heap_Allocation");
+
+	D3D12_SUBRESOURCE_DATA textureSubresourceData = 
+	{
+		.pData = imageData,
+		.RowPitch = imageBytesPerRow,
+		.SlicePitch = imageBytesPerRow * textureDesc.Height
+	};
+
+	// Start recording 
+	ctx.ResetCommandList();
+
+	UpdateSubresources(
+		ctx.GetCommandList(), 
+		resource_.Get(), 
+		textureUpload.Get(), 
+		0, 
+		0, 
+		1, 
+		&textureSubresourceData);
+
+	D3D12_RESOURCE_BARRIER textureBarrier = 
+	{
+		.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION
+	};
+	textureBarrier.Transition.pResource = resource_.Get();
+	textureBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+	textureBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	textureBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	ctx.GetCommandList()->ResourceBarrier(1, &textureBarrier);
+
+	// End recording 
+	ctx.EndCommandListRecordingAndSubmit();
+
+	// Release
+	textureUploadAllocation->Release();
+}

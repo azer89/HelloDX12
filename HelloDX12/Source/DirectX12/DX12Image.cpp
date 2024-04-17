@@ -7,72 +7,11 @@ DX12Image::DX12Image(DX12Context& ctx)
 	width_ = 256;
 	height_ = 256;
 	pixelSize_ = 4;
+	format_ = DXGI_FORMAT_R8G8B8A8_UNORM;
 
-	// Create the texture.
-	{
-		// Describe and create a Texture2D.
-		D3D12_RESOURCE_DESC textureDesc =
-		{
-			.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
-			.Width = width_,
-			.Height = height_,
-			.MipLevels = 1,
-			.Format = DXGI_FORMAT_R8G8B8A8_UNORM,
-			.Flags = D3D12_RESOURCE_FLAG_NONE
-		};
-		textureDesc.DepthOrArraySize = 1;
-		textureDesc.SampleDesc.Count = 1;
-		textureDesc.SampleDesc.Quality = 0;
+	std::vector<uint8_t> imageData = GenerateTextureData(ctx);
 
-		{
-			auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-			ThrowIfFailed(ctx.GetDevice()->CreateCommittedResource(
-				&heapProperties,
-				D3D12_HEAP_FLAG_NONE,
-				&textureDesc,
-				D3D12_RESOURCE_STATE_COPY_DEST,
-				nullptr,
-				IID_PPV_ARGS(&image_)));
-		}
-
-		const uint64_t uploadBufferSize = GetRequiredIntermediateSize(image_.Get(), 0, 1);
-
-		// Create the GPU upload buffer
-		{
-			auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-			auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
-			ThrowIfFailed(ctx.GetDevice()->CreateCommittedResource(
-				&heapProperties,
-				D3D12_HEAP_FLAG_NONE,
-				&resourceDesc,
-				D3D12_RESOURCE_STATE_GENERIC_READ,
-				nullptr,
-				IID_PPV_ARGS(&textureUploadHeap_)));
-		}
-
-		// Copy data to the intermediate upload heap and then schedule a copy 
-		// from the upload heap to the Texture2D.
-		std::vector<uint8_t> texture = GenerateTextureData(ctx);
-
-		D3D12_SUBRESOURCE_DATA textureData =
-		{
-			.pData = &texture[0],
-			.RowPitch = width_ * pixelSize_,
-		};
-		textureData.SlicePitch = textureData.RowPitch * height_;
-
-		// Start recording 
-		ctx.ResetCommandList();
-
-		UpdateSubresources(ctx.GetCommandList(), image_.Get(), textureUploadHeap_.Get(), 0, 0, 1, &textureData);
-		{
-			auto resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(image_.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-			ctx.GetCommandList()->ResourceBarrier(1, &resourceBarrier);
-		}
-
-		// End recording 
-		ctx.EndCommandListRecordingAndSubmit();
-	}
+	buffer_.CreateImage(ctx, imageData.data(), width_, height_, pixelSize_, format_);
 }
 
 D3D12_STATIC_SAMPLER_DESC DX12Image::GetSampler()

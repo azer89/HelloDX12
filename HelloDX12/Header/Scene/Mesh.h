@@ -19,6 +19,7 @@ public:
 	{
 		vertexBuffer_.Destroy();
 		indexBuffer_.Destroy();
+		image_->Destroy();
 	}
 
 	void CreateCube(DX12Context& ctx);

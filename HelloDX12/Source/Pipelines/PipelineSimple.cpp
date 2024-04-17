@@ -33,7 +33,7 @@ void PipelineSimple::CreateSRV(DX12Context& ctx)
 		.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
 	};
 	srvDesc.Texture2D.MipLevels = 1;
-	ctx.GetDevice()->CreateShaderResourceView(scene_->mesh_.image_->image_.Get(), &srvDesc, srvHeap_->GetCPUDescriptorHandleForHeapStart());
+	ctx.GetDevice()->CreateShaderResourceView(scene_->mesh_.image_->buffer_.resource_.Get(), &srvDesc, srvHeap_->GetCPUDescriptorHandleForHeapStart());
 }
 
 void PipelineSimple::CreateRTV(DX12Context& ctx)
