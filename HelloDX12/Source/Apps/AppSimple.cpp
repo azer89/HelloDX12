@@ -50,6 +50,9 @@ void AppSimple::OnDestroy()
 {
 	context_.WaitForGpu();
 
+	scene_->Destroy();
+	context_.Destroy();
+
 	CloseHandle(context_.fenceEvent_);
 }
 

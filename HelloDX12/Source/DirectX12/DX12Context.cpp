@@ -3,6 +3,10 @@
 #include "Win32Application.h"
 #include "Configs.h"
 
+DX12Context::~DX12Context()
+{
+}
+
 void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 {
 	swapchainWidth_ = swapchainWidth;
@@ -29,11 +33,10 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 	ComPtr<IDXGIFactory4> factory;
 	ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory)));
 	{
-		ComPtr<IDXGIAdapter1> hardwareAdapter;
-		GetHardwareAdapter(factory.Get(), &hardwareAdapter);
+		GetHardwareAdapter(factory.Get(), &adapter_);
 
 		ThrowIfFailed(D3D12CreateDevice(
-			hardwareAdapter.Get(),
+			adapter_.Get(),
 			D3D_FEATURE_LEVEL_11_0,
 			IID_PPV_ARGS(&device_)
 		));
@@ -78,9 +81,21 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 	{
 		ThrowIfFailed(device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocators_[i])));
 	}
+	//ThrowIfFailed(device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&oneTimeCommandAllocator_)));
 
 	// TODO Why only one command list?
 	ThrowIfFailed(device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocators_[frameIndex_].Get(), nullptr, IID_PPV_ARGS(&commandList_)));
+	commandList_->Close();
+
+	// Memory allocator
+	{
+		D3D12MA::ALLOCATOR_DESC desc = {
+			.pDevice = device_.Get(),
+			.pAdapter = adapter_.Get(),
+		};
+
+		ThrowIfFailed(D3D12MA::CreateAllocator(&desc, &dmaAllocator_));
+	}
 }
 
 void DX12Context::WaitForGpu()
@@ -124,6 +139,16 @@ void DX12Context::ResetCommandAllocator()
 void DX12Context::ResetCommandList()
 {
 	ThrowIfFailed(commandList_->Reset(commandAllocators_[frameIndex_].Get(), nullptr));
+}
+
+void DX12Context::EndCommandListRecordingAndSubmit()
+{
+	ThrowIfFailed(commandList_->Close());
+	ID3D12CommandList* ppCommandLists[] = { GetCommandList() };
+	commandQueue_->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+	// TODO Find a way without stalling GPU
+	WaitForGpu();
 }
 
 void DX12Context::SetPipelineState(ID3D12PipelineState* pipeline)

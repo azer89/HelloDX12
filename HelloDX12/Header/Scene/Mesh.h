@@ -3,6 +3,7 @@
 
 #include "DX12Context.h"
 #include "DX12Image.h"
+#include "DX12Buffer.h"
 #include "VertexData.h"
 
 #include <vector>
@@ -14,6 +15,12 @@ public:
 	Mesh() = default;
 	~Mesh() = default;
 
+	void Destroy()
+	{
+		vertexBuffer_.Destroy();
+		indexBuffer_.Destroy();
+	}
+
 	void CreateCube(DX12Context& ctx);
 
 public:
@@ -21,12 +28,10 @@ public:
 	uint32_t numVertices_ = 0;
 
 	std::vector<VertexData> vertices_ = {};
-	ComPtr<ID3D12Resource> vertexBuffer_ = nullptr;
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_ = {};
+	DX12Buffer vertexBuffer_;
 
 	std::vector<uint32_t> indices_ = {};
-	ComPtr<ID3D12Resource> indexBuffer_ = nullptr;
-	D3D12_INDEX_BUFFER_VIEW indexBufferView_ = {};
+	DX12Buffer indexBuffer_;
 
 private:
 	void CreateBuffers(DX12Context& ctx);

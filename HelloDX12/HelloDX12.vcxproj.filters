@@ -93,6 +93,9 @@
     <ClInclude Include="Header\Scene\ShapeGenerator.h">
       <Filter>Header\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Header\DirectX12\DX12Buffer.h">
+      <Filter>Header\DirectX12</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -142,6 +145,12 @@
     </ClCompile>
     <ClCompile Include="Source\Scene\ShapeGenerator.cpp">
       <Filter>Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX12\DX12Buffer.cpp">
+      <Filter>Source\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\External\D3D12MemoryAllocator\src\D3D12MemAlloc.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
