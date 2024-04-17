@@ -60,17 +60,17 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t buffe
 	uploadResourceDesc.SampleDesc.Count = 1;
 	uploadResourceDesc.SampleDesc.Quality = 0;
 
-	ComPtr<ID3D12Resource> vBufferUploadHeap;
-	D3D12MA::Allocation* vBufferUploadHeapAllocation = nullptr;
+	ComPtr<ID3D12Resource> bufferUploadHeap;
+	D3D12MA::Allocation* bufferUploadHeapAllocation = nullptr;
 	ThrowIfFailed(ctx.dmaAllocator_->CreateResource(
 		&uploadAllocDesc,
 		&uploadResourceDesc, // Resource description for a buffer
 		D3D12_RESOURCE_STATE_GENERIC_READ, // GPU will read from this buffer and copy its contents to the default heap
 		nullptr,
-		&vBufferUploadHeapAllocation,
-		IID_PPV_ARGS(&vBufferUploadHeap)));
-	vBufferUploadHeap->SetName(L"Vertex_Buffer_Upload_Heap");
-	vBufferUploadHeapAllocation->SetName(L"Vertex Buffer_Upload_Heap_Allocation_DMA");
+		&bufferUploadHeapAllocation,
+		IID_PPV_ARGS(&bufferUploadHeap)));
+	bufferUploadHeap->SetName(L"Vertex_Buffer_Upload_Heap");
+	bufferUploadHeapAllocation->SetName(L"Vertex Buffer_Upload_Heap_Allocation_DMA");
 
 	// Store vertex buffer in upload heap
 	D3D12_SUBRESOURCE_DATA vertexData = 
@@ -87,7 +87,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t buffe
 	UINT64 r = UpdateSubresources(
 		ctx.GetCommandList(),
 		resource_.Get(), 
-		vBufferUploadHeap.Get(), 
+		bufferUploadHeap.Get(), 
 		0, 
 		0, 
 		1, 
@@ -95,21 +95,21 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t buffe
 	assert(r);
 
 	// Transition the vertex buffer data from copy destination state to vertex buffer state
-	D3D12_RESOURCE_BARRIER vbBarrier = 
+	D3D12_RESOURCE_BARRIER barrier = 
 	{
 		.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION
 	};
-	vbBarrier.Transition.pResource = resource_.Get();
-	vbBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-	vbBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
-	vbBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-	ctx.GetCommandList()->ResourceBarrier(1, &vbBarrier);
+	barrier.Transition.pResource = resource_.Get();
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	ctx.GetCommandList()->ResourceBarrier(1, &barrier);
 
 	// End recording
 	ctx.EndCommandListRecordingAndSubmit();
 
 	// Release
-	vBufferUploadHeapAllocation->Release();
+	bufferUploadHeapAllocation->Release();
 
 	// Create view
 	vertexBufferView_.BufferLocation = resource_->GetGPUVirtualAddress();
@@ -120,12 +120,12 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t buffe
 void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t bufferSize, DXGI_FORMAT format)
 {
 	// Create default heap to hold index buffer
-	constexpr D3D12MA::ALLOCATION_DESC indexBufferAllocDesc = 
+	constexpr D3D12MA::ALLOCATION_DESC allocDesc = 
 	{
 		.HeapType = D3D12_HEAP_TYPE_DEFAULT
 	};
 	
-	D3D12_RESOURCE_DESC indexBufferResourceDesc = 
+	D3D12_RESOURCE_DESC resourceDesc = 
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,
@@ -137,12 +137,12 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t buffer
 		.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
 		.Flags = D3D12_RESOURCE_FLAG_NONE
 	};
-	indexBufferResourceDesc.SampleDesc.Count = 1;
-	indexBufferResourceDesc.SampleDesc.Quality = 0;
+	resourceDesc.SampleDesc.Count = 1;
+	resourceDesc.SampleDesc.Quality = 0;
 
 	ThrowIfFailed(ctx.dmaAllocator_->CreateResource(
-		&indexBufferAllocDesc,
-		&indexBufferResourceDesc,
+		&allocDesc,
+		&resourceDesc,
 		D3D12_RESOURCE_STATE_COMMON,
 		nullptr,
 		&dmaAllocation_,
@@ -151,11 +151,11 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t buffer
 	dmaAllocation_->SetName(L"Index_Buffer_Allocation_DMA");
 
 	// Upload heap
-	constexpr D3D12MA::ALLOCATION_DESC iBufferUploadAllocDesc = 
+	constexpr D3D12MA::ALLOCATION_DESC uploadAllocDesc = 
 	{
 		.HeapType = D3D12_HEAP_TYPE_UPLOAD
 	};
-	D3D12_RESOURCE_DESC indexBufferUploadResourceDesc = 
+	D3D12_RESOURCE_DESC uploadResourceDesc = 
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,
@@ -167,20 +167,20 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t buffer
 		.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
 		.Flags = D3D12_RESOURCE_FLAG_NONE,
 	};
-	indexBufferUploadResourceDesc.SampleDesc.Count = 1;
-	indexBufferUploadResourceDesc.SampleDesc.Quality = 0;
-	ComPtr<ID3D12Resource> iBufferUploadHeap;
-	D3D12MA::Allocation* iBufferUploadHeapAllocation = nullptr;
+	uploadResourceDesc.SampleDesc.Count = 1;
+	uploadResourceDesc.SampleDesc.Quality = 0;
+	ComPtr<ID3D12Resource> bufferUploadHeap;
+	D3D12MA::Allocation* bufferUploadHeapAllocation = nullptr;
 
 	ThrowIfFailed(ctx.dmaAllocator_->CreateResource(
-		&iBufferUploadAllocDesc,
-		&indexBufferUploadResourceDesc, // resource description for a buffer
+		&uploadAllocDesc,
+		&uploadResourceDesc, // resource description for a buffer
 		D3D12_RESOURCE_STATE_GENERIC_READ, // GPU will read from this buffer and copy its contents to the default heap
 		nullptr,
-		&iBufferUploadHeapAllocation,
-		IID_PPV_ARGS(&iBufferUploadHeap)));
-	iBufferUploadHeap->SetName(L"Index_Buffer_Upload_Heap");
-	iBufferUploadHeapAllocation->SetName(L"Index_Buffer_Upload_Heap_Allocation");
+		&bufferUploadHeapAllocation,
+		IID_PPV_ARGS(&bufferUploadHeap)));
+	bufferUploadHeap->SetName(L"Index_Buffer_Upload_Heap");
+	bufferUploadHeapAllocation->SetName(L"Index_Buffer_Upload_Heap_Allocation");
 
 	// Store index buffer in upload heap
 	D3D12_SUBRESOURCE_DATA indexData = 
@@ -194,25 +194,32 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t buffer
 	ctx.ResetCommandList();
 
 	// Copy data
-	UINT64 r = UpdateSubresources(ctx.GetCommandList(), resource_.Get(), iBufferUploadHeap.Get(), 0, 0, 1, &indexData);
+	UINT64 r = UpdateSubresources(
+		ctx.GetCommandList(),
+		resource_.Get(),
+		bufferUploadHeap.Get(),
+		0,
+		0,
+		1,
+		&indexData);
 	assert(r);
 
 	// Transition the index buffer data from copy destination state to vertex buffer state
-	D3D12_RESOURCE_BARRIER ibBarrier = 
+	D3D12_RESOURCE_BARRIER barrier = 
 	{
-		ibBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION
+		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION
 	};
-	ibBarrier.Transition.pResource = resource_.Get();
-	ibBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-	ibBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_INDEX_BUFFER;
-	ibBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-	ctx.GetCommandList()->ResourceBarrier(1, &ibBarrier);
+	barrier.Transition.pResource = resource_.Get();
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_INDEX_BUFFER;
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	ctx.GetCommandList()->ResourceBarrier(1, &barrier);
 
 	// End recording 
 	ctx.EndCommandListRecordingAndSubmit();
 
 	// Release
-	iBufferUploadHeapAllocation->Release();
+	bufferUploadHeapAllocation->Release();
 
 	// Create view
 	indexBufferView_.BufferLocation = resource_->GetGPUVirtualAddress();
