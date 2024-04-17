@@ -87,6 +87,12 @@
     <ClInclude Include="Header\Pipelines\PipelineSimple.h">
       <Filter>Header\Pipelines</Filter>
     </ClInclude>
+    <ClInclude Include="Header\Scene\Mesh.h">
+      <Filter>Header\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Scene\ShapeGenerator.h">
+      <Filter>Header\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -129,6 +135,12 @@
       <Filter>Source\Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene\Scene.cpp">
+      <Filter>Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\Mesh.cpp">
+      <Filter>Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\ShapeGenerator.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
   </ItemGroup>

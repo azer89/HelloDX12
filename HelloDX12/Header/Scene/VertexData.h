@@ -4,6 +4,7 @@
 #include "glm/glm.hpp"
 
 #include <vector>
+#include <d3d12.h>
 
 struct VertexData
 {
