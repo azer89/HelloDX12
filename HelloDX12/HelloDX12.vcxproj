@@ -34,6 +34,7 @@
     <ClInclude Include="Header\Win32Application.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\External\D3D12MemoryAllocator\src\D3D12MemAlloc.cpp" />
     <ClCompile Include="Source\Apps\AppBase.cpp" />
     <ClCompile Include="Source\Apps\AppSimple.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
