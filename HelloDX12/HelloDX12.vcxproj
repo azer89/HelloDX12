@@ -24,7 +24,9 @@
     <ClInclude Include="Header\DirectX12\DX12Shader.h" />
     <ClInclude Include="Header\Pipelines\PipelineSimple.h" />
     <ClInclude Include="Header\ResourcesLights.h" />
+    <ClInclude Include="Header\Scene\Mesh.h" />
     <ClInclude Include="Header\Scene\Scene.h" />
+    <ClInclude Include="Header\Scene\ShapeGenerator.h" />
     <ClInclude Include="Header\Scene\VertexData.h" />
     <ClInclude Include="Header\UIData.h" />
     <ClInclude Include="Header\Utility.h" />
@@ -41,7 +43,9 @@
     <ClCompile Include="Source\DirectX12\DX12Shader.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineSimple.cpp" />
     <ClCompile Include="Source\ResourcesLights.cpp" />
+    <ClCompile Include="Source\Scene\Mesh.cpp" />
     <ClCompile Include="Source\Scene\Scene.cpp" />
+    <ClCompile Include="Source\Scene\ShapeGenerator.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Win32Application.cpp" />

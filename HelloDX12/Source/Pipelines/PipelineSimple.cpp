@@ -33,7 +33,7 @@ void PipelineSimple::CreateSRV(DX12Context& ctx)
 		.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
 	};
 	srvDesc.Texture2D.MipLevels = 1;
-	ctx.GetDevice()->CreateShaderResourceView(scene_->image_->image_.Get(), &srvDesc, srvHeap_->GetCPUDescriptorHandleForHeapStart());
+	ctx.GetDevice()->CreateShaderResourceView(scene_->mesh_.image_->image_.Get(), &srvDesc, srvHeap_->GetCPUDescriptorHandleForHeapStart());
 }
 
 void PipelineSimple::CreateRTV(DX12Context& ctx)
@@ -148,7 +148,7 @@ void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 	rootParameters[1].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
 
 	// Image
-	D3D12_STATIC_SAMPLER_DESC sampler = scene_->image_->GetSampler();
+	D3D12_STATIC_SAMPLER_DESC sampler = scene_->mesh_.image_->GetSampler();
 
 	// Allow input layout and deny uneccessary access to certain pipeline stages.
 	D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
@@ -243,9 +243,9 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	ctx.commandList_->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 	ctx.commandList_->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	ctx.commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	ctx.commandList_->IASetVertexBuffers(0, 1, &(scene_->vertexBufferView_));
-	ctx.commandList_->IASetIndexBuffer(&scene_->indexBufferView_);
-	ctx.commandList_->DrawIndexedInstanced(scene_->numVertices_, 1, 0, 0, 0);
+	ctx.commandList_->IASetVertexBuffers(0, 1, &(scene_->mesh_.vertexBufferView_));
+	ctx.commandList_->IASetIndexBuffer(&scene_->mesh_.indexBufferView_);
+	ctx.commandList_->DrawIndexedInstanced(scene_->mesh_.numVertices_, 1, 0, 0, 0);
 
 	// Indicate that the back buffer will now be used to present
 	{
