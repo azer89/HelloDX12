@@ -80,7 +80,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t buffe
 	ctx.GetCommandList()->ResourceBarrier(1, &barrier);
 
 	// End recording
-	ctx.EndCommandListRecordingAndSubmit();
+	ctx.SubmitCommandList();
 
 	// Release
 	bufferUploadHeapAllocation->Release();
@@ -165,7 +165,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t buffer
 	ctx.GetCommandList()->ResourceBarrier(1, &barrier);
 
 	// End recording 
-	ctx.EndCommandListRecordingAndSubmit();
+	ctx.SubmitCommandList();
 
 	// Release
 	bufferUploadHeapAllocation->Release();
@@ -262,7 +262,7 @@ void DX12Buffer::CreateImage(
 	ctx.GetCommandList()->ResourceBarrier(1, &barrier);
 
 	// End recording 
-	ctx.EndCommandListRecordingAndSubmit();
+	ctx.SubmitCommandList();
 
 	// Release
 	bufferUploadHeapAllocation->Release();
