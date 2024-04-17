@@ -14,22 +14,22 @@ void Mesh::CreateCube(DX12Context& ctx)
 
 void Mesh::CreateBuffers(DX12Context& ctx)
 {
-	const uint32_t vertexBufferSize = sizeof(VertexData) * vertices_.size();
+	const uint64_t vertexBufferSize = sizeof(VertexData) * vertices_.size();
 
 	// Note: using upload heaps to transfer static data like vert buffers is not 
 	// recommended. Every time the GPU needs it, the upload heap will be marshalled 
 	// over. Please read up on Default Heap usage. An upload heap is used here for 
 	// code simplicity and because there are very few verts to actually transfer
 	{
-		auto vHeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-		auto vResourceDesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
-		ThrowIfFailed(ctx.GetDevice()->CreateCommittedResource(
-			&vHeapProperties,
-			D3D12_HEAP_FLAG_NONE,
-			&vResourceDesc,
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			nullptr,
-			IID_PPV_ARGS(&vertexBuffer_)));
+	auto vHeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+	auto vResourceDesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
+	ThrowIfFailed(ctx.GetDevice()->CreateCommittedResource(
+		&vHeapProperties,
+		D3D12_HEAP_FLAG_NONE,
+		&vResourceDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&vertexBuffer_)));
 	}
 
 	// Copy the triangle data to the vertex buffer
@@ -44,7 +44,7 @@ void Mesh::CreateBuffers(DX12Context& ctx)
 	vertexBufferView_.StrideInBytes = sizeof(VertexData);
 	vertexBufferView_.SizeInBytes = vertexBufferSize;
 
-	const uint32_t indexBufferSize = sizeof(uint32_t) * indices_.size();
+	const uint64_t indexBufferSize = sizeof(uint32_t) * indices_.size();
 
 	auto iHeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	auto iResourceDescription = CD3DX12_RESOURCE_DESC::Buffer(indexBufferSize);
