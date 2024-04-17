@@ -6,8 +6,8 @@
 class DX12Buffer
 {
 public:
-	void CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t size, uint32_t stride);
-	void CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t size, DXGI_FORMAT format);
+	void CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t bufferSize, uint32_t stride);
+	void CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t bufferSize, DXGI_FORMAT format);
 
 	void Destroy()
 	{
