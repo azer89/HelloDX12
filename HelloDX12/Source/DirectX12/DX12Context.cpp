@@ -146,6 +146,8 @@ void DX12Context::EndCommandListRecordingAndSubmit()
 	ThrowIfFailed(commandList_->Close());
 	ID3D12CommandList* ppCommandLists[] = { GetCommandList() };
 	commandQueue_->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+	// TODO Find a way without stalling GPU
 	WaitForGpu();
 }
 
@@ -153,25 +155,6 @@ void DX12Context::SetPipelineState(ID3D12PipelineState* pipeline)
 {
 	commandList_->SetPipelineState(pipeline);
 }
-
-/*ComPtr<ID3D12GraphicsCommandList> DX12Context::StartOneTimeCommandList() const
-{
-	ComPtr<ID3D12GraphicsCommandList> commandList;
-	ThrowIfFailed(device_->CreateCommandList(
-		0,
-		D3D12_COMMAND_LIST_TYPE_DIRECT,
-		oneTimeCommandAllocator_.Get(),
-		NULL, IID_PPV_ARGS(&commandList)));
-	return commandList;
-}
-
-void DX12Context::EndOneTimeCommandList(ComPtr<ID3D12GraphicsCommandList>& commandList)
-{
-	commandList->Close();
-	ID3D12CommandList* ppCommandLists[] = { commandList.Get() };
-	commandQueue_->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-	WaitForGpu();
-}*/
 
 void DX12Context::CreateFence()
 {

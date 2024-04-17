@@ -34,9 +34,6 @@ public:
 	[[nodiscard]] ID3D12Device* GetDevice() const { return device_.Get(); }
 	[[nodiscard]] ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
 
-	//[[nodiscard]] ComPtr<ID3D12GraphicsCommandList> StartOneTimeCommandList() const;
-	//void EndOneTimeCommandList(ComPtr<ID3D12GraphicsCommandList>& commandList);
-
 	void Init(uint32_t swapchainWidth, uint32_t swapchainHeight);
 
 	void CreateFence();
@@ -58,7 +55,7 @@ private:
 		_Outptr_result_maybenull_ IDXGIAdapter1** ppAdapter,
 		bool requestHighPerformanceAdapter = false);
 
-// TODO Set to private
+// TODO Set these below to private
 public:
 	uint32_t swapchainWidth_ = 0;
 	uint32_t swapchainHeight_ = 0;
@@ -68,7 +65,6 @@ public:
 	ComPtr<ID3D12Device> device_;
 	ComPtr<IDXGIAdapter1> adapter_;
 	ComPtr<ID3D12CommandAllocator> commandAllocators_[AppConfig::FrameCount] = {};
-	//ComPtr<ID3D12CommandAllocator> oneTimeCommandAllocator_ = {};
 	ComPtr<ID3D12CommandQueue> commandQueue_;
 	ComPtr<ID3D12GraphicsCommandList> commandList_;
 

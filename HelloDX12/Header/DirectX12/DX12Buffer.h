@@ -3,7 +3,6 @@
 
 #include "DX12Context.h"
 
-
 class DX12Buffer
 {
 public:

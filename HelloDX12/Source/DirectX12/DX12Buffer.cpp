@@ -85,8 +85,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t size,
 	// Start recording 
 	ctx.ResetCommandList();
 
-	// we are now creating a command with the command list to copy the data from
-	// the upload heap to the default heap
+	// Copy data
 	UINT64 r = UpdateSubresources(
 		ctx.GetCommandList(),
 		resource_.Get(), 
@@ -150,8 +149,6 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t size, 
 		nullptr,
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)));
-
-	// we can give resource heaps a name so when we debug with the graphics debugger we know what resource we are looking at
 	resource_->SetName(L"Index_Buffer_Resource");
 	dmaAllocation_->SetName(L"Index_Buffer_Allocation_DMA");
 
@@ -190,16 +187,15 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t size, 
 	// Store index buffer in upload heap
 	D3D12_SUBRESOURCE_DATA indexData = 
 	{
-		.pData = data, // pointer to our index array
-		.RowPitch = size, // size of all our index buffer
-		.SlicePitch = size // also the size of our index buffer
+		.pData = data, // Pointer to our index array
+		.RowPitch = size, // Size of all our index buffer
+		.SlicePitch = size // Also the size of our index buffer
 	};
 
 	// Start recording 
 	ctx.ResetCommandList();
 
-	// we are now creating a command with the command list to copy the data from
-	// the upload heap to the default heap
+	// Copy data
 	UINT64 r = UpdateSubresources(ctx.GetCommandList(), resource_.Get(), iBufferUploadHeap.Get(), 0, 0, 1, &indexData);
 	assert(r);
 
