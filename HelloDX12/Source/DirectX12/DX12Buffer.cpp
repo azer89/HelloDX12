@@ -73,7 +73,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t buffe
 	bufferUploadHeapAllocation->SetName(L"Vertex Buffer_Upload_Heap_Allocation_DMA");
 
 	// Store vertex buffer in upload heap
-	D3D12_SUBRESOURCE_DATA vertexData = 
+	D3D12_SUBRESOURCE_DATA subresourceData = 
 	{
 		.pData = reinterpret_cast<BYTE*>(data), // Pointer to our vertex array
 		.RowPitch = bufferSize, // Size of all our triangle vertex data
@@ -91,7 +91,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t buffe
 		0, 
 		0, 
 		1, 
-		&vertexData);
+		&subresourceData);
 	assert(r);
 
 	// Transition the vertex buffer data from copy destination state to vertex buffer state
@@ -183,7 +183,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t buffer
 	bufferUploadHeapAllocation->SetName(L"Index_Buffer_Upload_Heap_Allocation");
 
 	// Store index buffer in upload heap
-	D3D12_SUBRESOURCE_DATA indexData = 
+	D3D12_SUBRESOURCE_DATA subresourceData = 
 	{
 		.pData = data, // Pointer to our index array
 		.RowPitch = bufferSize, // Size of all our index buffer
@@ -201,7 +201,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t buffer
 		0,
 		0,
 		1,
-		&indexData);
+		&subresourceData);
 	assert(r);
 
 	// Transition the index buffer data from copy destination state to vertex buffer state
@@ -225,4 +225,120 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t buffer
 	indexBufferView_.BufferLocation = resource_->GetGPUVirtualAddress();
 	indexBufferView_.Format = format;
 	indexBufferView_.SizeInBytes = static_cast<UINT>(bufferSize);
+}
+
+void DX12Buffer::CreateImage(
+	DX12Context& ctx, 
+	void* imageData, 
+	uint32_t width, 
+	uint32_t height, 
+	uint32_t bytesPerPixel, 
+	DXGI_FORMAT imageFormat)
+{
+	D3D12_RESOURCE_DESC textureDesc = 
+	{
+		.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
+		.Alignment = 0,
+		.Width = width,
+		.Height = height,
+		.DepthOrArraySize = 1,
+		.MipLevels = 1,
+		.Format = imageFormat,
+		.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN,
+		.Flags = D3D12_RESOURCE_FLAG_NONE
+	};
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.SampleDesc.Quality = 0;
+	
+	D3D12MA::ALLOCATION_DESC textureAllocDesc = 
+	{
+		.HeapType = D3D12_HEAP_TYPE_DEFAULT
+	};
+	ThrowIfFailed(ctx.dmaAllocator_->CreateResource(
+		&textureAllocDesc,
+		&textureDesc,
+		D3D12_RESOURCE_STATE_COPY_DEST,
+		nullptr, // pOptimizedClearValue
+		&dmaAllocation_,
+		IID_PPV_ARGS(&resource_)));
+	resource_->SetName(L"Texture");
+	dmaAllocation_->SetName(L"Texture_Allocation_DMA");
+
+	UINT64 textureUploadBufferSize;
+	ctx.GetDevice()->GetCopyableFootprints(
+		&textureDesc,
+		0, // FirstSubresource
+		1, // NumSubresources
+		0, // BaseOffset
+		nullptr, // pLayouts
+		nullptr, // pNumRows
+		nullptr, // pRowSizeInBytes
+		&textureUploadBufferSize); // pTotalBytes
+
+	D3D12MA::ALLOCATION_DESC uploadAllocDesc = 
+	{
+		.HeapType = D3D12_HEAP_TYPE_UPLOAD
+	};
+	D3D12_RESOURCE_DESC uploadResourceDesc = 
+	{
+		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
+		.Alignment = 0,
+		.Width = textureUploadBufferSize,
+		.Height = 1,
+		.DepthOrArraySize = 1,
+		.MipLevels = 1,
+		.Format = DXGI_FORMAT_UNKNOWN,
+		.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
+		.Flags = D3D12_RESOURCE_FLAG_NONE
+	};
+	uploadResourceDesc.SampleDesc.Count = 1;
+	uploadResourceDesc.SampleDesc.Quality = 0;
+
+	ComPtr<ID3D12Resource> bufferUploadHeap;
+	D3D12MA::Allocation* bufferUploadHeapAllocation;
+	ThrowIfFailed(ctx.dmaAllocator_->CreateResource(
+		&uploadAllocDesc,
+		&uploadResourceDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr, // pOptimizedClearValue
+		&bufferUploadHeapAllocation,
+		IID_PPV_ARGS(&bufferUploadHeap)));
+	bufferUploadHeap->SetName(L"Upload_Heap");
+	bufferUploadHeapAllocation->SetName(L"Upload_Heap_Allocation");
+
+	const uint32_t imageBytesPerRow = width * bytesPerPixel;
+	D3D12_SUBRESOURCE_DATA subresourceData = 
+	{
+		.pData = imageData,
+		.RowPitch = imageBytesPerRow,
+		.SlicePitch = static_cast<LONG_PTR>(imageBytesPerRow * textureDesc.Height)
+	};
+
+	// Start recording 
+	ctx.ResetCommandList();
+
+	UpdateSubresources(
+		ctx.GetCommandList(), 
+		resource_.Get(), 
+		bufferUploadHeap.Get(), 
+		0, 
+		0, 
+		1, 
+		&subresourceData);
+
+	D3D12_RESOURCE_BARRIER barrier = 
+	{
+		.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION
+	};
+	barrier.Transition.pResource = resource_.Get();
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	ctx.GetCommandList()->ResourceBarrier(1, &barrier);
+
+	// End recording 
+	ctx.EndCommandListRecordingAndSubmit();
+
+	// Release
+	bufferUploadHeapAllocation->Release();
 }
