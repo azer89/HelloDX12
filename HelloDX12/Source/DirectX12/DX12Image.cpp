@@ -66,6 +66,10 @@ DX12Image::DX12Image(DX12Context& ctx)
 			auto resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(image_.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 			ctx.GetCommandList()->ResourceBarrier(1, &resourceBarrier);
 		}
+
+		ThrowIfFailed(ctx.commandList_->Close());
+		ID3D12CommandList* ppCommandLists[] = { ctx.GetCommandList() };
+		ctx.commandQueue_->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 	}
 }
 

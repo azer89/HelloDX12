@@ -9,6 +9,7 @@ void AppSimple::OnInit()
 {
 	// Initialize Context
 	context_.Init(width_, height_);
+	context_.CreateFence();
 
 	// Camera
 	camera_->SetPositionAndTarget(glm::vec3(1.0f, 3.0f, 5.0f), glm::vec3(0.0));
@@ -19,13 +20,6 @@ void AppSimple::OnInit()
 
 	// Pipelines
 	pip_ = std::make_unique<PipelineSimple>(context_, scene_.get(), camera_.get());
-
-	// Close the command list and execute it to begin the initial GPU setup.
-	ThrowIfFailed(context_.commandList_->Close());
-	ID3D12CommandList* ppCommandLists[] = { context_.commandList_.Get() };
-	context_.commandQueue_->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-	
-	context_.CreateFence();
 }
 
 // Update frame-based values.
