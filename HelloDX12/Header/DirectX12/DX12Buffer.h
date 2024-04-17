@@ -20,6 +20,17 @@ public:
 		}
 	}
 
+private:
+	/*
+	ComPtr<ID3D12Resource> bufferUploadHeap;
+	D3D12MA::Allocation* bufferUploadHeapAllocation
+	*/
+	void CreateUploadHeap(DX12Context& ctx,
+		UINT64 bufferSize,
+		UINT16 mipLevel,
+		ComPtr<ID3D12Resource>& bufferUploadHeap,
+		D3D12MA::Allocation** bufferUploadHeapAllocation);
+
 public:
 	uint64_t size_;
 	ComPtr<ID3D12Resource> resource_ = nullptr;
