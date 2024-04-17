@@ -15,6 +15,12 @@ public:
 	Mesh() = default;
 	~Mesh() = default;
 
+	void Destroy()
+	{
+		vertexBuffer_.Destroy();
+		indexBuffer_.Destroy();
+	}
+
 	void CreateCube(DX12Context& ctx);
 
 public:

@@ -5,10 +5,6 @@
 
 DX12Context::~DX12Context()
 {
-	if (dmaAllocator_ != nullptr)
-	{
-		dmaAllocator_->Release();
-	}
 }
 
 void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
@@ -85,10 +81,11 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 	{
 		ThrowIfFailed(device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocators_[i])));
 	}
-	ThrowIfFailed(device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&oneTimeCommandAllocator_)));
+	//ThrowIfFailed(device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&oneTimeCommandAllocator_)));
 
 	// TODO Why only one command list?
 	ThrowIfFailed(device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocators_[frameIndex_].Get(), nullptr, IID_PPV_ARGS(&commandList_)));
+	commandList_->Close();
 
 	// Memory allocator
 	{
@@ -144,12 +141,20 @@ void DX12Context::ResetCommandList()
 	ThrowIfFailed(commandList_->Reset(commandAllocators_[frameIndex_].Get(), nullptr));
 }
 
+void DX12Context::EndCommandListRecordingAndSubmit()
+{
+	ThrowIfFailed(commandList_->Close());
+	ID3D12CommandList* ppCommandLists[] = { GetCommandList() };
+	commandQueue_->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+	WaitForGpu();
+}
+
 void DX12Context::SetPipelineState(ID3D12PipelineState* pipeline)
 {
 	commandList_->SetPipelineState(pipeline);
 }
 
-ComPtr<ID3D12GraphicsCommandList> DX12Context::StartOneTimeCommandList() const
+/*ComPtr<ID3D12GraphicsCommandList> DX12Context::StartOneTimeCommandList() const
 {
 	ComPtr<ID3D12GraphicsCommandList> commandList;
 	ThrowIfFailed(device_->CreateCommandList(
@@ -166,7 +171,7 @@ void DX12Context::EndOneTimeCommandList(ComPtr<ID3D12GraphicsCommandList>& comma
 	ID3D12CommandList* ppCommandLists[] = { commandList.Get() };
 	commandQueue_->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 	WaitForGpu();
-}
+}*/
 
 void DX12Context::CreateFence()
 {

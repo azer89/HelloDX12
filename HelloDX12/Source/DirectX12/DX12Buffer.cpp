@@ -82,12 +82,13 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t size,
 		.SlicePitch = size, // Also the size of our triangle vertex data
 	};
 	
-	auto commandList = ctx.StartOneTimeCommandList();
+	// Start recording 
+	ctx.ResetCommandList();
 
 	// we are now creating a command with the command list to copy the data from
 	// the upload heap to the default heap
 	UINT64 r = UpdateSubresources(
-		commandList.Get(), 
+		ctx.GetCommandList(),
 		resource_.Get(), 
 		vBufferUploadHeap.Get(), 
 		0, 
@@ -105,11 +106,15 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t size,
 	vbBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
 	vbBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
 	vbBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-	commandList->ResourceBarrier(1, &vbBarrier);
+	ctx.GetCommandList()->ResourceBarrier(1, &vbBarrier);
 
-	ctx.EndOneTimeCommandList(commandList);
+	// End recording
+	ctx.EndCommandListRecordingAndSubmit();
 
-	// Create a vertex buffer view for the triangle. 
+	// Release
+	vBufferUploadHeapAllocation->Release();
+
+	// Create view
 	vertexBufferView_.BufferLocation = resource_->GetGPUVirtualAddress();
 	vertexBufferView_.StrideInBytes = stride;
 	vertexBufferView_.SizeInBytes = static_cast<UINT>(size);
@@ -190,11 +195,12 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t size, 
 		.SlicePitch = size // also the size of our index buffer
 	};
 
-	auto commandList = ctx.StartOneTimeCommandList();
+	// Start recording 
+	ctx.ResetCommandList();
 
 	// we are now creating a command with the command list to copy the data from
 	// the upload heap to the default heap
-	UINT64 r = UpdateSubresources(commandList.Get(), resource_.Get(), iBufferUploadHeap.Get(), 0, 0, 1, &indexData);
+	UINT64 r = UpdateSubresources(ctx.GetCommandList(), resource_.Get(), iBufferUploadHeap.Get(), 0, 0, 1, &indexData);
 	assert(r);
 
 	// Transition the index buffer data from copy destination state to vertex buffer state
@@ -206,10 +212,15 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t size, 
 	ibBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
 	ibBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_INDEX_BUFFER;
 	ibBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-	commandList->ResourceBarrier(1, &ibBarrier);
+	ctx.GetCommandList()->ResourceBarrier(1, &ibBarrier);
 
-	ctx.EndOneTimeCommandList(commandList);
+	// End recording 
+	ctx.EndCommandListRecordingAndSubmit();
 
+	// Release
+	iBufferUploadHeapAllocation->Release();
+
+	// Create view
 	indexBufferView_.BufferLocation = resource_->GetGPUVirtualAddress();
 	indexBufferView_.Format = format;
 	indexBufferView_.SizeInBytes = static_cast<UINT>(size);

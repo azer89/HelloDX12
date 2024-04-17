@@ -22,11 +22,20 @@ public:
 	DX12Context() = default;
 	~DX12Context();
 
+	void Destroy()
+	{
+		if (dmaAllocator_ != nullptr)
+		{
+			dmaAllocator_->Release();
+			dmaAllocator_ = nullptr;
+		}
+	}
+
 	[[nodiscard]] ID3D12Device* GetDevice() const { return device_.Get(); }
 	[[nodiscard]] ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
 
-	[[nodiscard]] ComPtr<ID3D12GraphicsCommandList> StartOneTimeCommandList() const;
-	void EndOneTimeCommandList(ComPtr<ID3D12GraphicsCommandList>& commandList);
+	//[[nodiscard]] ComPtr<ID3D12GraphicsCommandList> StartOneTimeCommandList() const;
+	//void EndOneTimeCommandList(ComPtr<ID3D12GraphicsCommandList>& commandList);
 
 	void Init(uint32_t swapchainWidth, uint32_t swapchainHeight);
 
@@ -37,6 +46,7 @@ public:
 
 	void ResetCommandAllocator();
 	void ResetCommandList();
+	void EndCommandListRecordingAndSubmit();
 	void SetPipelineState(ID3D12PipelineState* pipeline);
 
 	CD3DX12_VIEWPORT GetViewport();
@@ -58,7 +68,7 @@ public:
 	ComPtr<ID3D12Device> device_;
 	ComPtr<IDXGIAdapter1> adapter_;
 	ComPtr<ID3D12CommandAllocator> commandAllocators_[AppConfig::FrameCount] = {};
-	ComPtr<ID3D12CommandAllocator> oneTimeCommandAllocator_ = {};
+	//ComPtr<ID3D12CommandAllocator> oneTimeCommandAllocator_ = {};
 	ComPtr<ID3D12CommandQueue> commandQueue_;
 	ComPtr<ID3D12GraphicsCommandList> commandList_;
 

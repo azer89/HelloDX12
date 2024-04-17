@@ -9,6 +9,11 @@ public:
 	Scene() = default;
 	~Scene() = default;
 
+	void Destroy()
+	{
+		mesh_.Destroy();
+	}
+
 	void Init(DX12Context& ctx);
 
 public:
