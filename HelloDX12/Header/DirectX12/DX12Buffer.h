@@ -25,7 +25,6 @@ public:
 	D3D12MA::Allocation* dmaAllocation_ = nullptr;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_ = {};
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_ = {};
-
 };
 
 #endif

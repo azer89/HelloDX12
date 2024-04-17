@@ -29,13 +29,9 @@ public:
 
 	std::vector<VertexData> vertices_ = {};
 	DX12Buffer vertexBuffer_;
-	//ComPtr<ID3D12Resource> vertexBuffer_ = nullptr;
-	//D3D12_VERTEX_BUFFER_VIEW vertexBufferView_ = {};
 
 	std::vector<uint32_t> indices_ = {};
 	DX12Buffer indexBuffer_;
-	//ComPtr<ID3D12Resource> indexBuffer_ = nullptr;
-	//D3D12_INDEX_BUFFER_VIEW indexBufferView_ = {};
 
 private:
 	void CreateBuffers(DX12Context& ctx);
