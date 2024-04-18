@@ -8,7 +8,13 @@ class DX12Buffer
 public:
 	void CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t bufferSize, uint32_t stride);
 	void CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t bufferSize, DXGI_FORMAT format);
-	void CreateImage(DX12Context& ctx, void* imageData, uint32_t width, uint32_t height, uint32_t bytesPerPixel, DXGI_FORMAT imageFormat);
+	void CreateImage(
+		DX12Context& ctx,
+		void* imageData,
+		uint32_t width,
+		uint32_t height,
+		uint32_t bytesPerPixel,
+		DXGI_FORMAT imageFormat);
 
 	void Destroy()
 	{
@@ -21,10 +27,6 @@ public:
 	}
 
 private:
-	/*
-	ComPtr<ID3D12Resource> bufferUploadHeap;
-	D3D12MA::Allocation* bufferUploadHeapAllocation
-	*/
 	void CreateUploadHeap(DX12Context& ctx,
 		UINT64 bufferSize,
 		UINT16 mipLevel,
