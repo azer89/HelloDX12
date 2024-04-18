@@ -43,17 +43,17 @@ public:
 	void CreateFence();
 	void WaitForGPU();
 	void MoveToNextFrame();
-	void PresentSwapchain();
+	void PresentSwapchain() const;
+	void SetPipelineState(ID3D12PipelineState* pipeline) const;
 	
-	void ResetCommandAllocator();
-	void ResetCommandList();
-	void CloseCommandList();
-	void SubmitCommandList1();
+	void ResetCommandList() const;
+	void CloseCommandList() const;
+	void SubmitCommandList() const;
 	void SubmitCommandListAndWaitForGPU();
-	void SetPipelineState(ID3D12PipelineState* pipeline);
-
-	CD3DX12_VIEWPORT GetViewport();
-	CD3DX12_RECT GetScissor();
+	void ResetCommandAllocator() const;
+	
+	CD3DX12_VIEWPORT GetViewport() const;
+	CD3DX12_RECT GetScissor() const;
 
 private:
 	void GetHardwareAdapter(

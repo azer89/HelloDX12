@@ -40,7 +40,7 @@ void AppSimple::OnRender()
 	//context_.CloseCommandList();
 	//ID3D12CommandList* ppCommandLists[] = { context_.commandList_.Get() };
 	//context_.commandQueue_->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-	context_.SubmitCommandList1();
+	context_.SubmitCommandList();
 	
 	// Present the frame.
 	//ThrowIfFailed(context_.swapchain_->Present(1, 0));

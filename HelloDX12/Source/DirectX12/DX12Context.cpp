@@ -117,9 +117,9 @@ void DX12Context::WaitForGPU()
 	fenceValues_[frameIndex_]++;
 }
 
-void DX12Context::PresentSwapchain()
+void DX12Context::PresentSwapchain() const
 {
-	ThrowIfFailed(swapchain_->Present(1, 0));
+	ThrowIfFailed(swapchain_->Present(1, 0))
 }
 
 void DX12Context::MoveToNextFrame()
@@ -142,35 +142,35 @@ void DX12Context::MoveToNextFrame()
 	fenceValues_[frameIndex_] = currentFenceValue + 1;
 }
 
-void DX12Context::ResetCommandAllocator()
+void DX12Context::ResetCommandAllocator() const
 {
 	ThrowIfFailed(commandAllocators_[frameIndex_]->Reset());
 }
 
-void DX12Context::ResetCommandList()
+void DX12Context::ResetCommandList() const
 {
 	ThrowIfFailed(commandList_->Reset(commandAllocators_[frameIndex_].Get(), nullptr));
 }
 
-void DX12Context::CloseCommandList()
+void DX12Context::CloseCommandList() const
 {
-	ThrowIfFailed(commandList_->Close());
+	ThrowIfFailed(commandList_->Close())
 }
 
-void DX12Context::SubmitCommandList1()
+void DX12Context::SubmitCommandList() const
 {
-	ThrowIfFailed(commandList_->Close());
+	ThrowIfFailed(commandList_->Close())
 	ID3D12CommandList* ppCommandLists[] = { GetCommandList() };
 	commandQueue_->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 }
 
 void DX12Context::SubmitCommandListAndWaitForGPU()
 {
-	SubmitCommandList1();
+	SubmitCommandList();
 	WaitForGPU();
 }
 
-void DX12Context::SetPipelineState(ID3D12PipelineState* pipeline)
+void DX12Context::SetPipelineState(ID3D12PipelineState* pipeline) const
 {
 	commandList_->SetPipelineState(pipeline);
 }
@@ -261,7 +261,7 @@ void DX12Context::GetHardwareAdapter(
 	*ppAdapter = adapter.Detach();
 }
 
-CD3DX12_VIEWPORT DX12Context::GetViewport()
+CD3DX12_VIEWPORT DX12Context::GetViewport() const
 {
 	return
 		CD3DX12_VIEWPORT(
@@ -271,7 +271,7 @@ CD3DX12_VIEWPORT DX12Context::GetViewport()
 			static_cast<float>(swapchainHeight_));
 }
 
-CD3DX12_RECT DX12Context::GetScissor()
+CD3DX12_RECT DX12Context::GetScissor() const
 {
 	return
 		CD3DX12_RECT(
