@@ -34,6 +34,9 @@
     <Filter Include="Source\Pipelines">
       <UniqueIdentifier>{9905b90c-4bea-4722-879e-bd3ed211ce6d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header\Resources">
+      <UniqueIdentifier>{00ea7521-acce-41bb-be72-d443172201be}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\Win32Application.h">
@@ -49,9 +52,6 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Header\Camera.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\ResourcesLights.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Header\DirectX12\DX12Context.h">
@@ -99,6 +99,18 @@
     <ClInclude Include="Header\Scene\Model.h">
       <Filter>Header\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Header\Pipelines\PipelineBase.h">
+      <Filter>Header\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Resources\ResourcesBase.h">
+      <Filter>Header\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Resources\ResourcesShared.h">
+      <Filter>Header\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Resources\ResourcesLights.h">
+      <Filter>Header\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -114,9 +126,6 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Camera.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ResourcesLights.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\DirectX12\DX12Context.cpp">
@@ -154,6 +163,9 @@
     </ClCompile>
     <ClCompile Include="Source\Scene\Model.cpp">
       <Filter>Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Pipelines\PipelineBase.cpp">
+      <Filter>Source\Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

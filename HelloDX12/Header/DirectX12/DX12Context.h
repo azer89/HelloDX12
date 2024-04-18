@@ -30,14 +30,14 @@ public:
 
 	void Destroy();
 
+	[[nodiscard]] uint32_t GetFrameIndex() const { return frameIndex_; }
 	[[nodiscard]] ID3D12Device* GetDevice() const { return device_.Get(); }
-	[[nodiscard]] ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
 	[[nodiscard]] uint32_t GetSwapchainWidth() const { return swapchainWidth_; }
 	[[nodiscard]] uint32_t GetSwapchainHeight() const { return swapchainHeight_; }
-	[[nodiscard]] D3D12MA::Allocator* GetDMAAllocator() const { return dmaAllocator_; }
 	[[nodiscard]] IDXGISwapChain3* GetSwapchain() const { return swapchain_.Get(); }
-	[[nodiscard]] uint32_t GetFrameIndex() const { return frameIndex_; }
-
+	[[nodiscard]] D3D12MA::Allocator* GetDMAAllocator() const { return dmaAllocator_; }
+	[[nodiscard]] ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
+	
 	void Init(uint32_t swapchainWidth, uint32_t swapchainHeight);
 
 	void CreateFence();
