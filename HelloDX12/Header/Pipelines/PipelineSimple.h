@@ -11,6 +11,8 @@
 
 #include "glm/glm.hpp"
 
+#include <array>
+
 class PipelineSimple final : PipelineBase
 {
 public:
@@ -52,7 +54,7 @@ private:
 	};
 
     // Create a union with the correct size and enough room for one ConstantBuffer
-	union PaddedConstantBuffer
+	/*union PaddedConstantBuffer
 	{
 		MVPCB constants;
 		uint8_t bytes[2 * D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT];
@@ -63,7 +65,9 @@ private:
 
 	PaddedConstantBuffer* constantMappedData_;
 	ComPtr<ID3D12Resource> constantPerFrame_;
-	D3D12_GPU_VIRTUAL_ADDRESS constantDataGpuAddr_;
+	D3D12_GPU_VIRTUAL_ADDRESS constantDataGpuAddr_;*/
+
+	std::array<DX12ConstantBuffer, AppConfig::FrameCount> constantBuffers_;
 };
 
 #endif

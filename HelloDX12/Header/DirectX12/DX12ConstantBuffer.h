@@ -4,13 +4,12 @@
 #include "DX12Context.h"
 #include "DX12Exception.h"
 
-template<typename T>
 class DX12ConstantBuffer
 {
 public:
-	DX12ConstantBuffer(DX12Context& ctx)
+	void Init(DX12Context& ctx, uint32_t bufferSize)
 	{
-		bufferSize_ = sizeof(T);
+		bufferSize_ = bufferSize;
 		paddedBufferSize_ = GetConstantBufferByteSize(bufferSize_);
 
 		const D3D12_HEAP_PROPERTIES uploadHeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
