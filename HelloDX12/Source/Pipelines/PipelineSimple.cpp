@@ -1,6 +1,8 @@
 #include "PipelineSimple.h"
 #include "DX12Exception.h"
 
+#include "ConstantBuffers.h"
+
 PipelineSimple::PipelineSimple(DX12Context& ctx, Scene* scene, Camera* camera) : 
 	PipelineBase(),
 	scene_(scene),
@@ -113,22 +115,10 @@ void PipelineSimple::CreateDSV(DX12Context& ctx)
 
 void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
 {
-	const D3D12_HEAP_PROPERTIES uploadHeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-	size_t cbSize = AppConfig::FrameCount * sizeof(PaddedConstantBuffer);
-
-	const D3D12_RESOURCE_DESC constantBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(cbSize);
-	ThrowIfFailed(ctx.GetDevice()->CreateCommittedResource(
-		&uploadHeapProperties,
-		D3D12_HEAP_FLAG_NONE,
-		&constantBufferDesc,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(constantPerFrame_.ReleaseAndGetAddressOf())))
-
-	ThrowIfFailed(constantPerFrame_->Map(0, nullptr, reinterpret_cast<void**>(&constantMappedData_)))
-
-	// GPU virtual address of the resource
-	constantDataGpuAddr_ = constantPerFrame_->GetGPUVirtualAddress();
+	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
+	{
+		constantBuffers_[i].Init(ctx, sizeof(CBMVP));
+	}
 }
 
 void PipelineSimple::CreateRootSignature(DX12Context& ctx)
@@ -206,12 +196,12 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 
 void PipelineSimple::Update(DX12Context& ctx)
 {
-	ConstantBuffer cb = {
+	CBMVP cb = {
 		.worldMatrix = glm::transpose(glm::mat4(1.0)),
 		.viewMatrix = glm::transpose(camera_->GetViewMatrix()),
 		.projectionMatrix = glm::transpose(camera_->GetProjectionMatrix())
 	};
-	memcpy(&constantMappedData_[ctx.GetFrameIndex()], &cb, sizeof(ConstantBuffer));
+	constantBuffers_[ctx.GetFrameIndex()].UploadData(&cb);
 }
 
 void PipelineSimple::PopulateCommandList(DX12Context& ctx)
@@ -225,9 +215,8 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 
 	ID3D12DescriptorHeap* ppHeaps[] = { srvHeap_.Get() };
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
-	
-	auto baseGpuAddress = constantDataGpuAddr_ + sizeof(PaddedConstantBuffer) * ctx.GetFrameIndex();
-	commandList->SetGraphicsRootConstantBufferView(0, baseGpuAddress);
+
+	commandList->SetGraphicsRootConstantBufferView(0, constantBuffers_[ctx.GetFrameIndex()].gpuAddress_);
 
 	commandList->SetGraphicsRootDescriptorTable(1, srvHeap_->GetGPUDescriptorHandleForHeapStart());
 	commandList->RSSetViewports(1, &viewport_);

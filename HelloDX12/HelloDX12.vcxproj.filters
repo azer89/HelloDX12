@@ -111,6 +111,12 @@
     <ClInclude Include="Header\Resources\ResourcesLights.h">
       <Filter>Header\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="Header\DirectX12\DX12ConstantBuffer.h">
+      <Filter>Header\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\ConstantBuffers.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -166,6 +172,9 @@
     </ClCompile>
     <ClCompile Include="Source\Pipelines\PipelineBase.cpp">
       <Filter>Source\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX12\DX12ConstantBuffer.cpp">
+      <Filter>Source\DirectX12</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

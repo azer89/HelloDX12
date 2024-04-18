@@ -3,12 +3,15 @@
 
 #include "DX12Context.h"
 #include "DX12Shader.h"
+#include "DX12ConstantBuffer.h"
 #include "PipelineBase.h"
 #include "Scene.h"
 #include "Camera.h"
 #include "Configs.h"
 
 #include "glm/glm.hpp"
+
+#include <array>
 
 class PipelineSimple final : PipelineBase
 {
@@ -42,27 +45,7 @@ public:
 	Camera* camera_;
 
 private:
-	// Constant buffer
-	struct ConstantBuffer
-	{
-		glm::mat4 worldMatrix;        // 64 bytes
-		glm::mat4 viewMatrix;         // 64 bytes
-		glm::mat4 projectionMatrix;   // 64 bytes
-	};
-
-    // Create a union with the correct size and enough room for one ConstantBuffer
-	union PaddedConstantBuffer
-	{
-		ConstantBuffer constants;
-		uint8_t bytes[2 * D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT];
-	};
-
-	// Check the exact size of the PaddedConstantBuffer to make sure it will align properly
-	static_assert(sizeof(PaddedConstantBuffer) == 2 * D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT, "PaddedConstantBuffer is not aligned properly");
-
-	PaddedConstantBuffer* constantMappedData_;
-	ComPtr<ID3D12Resource> constantPerFrame_;
-	D3D12_GPU_VIRTUAL_ADDRESS constantDataGpuAddr_;
+	std::array<DX12ConstantBuffer, AppConfig::FrameCount> constantBuffers_;
 };
 
 #endif
