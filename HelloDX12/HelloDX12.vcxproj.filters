@@ -96,6 +96,9 @@
     <ClInclude Include="Header\DirectX12\DX12Buffer.h">
       <Filter>Header\DirectX12</Filter>
     </ClInclude>
+    <ClInclude Include="Header\Scene\Model.h">
+      <Filter>Header\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -149,8 +152,8 @@
     <ClCompile Include="Source\DirectX12\DX12Buffer.cpp">
       <Filter>Source\DirectX12</Filter>
     </ClCompile>
-    <ClCompile Include="..\External\D3D12MemoryAllocator\src\D3D12MemAlloc.cpp">
-      <Filter>Source</Filter>
+    <ClCompile Include="Source\Scene\Model.cpp">
+      <Filter>Source\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

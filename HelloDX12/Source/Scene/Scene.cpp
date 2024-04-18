@@ -5,5 +5,5 @@
 
 void Scene::Init(DX12Context& ctx)
 {
-	mesh_.CreateCube(ctx);
+	model_.Load(ctx, AppConfig::ModelFolder + "HorseStatue/HorseStatue.gltf");
 }

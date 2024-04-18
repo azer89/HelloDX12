@@ -12,8 +12,11 @@
 class Mesh
 {
 public:
-	Mesh() = default;
-	~Mesh() = default;
+	Mesh(
+		DX12Context& ctx,
+		const std::string& meshName,
+		std::vector<VertexData>&& vertices,
+		std::vector<uint32_t>&& indices);
 
 	void Destroy()
 	{
@@ -25,8 +28,10 @@ public:
 	void CreateCube(DX12Context& ctx);
 
 public:
+	std::string meshName_ = {};
+
 	std::unique_ptr<DX12Image> image_ = nullptr;
-	uint32_t numVertices_ = 0;
+	uint32_t vertexCount_ = 0;
 
 	std::vector<VertexData> vertices_ = {};
 	DX12Buffer vertexBuffer_;

@@ -38,8 +38,8 @@ D3D12_STATIC_SAMPLER_DESC DX12Image::GetSampler()
 std::vector<UINT8> DX12Image::GenerateTextureData(DX12Context& ctx)
 {
 	const uint32_t rowPitch = width_ * pixelSize_;
-	const uint32_t cellPitch = rowPitch >> 3;        // The width of a cell in the checkboard texture.
-	const uint32_t cellHeight = width_ >> 3;    // The height of a cell in the checkerboard texture.
+	const uint32_t cellPitch = rowPitch >> 6;        // The width of a cell in the checkboard texture.
+	const uint32_t cellHeight = width_ >> 6;    // The height of a cell in the checkerboard texture.
 	const uint32_t textureSize = rowPitch * height_;
 
 	std::vector<uint8_t> data(textureSize);

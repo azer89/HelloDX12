@@ -2,10 +2,26 @@
 #include "ShapeGenerator.h"
 #include "DX12Exception.h"
 
+Mesh::Mesh(
+	DX12Context& ctx,
+	const std::string& meshName,
+	std::vector<VertexData>&& vertices,
+	std::vector<uint32_t>&& indices) :
+	meshName_(meshName),
+	vertices_(std::move(vertices)),
+	indices_(indices)
+{
+	vertexCount_ = static_cast<uint32_t>(indices_.size());
+
+	CreateBuffers(ctx);
+
+	image_ = std::make_unique<DX12Image>(ctx);
+}
+
 void Mesh::CreateCube(DX12Context& ctx)
 {
 	ShapeGenerator::Cube(vertices_, indices_);
-	numVertices_ = static_cast<uint32_t>(indices_.size());
+	vertexCount_ = static_cast<uint32_t>(indices_.size());
 
 	CreateBuffers(ctx);
 
