@@ -129,7 +129,7 @@ void DX12Context::PresentSwapchain() const
 void DX12Context::MoveToNextFrame()
 {
 	// Schedule a Signal command in the queue.
-	const UINT64 currentFenceValue = fenceValues_[frameIndex_];
+	const uint64_t currentFenceValue = fenceValues_[frameIndex_];
 	ThrowIfFailed(commandQueue_->Signal(fence_.Get(), currentFenceValue))
 
 	// Update the frame index.

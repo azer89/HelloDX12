@@ -42,7 +42,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t buffe
 	// Upload heap
 	ComPtr<ID3D12Resource> bufferUploadHeap;
 	D3D12MA::Allocation* bufferUploadHeapAllocation;
-	CreateUploadHeap(ctx, static_cast<UINT64>(bufferSize), 1, bufferUploadHeap, &bufferUploadHeapAllocation);
+	CreateUploadHeap(ctx, static_cast<uint64_t>(bufferSize), 1, bufferUploadHeap, &bufferUploadHeapAllocation);
 	bufferUploadHeap->SetName(L"Vertex_Buffer_Upload_Heap");
 	bufferUploadHeapAllocation->SetName(L"Vertex Buffer_Upload_Heap_Allocation_DMA");
 
@@ -58,7 +58,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t buffe
 	ctx.ResetCommandList();
 
 	// Copy data
-	UINT64 r = UpdateSubresources(
+	uint64_t r = UpdateSubresources(
 		ctx.GetCommandList(),
 		resource_.Get(), 
 		bufferUploadHeap.Get(), 
@@ -88,7 +88,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t buffe
 	// Create view
 	vertexBufferView_.BufferLocation = resource_->GetGPUVirtualAddress();
 	vertexBufferView_.StrideInBytes = stride;
-	vertexBufferView_.SizeInBytes = static_cast<UINT>(bufferSize);
+	vertexBufferView_.SizeInBytes = static_cast<uint32_t>(bufferSize);
 }
 
 void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t bufferSize, DXGI_FORMAT format)
@@ -127,7 +127,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t buffer
 	// Upload heap
 	ComPtr<ID3D12Resource> bufferUploadHeap;
 	D3D12MA::Allocation* bufferUploadHeapAllocation;
-	CreateUploadHeap(ctx, static_cast<UINT64>(bufferSize), 1, bufferUploadHeap, &bufferUploadHeapAllocation);
+	CreateUploadHeap(ctx, static_cast<uint64_t>(bufferSize), 1, bufferUploadHeap, &bufferUploadHeapAllocation);
 	bufferUploadHeap->SetName(L"Index_Buffer_Upload_Heap");
 	bufferUploadHeapAllocation->SetName(L"Index_Buffer_Upload_Heap_Allocation");
 
@@ -143,7 +143,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t buffer
 	ctx.ResetCommandList();
 
 	// Copy data
-	UINT64 r = UpdateSubresources(
+	uint64_t r = UpdateSubresources(
 		ctx.GetCommandList(),
 		resource_.Get(),
 		bufferUploadHeap.Get(),
@@ -173,7 +173,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t buffer
 	// Create view
 	indexBufferView_.BufferLocation = resource_->GetGPUVirtualAddress();
 	indexBufferView_.Format = format;
-	indexBufferView_.SizeInBytes = static_cast<UINT>(bufferSize);
+	indexBufferView_.SizeInBytes = static_cast<uint32_t>(bufferSize);
 }
 
 void DX12Buffer::CreateImage(
@@ -213,7 +213,7 @@ void DX12Buffer::CreateImage(
 	resource_->SetName(L"Texture");
 	dmaAllocation_->SetName(L"Texture_Allocation_DMA");
 
-	UINT64 textureUploadBufferSize;
+	uint64_t textureUploadBufferSize;
 	ctx.GetDevice()->GetCopyableFootprints(
 		&textureDesc,
 		0, // FirstSubresource
@@ -269,8 +269,8 @@ void DX12Buffer::CreateImage(
 }
 
 void DX12Buffer::CreateUploadHeap(DX12Context& ctx,
-	UINT64 bufferSize,
-	UINT16 mipLevel,
+	uint64_t bufferSize,
+	uint16_t mipLevel,
 	ComPtr<ID3D12Resource>& bufferUploadHeap,
 	D3D12MA::Allocation** bufferUploadHeapAllocation)
 {

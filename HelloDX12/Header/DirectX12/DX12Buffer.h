@@ -28,8 +28,8 @@ public:
 
 private:
 	void CreateUploadHeap(DX12Context& ctx,
-		UINT64 bufferSize,
-		UINT16 mipLevel,
+		uint64_t bufferSize,
+		uint16_t mipLevel,
 		ComPtr<ID3D12Resource>& bufferUploadHeap,
 		D3D12MA::Allocation** bufferUploadHeapAllocation);
 

@@ -191,7 +191,7 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 		.SampleMask = UINT_MAX,
 		.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT),
 		.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT),
-		.InputLayout = { inputElementDescs.data(), static_cast<UINT>(inputElementDescs.size()) },
+		.InputLayout = { inputElementDescs.data(), static_cast<uint32_t>(inputElementDescs.size()) },
 		.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 		.NumRenderTargets = 1,
 		.DSVFormat = DXGI_FORMAT_D32_FLOAT,
