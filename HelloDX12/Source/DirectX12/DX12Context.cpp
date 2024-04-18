@@ -141,13 +141,11 @@ void DX12Context::ResetCommandList()
 	ThrowIfFailed(commandList_->Reset(commandAllocators_[frameIndex_].Get(), nullptr));
 }
 
-void DX12Context::EndCommandListRecordingAndSubmit()
+void DX12Context::SubmitCommandList()
 {
 	ThrowIfFailed(commandList_->Close());
 	ID3D12CommandList* ppCommandLists[] = { GetCommandList() };
 	commandQueue_->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-
-	// TODO Find a way without stalling GPU
 	WaitForGpu();
 }
 

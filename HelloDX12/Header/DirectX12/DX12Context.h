@@ -43,7 +43,7 @@ public:
 
 	void ResetCommandAllocator();
 	void ResetCommandList();
-	void EndCommandListRecordingAndSubmit();
+	void SubmitCommandList();
 	void SetPipelineState(ID3D12PipelineState* pipeline);
 
 	CD3DX12_VIEWPORT GetViewport();

@@ -40,35 +40,9 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t buffe
 	dmaAllocation_->SetName(L"Vertex_Buffer_Allocation_DMA");
 
 	// Upload heap
-	constexpr D3D12MA::ALLOCATION_DESC uploadAllocDesc = 
-	{
-		.HeapType = D3D12_HEAP_TYPE_UPLOAD
-	};
-	
-	D3D12_RESOURCE_DESC uploadResourceDesc = 
-	{
-		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
-		.Alignment = 0,
-		.Width = bufferSize,
-		.Height = 1,
-		.DepthOrArraySize = 1,
-		.MipLevels = 1,
-		.Format = DXGI_FORMAT_UNKNOWN,
-		.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
-		.Flags = D3D12_RESOURCE_FLAG_NONE
-	};
-	uploadResourceDesc.SampleDesc.Count = 1;
-	uploadResourceDesc.SampleDesc.Quality = 0;
-
 	ComPtr<ID3D12Resource> bufferUploadHeap;
-	D3D12MA::Allocation* bufferUploadHeapAllocation = nullptr;
-	ThrowIfFailed(ctx.dmaAllocator_->CreateResource(
-		&uploadAllocDesc,
-		&uploadResourceDesc, // Resource description for a buffer
-		D3D12_RESOURCE_STATE_GENERIC_READ, // GPU will read from this buffer and copy its contents to the default heap
-		nullptr,
-		&bufferUploadHeapAllocation,
-		IID_PPV_ARGS(&bufferUploadHeap)));
+	D3D12MA::Allocation* bufferUploadHeapAllocation;
+	CreateUploadHeap(ctx, static_cast<UINT64>(bufferSize), 1, bufferUploadHeap, &bufferUploadHeapAllocation);
 	bufferUploadHeap->SetName(L"Vertex_Buffer_Upload_Heap");
 	bufferUploadHeapAllocation->SetName(L"Vertex Buffer_Upload_Heap_Allocation_DMA");
 
@@ -106,7 +80,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t buffe
 	ctx.GetCommandList()->ResourceBarrier(1, &barrier);
 
 	// End recording
-	ctx.EndCommandListRecordingAndSubmit();
+	ctx.SubmitCommandList();
 
 	// Release
 	bufferUploadHeapAllocation->Release();
@@ -151,34 +125,9 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t buffer
 	dmaAllocation_->SetName(L"Index_Buffer_Allocation_DMA");
 
 	// Upload heap
-	constexpr D3D12MA::ALLOCATION_DESC uploadAllocDesc = 
-	{
-		.HeapType = D3D12_HEAP_TYPE_UPLOAD
-	};
-	D3D12_RESOURCE_DESC uploadResourceDesc = 
-	{
-		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
-		.Alignment = 0,
-		.Width = bufferSize,
-		.Height = 1,
-		.DepthOrArraySize = 1,
-		.MipLevels = 1,
-		.Format = DXGI_FORMAT_UNKNOWN,
-		.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
-		.Flags = D3D12_RESOURCE_FLAG_NONE,
-	};
-	uploadResourceDesc.SampleDesc.Count = 1;
-	uploadResourceDesc.SampleDesc.Quality = 0;
 	ComPtr<ID3D12Resource> bufferUploadHeap;
-	D3D12MA::Allocation* bufferUploadHeapAllocation = nullptr;
-
-	ThrowIfFailed(ctx.dmaAllocator_->CreateResource(
-		&uploadAllocDesc,
-		&uploadResourceDesc, // resource description for a buffer
-		D3D12_RESOURCE_STATE_GENERIC_READ, // GPU will read from this buffer and copy its contents to the default heap
-		nullptr,
-		&bufferUploadHeapAllocation,
-		IID_PPV_ARGS(&bufferUploadHeap)));
+	D3D12MA::Allocation* bufferUploadHeapAllocation;
+	CreateUploadHeap(ctx, static_cast<UINT64>(bufferSize), 1, bufferUploadHeap, &bufferUploadHeapAllocation);
 	bufferUploadHeap->SetName(L"Index_Buffer_Upload_Heap");
 	bufferUploadHeapAllocation->SetName(L"Index_Buffer_Upload_Heap_Allocation");
 
@@ -216,7 +165,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t buffer
 	ctx.GetCommandList()->ResourceBarrier(1, &barrier);
 
 	// End recording 
-	ctx.EndCommandListRecordingAndSubmit();
+	ctx.SubmitCommandList();
 
 	// Release
 	bufferUploadHeapAllocation->Release();
@@ -275,36 +224,12 @@ void DX12Buffer::CreateImage(
 		nullptr, // pRowSizeInBytes
 		&textureUploadBufferSize); // pTotalBytes
 
-	D3D12MA::ALLOCATION_DESC uploadAllocDesc = 
-	{
-		.HeapType = D3D12_HEAP_TYPE_UPLOAD
-	};
-	D3D12_RESOURCE_DESC uploadResourceDesc = 
-	{
-		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
-		.Alignment = 0,
-		.Width = textureUploadBufferSize,
-		.Height = 1,
-		.DepthOrArraySize = 1,
-		.MipLevels = 1,
-		.Format = DXGI_FORMAT_UNKNOWN,
-		.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
-		.Flags = D3D12_RESOURCE_FLAG_NONE
-	};
-	uploadResourceDesc.SampleDesc.Count = 1;
-	uploadResourceDesc.SampleDesc.Quality = 0;
-
+	// Upload heap
 	ComPtr<ID3D12Resource> bufferUploadHeap;
 	D3D12MA::Allocation* bufferUploadHeapAllocation;
-	ThrowIfFailed(ctx.dmaAllocator_->CreateResource(
-		&uploadAllocDesc,
-		&uploadResourceDesc,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr, // pOptimizedClearValue
-		&bufferUploadHeapAllocation,
-		IID_PPV_ARGS(&bufferUploadHeap)));
-	bufferUploadHeap->SetName(L"Upload_Heap");
-	bufferUploadHeapAllocation->SetName(L"Upload_Heap_Allocation");
+	CreateUploadHeap(ctx, textureUploadBufferSize, 1, bufferUploadHeap, &bufferUploadHeapAllocation);
+	bufferUploadHeap->SetName(L"Image_Upload_Heap");
+	bufferUploadHeapAllocation->SetName(L"Image_Upload_Heap_Allocation");
 
 	const uint32_t imageBytesPerRow = width * bytesPerPixel;
 	D3D12_SUBRESOURCE_DATA subresourceData = 
@@ -337,8 +262,43 @@ void DX12Buffer::CreateImage(
 	ctx.GetCommandList()->ResourceBarrier(1, &barrier);
 
 	// End recording 
-	ctx.EndCommandListRecordingAndSubmit();
+	ctx.SubmitCommandList();
 
 	// Release
 	bufferUploadHeapAllocation->Release();
+}
+
+void DX12Buffer::CreateUploadHeap(DX12Context& ctx,
+	UINT64 bufferSize,
+	UINT16 mipLevel,
+	ComPtr<ID3D12Resource>& bufferUploadHeap,
+	D3D12MA::Allocation** bufferUploadHeapAllocation)
+{
+	constexpr D3D12MA::ALLOCATION_DESC uploadAllocDesc =
+	{
+		.HeapType = D3D12_HEAP_TYPE_UPLOAD
+	};
+
+	D3D12_RESOURCE_DESC uploadResourceDesc =
+	{
+		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
+		.Alignment = 0,
+		.Width = bufferSize,
+		.Height = 1,
+		.DepthOrArraySize = 1,
+		.MipLevels = mipLevel,
+		.Format = DXGI_FORMAT_UNKNOWN,
+		.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
+		.Flags = D3D12_RESOURCE_FLAG_NONE
+	};
+	uploadResourceDesc.SampleDesc.Count = 1;
+	uploadResourceDesc.SampleDesc.Quality = 0;
+
+	ThrowIfFailed(ctx.dmaAllocator_->CreateResource(
+		&uploadAllocDesc,
+		&uploadResourceDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		bufferUploadHeapAllocation,
+		IID_PPV_ARGS(&bufferUploadHeap)));
 }
