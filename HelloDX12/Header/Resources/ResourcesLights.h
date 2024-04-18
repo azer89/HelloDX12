@@ -1,6 +1,8 @@
 #ifndef HELLO_DX12_RESOURCES_LIGHTS
 #define HELLO_DX12_RESOURCES_LIGHTS
 
+#include "ResourcesBase.h"
+
 #include "glm/glm.hpp"
 
 #include <vector>
@@ -11,7 +13,7 @@ struct LightData
 	glm::vec4 color_;
 };
 
-struct ResourcesLights
+class ResourcesLights final : ResourcesBase
 {
 public:
 	ResourcesLights() = default;

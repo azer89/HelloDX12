@@ -2,11 +2,13 @@
 #include "DX12Exception.h"
 
 PipelineSimple::PipelineSimple(DX12Context& ctx, Scene* scene, Camera* camera) : 
+	PipelineBase(),
 	scene_(scene),
-	camera_(camera),
-	viewport_(ctx.GetViewport()),
-	scissor_(ctx.GetScissor())
+	camera_(camera)
 {
+	viewport_ = ctx.GetViewport();
+	scissor_ = ctx.GetScissor();
+
 	CreateSRV(ctx);
 	CreateRTV(ctx);
 	CreateDSV(ctx);

@@ -3,13 +3,14 @@
 
 #include "DX12Context.h"
 #include "DX12Shader.h"
+#include "PipelineBase.h"
 #include "Scene.h"
 #include "Camera.h"
 #include "Configs.h"
 
 #include "glm/glm.hpp"
 
-class PipelineSimple
+class PipelineSimple final : PipelineBase
 {
 public:
 	PipelineSimple(DX12Context& ctx, Scene* scene, Camera* camera);
@@ -28,12 +29,6 @@ private:
 	void CreateGraphicsPipeline(DX12Context& ctx);
 
 public:
-	ComPtr<ID3D12PipelineState> pipelineState_;
-	ComPtr<ID3D12RootSignature> rootSignature_;
-
-	DX12Shader vertexShader_;
-	DX12Shader fragmentShader_;
-
 	ComPtr<ID3D12Resource> depthStencil_;
 
 	ComPtr<ID3D12DescriptorHeap> rtvHeap_; // Render target view
@@ -45,9 +40,6 @@ public:
 
 	Scene* scene_;
 	Camera* camera_;
-
-	CD3DX12_VIEWPORT viewport_;
-	CD3DX12_RECT scissor_;
 
 private:
 	// Constant buffer
