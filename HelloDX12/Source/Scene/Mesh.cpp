@@ -25,7 +25,6 @@ void Mesh::CreateCube(DX12Context& ctx)
 	vertexCount_ = static_cast<uint32_t>(indices_.size());
 
 	CreateBuffers(ctx);
-
 	//image_ = std::make_unique<DX12Image>();
 }
 
