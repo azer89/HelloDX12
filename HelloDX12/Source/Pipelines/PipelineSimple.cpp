@@ -149,7 +149,6 @@ void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 	rootParameters[1].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
 
 	// Image
-	//D3D12_STATIC_SAMPLER_DESC sampler = scene_->mesh_.image_->GetSampler();
 	D3D12_STATIC_SAMPLER_DESC sampler = scene_->model_.meshes_[0].image_->GetSampler();
 
 	// Allow input layout and deny uneccessary access to certain pipeline stages.
