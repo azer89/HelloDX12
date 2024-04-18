@@ -15,5 +15,5 @@ void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderTyp
 	LPCSTR entryPoint = shaderType == ShaderType::Vertex ? "VSMain" : "PSMain";
 	LPCSTR target = shaderType == ShaderType::Vertex ? "vs_5_0" : "ps_5_0";
 
-	ThrowIfFailed(D3DCompileFromFile(assetPath.c_str(), nullptr, nullptr, entryPoint, target, compileFlags, 0, &handle_, nullptr));
+	ThrowIfFailed(D3DCompileFromFile(assetPath.c_str(), nullptr, nullptr, entryPoint, target, compileFlags, 0, &handle_, nullptr))
 }

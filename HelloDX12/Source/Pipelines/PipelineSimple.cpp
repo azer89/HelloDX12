@@ -24,7 +24,7 @@ void PipelineSimple::CreateSRV(DX12Context& ctx)
 		.NumDescriptors = 1,
 		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE
 	};
-	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&srvHeap_)));
+	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&srvHeap_)))
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc =
 	{
@@ -45,14 +45,14 @@ void PipelineSimple::CreateRTV(DX12Context& ctx)
 		.NumDescriptors = AppConfig::FrameCount,
 		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
 	};
-	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&rtvHeap_)));
+	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&rtvHeap_)))
 
 	// Create a RTV for each frame
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvHeap_->GetCPUDescriptorHandleForHeapStart());
 	rtvDescriptorSize_ = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	for (uint32_t n = 0; n < AppConfig::FrameCount; n++)
 	{
-		ThrowIfFailed(ctx.GetSwapchain()->GetBuffer(n, IID_PPV_ARGS(&renderTargets_[n])));
+		ThrowIfFailed(ctx.GetSwapchain()->GetBuffer(n, IID_PPV_ARGS(&renderTargets_[n])))
 		ctx.GetDevice()->CreateRenderTargetView(renderTargets_[n].Get(), nullptr, rtvHandle);
 		rtvHandle.Offset(1, rtvDescriptorSize_);
 	}
@@ -67,7 +67,7 @@ void PipelineSimple::CreateDSV(DX12Context& ctx)
 		.NumDescriptors = 1,
 		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
 	};
-	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&dsvHeap_)));
+	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&dsvHeap_)))
 
 	rtvDescriptorSize_ = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
@@ -101,7 +101,7 @@ void PipelineSimple::CreateDSV(DX12Context& ctx)
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,
 		&clearValue,
 		IID_PPV_ARGS(&depthStencil_)
-	));
+	))
 
 	ctx.GetDevice()->CreateDepthStencilView(
 		depthStencil_.Get(), 
@@ -121,9 +121,9 @@ void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
 		&constantBufferDesc,
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
-		IID_PPV_ARGS(constantPerFrame_.ReleaseAndGetAddressOf())));
+		IID_PPV_ARGS(constantPerFrame_.ReleaseAndGetAddressOf())))
 
-	ThrowIfFailed(constantPerFrame_->Map(0, nullptr, reinterpret_cast<void**>(&constantMappedData_)));
+	ThrowIfFailed(constantPerFrame_->Map(0, nullptr, reinterpret_cast<void**>(&constantMappedData_)))
 
 	// GPU virtual address of the resource
 	constantDataGpuAddr_ = constantPerFrame_->GetGPUVirtualAddress();
@@ -163,12 +163,12 @@ void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 
 	ComPtr<ID3DBlob> signature;
 	ComPtr<ID3DBlob> error;
-	ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featureData.HighestVersion, &signature, &error));
+	ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featureData.HighestVersion, &signature, &error))
 	ThrowIfFailed(ctx.GetDevice()->CreateRootSignature(
 		0, 
 		signature->GetBufferPointer(), 
 		signature->GetBufferSize(), 
-		IID_PPV_ARGS(&rootSignature_)));
+		IID_PPV_ARGS(&rootSignature_)))
 }
 
 void PipelineSimple::CreateShaders(DX12Context& ctx)
@@ -199,7 +199,7 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	psoDesc.SampleDesc.Count = 1;
 	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
-	ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)));
+	ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)))
 }
 
 void PipelineSimple::Update(DX12Context& ctx)

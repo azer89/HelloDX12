@@ -33,7 +33,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t buffe
 		D3D12_RESOURCE_STATE_COMMON,
 		nullptr,
 		&dmaAllocation_,
-		IID_PPV_ARGS(&vertexBufferPtr)));
+		IID_PPV_ARGS(&vertexBufferPtr)))
 	resource_.Attach(vertexBufferPtr);
 
 	resource_->SetName(L"Vertex_Buffer_Resource");
@@ -120,7 +120,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t buffer
 		D3D12_RESOURCE_STATE_COMMON,
 		nullptr,
 		&dmaAllocation_,
-		IID_PPV_ARGS(&resource_)));
+		IID_PPV_ARGS(&resource_)))
 	resource_->SetName(L"Index_Buffer_Resource");
 	dmaAllocation_->SetName(L"Index_Buffer_Allocation_DMA");
 
@@ -209,7 +209,7 @@ void DX12Buffer::CreateImage(
 		D3D12_RESOURCE_STATE_COPY_DEST,
 		nullptr, // pOptimizedClearValue
 		&dmaAllocation_,
-		IID_PPV_ARGS(&resource_)));
+		IID_PPV_ARGS(&resource_)))
 	resource_->SetName(L"Texture");
 	dmaAllocation_->SetName(L"Texture_Allocation_DMA");
 
@@ -300,5 +300,5 @@ void DX12Buffer::CreateUploadHeap(DX12Context& ctx,
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
 		bufferUploadHeapAllocation,
-		IID_PPV_ARGS(&bufferUploadHeap)));
+		IID_PPV_ARGS(&bufferUploadHeap)))
 }

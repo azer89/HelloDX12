@@ -33,27 +33,10 @@ void AppSimple::OnUpdate()
 // Render the scene.
 void AppSimple::OnRender()
 {
-	// Record all the commands we need to render the scene into the command list.
 	PopulateCommandList();
-
-	// Execute the command list.
-	//context_.CloseCommandList();
-	//ID3D12CommandList* ppCommandLists[] = { context_.commandList_.Get() };
-	//context_.commandQueue_->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 	context_.SubmitCommandList();
-	
-	// Present the frame.
-	//ThrowIfFailed(context_.swapchain_->Present(1, 0));
 	context_.PresentSwapchain();
-
 	context_.MoveToNextFrame();
-}
-
-void AppSimple::OnDestroy()
-{
-	context_.WaitForGPU();
-	scene_->Destroy();
-	context_.Destroy();
 }
 
 void AppSimple::PopulateCommandList()
@@ -62,4 +45,11 @@ void AppSimple::PopulateCommandList()
 	context_.ResetCommandList();
 
 	pip_->PopulateCommandList(context_);
+}
+
+void AppSimple::OnDestroy()
+{
+	context_.WaitForGPU();
+	scene_->Destroy();
+	context_.Destroy();
 }
