@@ -131,7 +131,7 @@ void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
 	constantDataGpuAddr_ = constantPerFrame_->GetGPUVirtualAddress();*/
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
-		constantBuffers_[i].Init(ctx, sizeof(MVPCB));
+		constantBuffers_[i].Init(ctx, sizeof(CBMVP));
 	}
 }
 
@@ -210,13 +210,12 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 
 void PipelineSimple::Update(DX12Context& ctx)
 {
-	MVPCB cb = {
+	CBMVP cb = {
 		.worldMatrix = glm::transpose(glm::mat4(1.0)),
 		.viewMatrix = glm::transpose(camera_->GetViewMatrix()),
 		.projectionMatrix = glm::transpose(camera_->GetProjectionMatrix())
 	};
 	constantBuffers_[ctx.GetFrameIndex()].UploadData(&cb);
-	//memcpy(&constantMappedData_[ctx.GetFrameIndex()], &cb, sizeof(MVPCB));
 }
 
 void PipelineSimple::PopulateCommandList(DX12Context& ctx)
@@ -230,9 +229,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 
 	ID3D12DescriptorHeap* ppHeaps[] = { srvHeap_.Get() };
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
-	
-	//auto baseGpuAddress = constantDataGpuAddr_ + sizeof(PaddedConstantBuffer) * ctx.GetFrameIndex();
-	//commandList->SetGraphicsRootConstantBufferView(0, baseGpuAddress);
+
 	commandList->SetGraphicsRootConstantBufferView(0, constantBuffers_[ctx.GetFrameIndex()].gpuAddress_);
 
 	commandList->SetGraphicsRootDescriptorTable(1, srvHeap_->GetGPUDescriptorHandleForHeapStart());

@@ -45,27 +45,12 @@ public:
 	Camera* camera_;
 
 private:
-	// Constant buffer
-	struct MVPCB
+	struct CBMVP
 	{
-		glm::mat4 worldMatrix;        // 64 bytes
-		glm::mat4 viewMatrix;         // 64 bytes
-		glm::mat4 projectionMatrix;   // 64 bytes
+		glm::mat4 worldMatrix;
+		glm::mat4 viewMatrix;
+		glm::mat4 projectionMatrix;
 	};
-
-    // Create a union with the correct size and enough room for one ConstantBuffer
-	/*union PaddedConstantBuffer
-	{
-		MVPCB constants;
-		uint8_t bytes[2 * D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT];
-	};
-
-	// Check the exact size of the PaddedConstantBuffer to make sure it will align properly
-	static_assert(sizeof(PaddedConstantBuffer) == 2 * D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT, "PaddedConstantBuffer is not aligned properly");
-
-	PaddedConstantBuffer* constantMappedData_;
-	ComPtr<ID3D12Resource> constantPerFrame_;
-	D3D12_GPU_VIRTUAL_ADDRESS constantDataGpuAddr_;*/
 
 	std::array<DX12ConstantBuffer, AppConfig::FrameCount> constantBuffers_;
 };
