@@ -1,17 +1,44 @@
 #include "DX12Image.h"
 #include "DX12Exception.h"
 
-DX12Image::DX12Image(DX12Context& ctx)
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+#include <iostream>
+#include <sstream>
+
+DX12Image::DX12Image()
+{
+}
+
+void DX12Image::Load(DX12Context& ctx, std::string filename)
 {
 	// TODO Temporary
-	width_ = 256;
+	/*width_ = 256;
 	height_ = 256;
 	pixelSize_ = 4;
 	format_ = DXGI_FORMAT_R8G8B8A8_UNORM;
-
 	std::vector<uint8_t> imageData = GenerateTextureData(ctx);
+	buffer_.CreateImage(ctx, imageData.data(), width_, height_, pixelSize_, format_);*/
 
-	buffer_.CreateImage(ctx, imageData.data(), width_, height_, pixelSize_, format_);
+	stbi_set_flip_vertically_on_load(false);
+
+	int texWidth, texHeight, texChannels;
+	stbi_uc* pixels = stbi_load(filename.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+
+	if (!pixels)
+	{
+		std::stringstream ss;
+		ss << "Failed to load image " << filename;
+		throw std::runtime_error(ss.str());
+	}
+
+	width_ = texWidth;
+	height_ = texHeight;
+	pixelSize_ = 4; // texChannels is 3 eventhough STBI_rgb_alpha is used
+	format_ = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+	buffer_.CreateImage(ctx, pixels, width_, height_, pixelSize_, format_);
 }
 
 D3D12_STATIC_SAMPLER_DESC DX12Image::GetSampler()
@@ -38,8 +65,8 @@ D3D12_STATIC_SAMPLER_DESC DX12Image::GetSampler()
 std::vector<UINT8> DX12Image::GenerateTextureData(DX12Context& ctx)
 {
 	const uint32_t rowPitch = width_ * pixelSize_;
-	const uint32_t cellPitch = rowPitch >> 3;        // The width of a cell in the checkboard texture.
-	const uint32_t cellHeight = width_ >> 3;    // The height of a cell in the checkerboard texture.
+	const uint32_t cellPitch = rowPitch >> 6;        // The width of a cell in the checkboard texture.
+	const uint32_t cellHeight = width_ >> 6;    // The height of a cell in the checkerboard texture.
 	const uint32_t textureSize = rowPitch * height_;
 
 	std::vector<uint8_t> data(textureSize);

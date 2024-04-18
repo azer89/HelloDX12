@@ -33,7 +33,8 @@ void PipelineSimple::CreateSRV(DX12Context& ctx)
 		.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
 	};
 	srvDesc.Texture2D.MipLevels = 1;
-	ctx.GetDevice()->CreateShaderResourceView(scene_->mesh_.image_->buffer_.resource_.Get(), &srvDesc, srvHeap_->GetCPUDescriptorHandleForHeapStart());
+	auto imageResource = scene_->model_.meshes_[0].image_->buffer_.resource_.Get();
+	ctx.GetDevice()->CreateShaderResourceView(imageResource, &srvDesc, srvHeap_->GetCPUDescriptorHandleForHeapStart());
 }
 
 void PipelineSimple::CreateRTV(DX12Context& ctx)
@@ -148,7 +149,7 @@ void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 	rootParameters[1].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
 
 	// Image
-	D3D12_STATIC_SAMPLER_DESC sampler = scene_->mesh_.image_->GetSampler();
+	D3D12_STATIC_SAMPLER_DESC sampler = scene_->model_.meshes_[0].image_->GetSampler();
 
 	// Allow input layout and deny uneccessary access to certain pipeline stages.
 	D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
@@ -238,14 +239,17 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(dsvHeap_->GetCPUDescriptorHandleForHeapStart());
 	ctx.commandList_->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
 
+	// TODO Only one mesh for now
+	Mesh& mesh = scene_->model_.meshes_[0];
+
 	// Record commands.
 	const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
 	ctx.commandList_->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 	ctx.commandList_->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	ctx.commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	ctx.commandList_->IASetVertexBuffers(0, 1, &(scene_->mesh_.vertexBuffer_.vertexBufferView_));
-	ctx.commandList_->IASetIndexBuffer(&scene_->mesh_.indexBuffer_.indexBufferView_);
-	ctx.commandList_->DrawIndexedInstanced(scene_->mesh_.numVertices_, 1, 0, 0, 0);
+	ctx.commandList_->IASetVertexBuffers(0, 1, &(mesh.vertexBuffer_.vertexBufferView_));
+	ctx.commandList_->IASetIndexBuffer(&mesh.indexBuffer_.indexBufferView_);
+	ctx.commandList_->DrawIndexedInstanced(mesh.vertexCount_, 1, 0, 0, 0);
 
 	// Indicate that the back buffer will now be used to present
 	{

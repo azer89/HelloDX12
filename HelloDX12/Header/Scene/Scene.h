@@ -1,7 +1,7 @@
 #ifndef HELLO_DX12_SCENE
 #define HELLO_DX12_SCENE
 
-#include "Mesh.h"
+#include "Model.h"
 
 class Scene
 {
@@ -11,13 +11,13 @@ public:
 
 	void Destroy()
 	{
-		mesh_.Destroy();
+		model_.Destroy();
 	}
 
 	void Init(DX12Context& ctx);
 
 public:
-	Mesh mesh_;
+	Model model_;
 };
 
 #endif
