@@ -206,12 +206,12 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 
 void PipelineSimple::Update(DX12Context& ctx)
 {
-	ConstantBuffer cb = {
+	MVPCB cb = {
 		.worldMatrix = glm::transpose(glm::mat4(1.0)),
 		.viewMatrix = glm::transpose(camera_->GetViewMatrix()),
 		.projectionMatrix = glm::transpose(camera_->GetProjectionMatrix())
 	};
-	memcpy(&constantMappedData_[ctx.GetFrameIndex()], &cb, sizeof(ConstantBuffer));
+	memcpy(&constantMappedData_[ctx.GetFrameIndex()], &cb, sizeof(MVPCB));
 }
 
 void PipelineSimple::PopulateCommandList(DX12Context& ctx)

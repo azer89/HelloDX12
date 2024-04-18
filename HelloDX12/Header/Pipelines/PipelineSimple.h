@@ -3,6 +3,7 @@
 
 #include "DX12Context.h"
 #include "DX12Shader.h"
+#include "DX12ConstantBuffer.h"
 #include "PipelineBase.h"
 #include "Scene.h"
 #include "Camera.h"
@@ -43,7 +44,7 @@ public:
 
 private:
 	// Constant buffer
-	struct ConstantBuffer
+	struct MVPCB
 	{
 		glm::mat4 worldMatrix;        // 64 bytes
 		glm::mat4 viewMatrix;         // 64 bytes
@@ -53,7 +54,7 @@ private:
     // Create a union with the correct size and enough room for one ConstantBuffer
 	union PaddedConstantBuffer
 	{
-		ConstantBuffer constants;
+		MVPCB constants;
 		uint8_t bytes[2 * D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT];
 	};
 
