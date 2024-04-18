@@ -20,7 +20,7 @@ public:
 	D3D12_STATIC_SAMPLER_DESC GetSampler();
 
 private:
-	std::vector<UINT8> GenerateTextureData(DX12Context& ctx);
+	std::vector<uint8_t> GenerateTextureData(DX12Context& ctx);
 
 public:
 	uint32_t width_ = 0;

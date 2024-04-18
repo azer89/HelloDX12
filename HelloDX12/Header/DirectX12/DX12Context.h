@@ -20,34 +20,40 @@ class DX12Context
 {
 public:
 	DX12Context() = default;
-	~DX12Context();
+	~DX12Context() = default;
 
-	void Destroy()
-	{
-		if (dmaAllocator_ != nullptr)
-		{
-			dmaAllocator_->Release();
-			dmaAllocator_ = nullptr;
-		}
-	}
+	// Not copyable or movable
+	DX12Context(const DX12Context&) = delete;
+	DX12Context& operator=(const DX12Context&) = delete;
+	DX12Context(DX12Context&&) = delete;
+	DX12Context& operator=(DX12Context&&) = delete;
+
+	void Destroy();
 
 	[[nodiscard]] ID3D12Device* GetDevice() const { return device_.Get(); }
 	[[nodiscard]] ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
+	[[nodiscard]] uint32_t GetSwapchainWidth() const { return swapchainWidth_; }
+	[[nodiscard]] uint32_t GetSwapchainHeight() const { return swapchainHeight_; }
+	[[nodiscard]] D3D12MA::Allocator* GetDMAAllocator() const { return dmaAllocator_; }
+	[[nodiscard]] IDXGISwapChain3* GetSwapchain() const { return swapchain_.Get(); }
+	[[nodiscard]] uint32_t GetFrameIndex() const { return frameIndex_; }
 
 	void Init(uint32_t swapchainWidth, uint32_t swapchainHeight);
 
 	void CreateFence();
-
-	void WaitForGpu();
+	void WaitForGPU();
 	void MoveToNextFrame();
-
-	void ResetCommandAllocator();
-	void ResetCommandList();
-	void SubmitCommandList();
-	void SetPipelineState(ID3D12PipelineState* pipeline);
-
-	CD3DX12_VIEWPORT GetViewport();
-	CD3DX12_RECT GetScissor();
+	void PresentSwapchain() const;
+	void SetPipelineState(ID3D12PipelineState* pipeline) const;
+	
+	void ResetCommandList() const;
+	void CloseCommandList() const;
+	void SubmitCommandList() const;
+	void SubmitCommandListAndWaitForGPU();
+	void ResetCommandAllocator() const;
+	
+	CD3DX12_VIEWPORT GetViewport() const;
+	CD3DX12_RECT GetScissor() const;
 
 private:
 	void GetHardwareAdapter(
@@ -55,8 +61,7 @@ private:
 		_Outptr_result_maybenull_ IDXGIAdapter1** ppAdapter,
 		bool requestHighPerformanceAdapter = false);
 
-// TODO Set these below to private
-public:
+private:
 	uint32_t swapchainWidth_ = 0;
 	uint32_t swapchainHeight_ = 0;
 	

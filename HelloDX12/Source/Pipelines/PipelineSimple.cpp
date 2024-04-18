@@ -24,7 +24,7 @@ void PipelineSimple::CreateSRV(DX12Context& ctx)
 		.NumDescriptors = 1,
 		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE
 	};
-	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&srvHeap_)));
+	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&srvHeap_)))
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc =
 	{
@@ -45,14 +45,14 @@ void PipelineSimple::CreateRTV(DX12Context& ctx)
 		.NumDescriptors = AppConfig::FrameCount,
 		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
 	};
-	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&rtvHeap_)));
+	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&rtvHeap_)))
 
 	// Create a RTV for each frame
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvHeap_->GetCPUDescriptorHandleForHeapStart());
 	rtvDescriptorSize_ = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	for (uint32_t n = 0; n < AppConfig::FrameCount; n++)
 	{
-		ThrowIfFailed(ctx.swapchain_->GetBuffer(n, IID_PPV_ARGS(&renderTargets_[n])));
+		ThrowIfFailed(ctx.GetSwapchain()->GetBuffer(n, IID_PPV_ARGS(&renderTargets_[n])))
 		ctx.GetDevice()->CreateRenderTargetView(renderTargets_[n].Get(), nullptr, rtvHandle);
 		rtvHandle.Offset(1, rtvDescriptorSize_);
 	}
@@ -67,7 +67,7 @@ void PipelineSimple::CreateDSV(DX12Context& ctx)
 		.NumDescriptors = 1,
 		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
 	};
-	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&dsvHeap_)));
+	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&dsvHeap_)))
 
 	rtvDescriptorSize_ = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
@@ -83,8 +83,8 @@ void PipelineSimple::CreateDSV(DX12Context& ctx)
 	// Performance tip: Deny shader resource access to resources that don't need shader resource views.
 	CD3DX12_RESOURCE_DESC resourceDescription = 
 		CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, 
-			ctx.swapchainWidth_, 
-			ctx.swapchainHeight_, 
+			ctx.GetSwapchainWidth(), 
+			ctx.GetSwapchainHeight(), 
 			1, 
 			0, 
 			1, 
@@ -101,7 +101,7 @@ void PipelineSimple::CreateDSV(DX12Context& ctx)
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,
 		&clearValue,
 		IID_PPV_ARGS(&depthStencil_)
-	));
+	))
 
 	ctx.GetDevice()->CreateDepthStencilView(
 		depthStencil_.Get(), 
@@ -121,9 +121,9 @@ void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
 		&constantBufferDesc,
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
-		IID_PPV_ARGS(constantPerFrame_.ReleaseAndGetAddressOf())));
+		IID_PPV_ARGS(constantPerFrame_.ReleaseAndGetAddressOf())))
 
-	ThrowIfFailed(constantPerFrame_->Map(0, nullptr, reinterpret_cast<void**>(&constantMappedData_)));
+	ThrowIfFailed(constantPerFrame_->Map(0, nullptr, reinterpret_cast<void**>(&constantMappedData_)))
 
 	// GPU virtual address of the resource
 	constantDataGpuAddr_ = constantPerFrame_->GetGPUVirtualAddress();
@@ -163,12 +163,12 @@ void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 
 	ComPtr<ID3DBlob> signature;
 	ComPtr<ID3DBlob> error;
-	ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featureData.HighestVersion, &signature, &error));
+	ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featureData.HighestVersion, &signature, &error))
 	ThrowIfFailed(ctx.GetDevice()->CreateRootSignature(
 		0, 
 		signature->GetBufferPointer(), 
 		signature->GetBufferSize(), 
-		IID_PPV_ARGS(&rootSignature_)));
+		IID_PPV_ARGS(&rootSignature_)))
 }
 
 void PipelineSimple::CreateShaders(DX12Context& ctx)
@@ -191,7 +191,7 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 		.SampleMask = UINT_MAX,
 		.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT),
 		.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT),
-		.InputLayout = { inputElementDescs.data(), static_cast<UINT>(inputElementDescs.size()) },
+		.InputLayout = { inputElementDescs.data(), static_cast<uint32_t>(inputElementDescs.size()) },
 		.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 		.NumRenderTargets = 1,
 		.DSVFormat = DXGI_FORMAT_D32_FLOAT,
@@ -199,7 +199,7 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	psoDesc.SampleDesc.Count = 1;
 	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
-	ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)));
+	ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)))
 }
 
 void PipelineSimple::Update(DX12Context& ctx)
@@ -209,55 +209,57 @@ void PipelineSimple::Update(DX12Context& ctx)
 		.viewMatrix = glm::transpose(camera_->GetViewMatrix()),
 		.projectionMatrix = glm::transpose(camera_->GetProjectionMatrix())
 	};
-	memcpy(&constantMappedData_[ctx.frameIndex_], &cb, sizeof(ConstantBuffer));
+	memcpy(&constantMappedData_[ctx.GetFrameIndex()], &cb, sizeof(ConstantBuffer));
 }
 
 void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 {
 	ctx.SetPipelineState(pipelineState_.Get());
 
+	ID3D12GraphicsCommandList* commandList = ctx.GetCommandList();
+	
 	// Set necessary state.
-	ctx.commandList_->SetGraphicsRootSignature(rootSignature_.Get());
+	commandList->SetGraphicsRootSignature(rootSignature_.Get());
 
 	ID3D12DescriptorHeap* ppHeaps[] = { srvHeap_.Get() };
-	ctx.commandList_->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 	
-	auto baseGpuAddress = constantDataGpuAddr_ + sizeof(PaddedConstantBuffer) * ctx.frameIndex_;
-	ctx.commandList_->SetGraphicsRootConstantBufferView(0, baseGpuAddress);
+	auto baseGpuAddress = constantDataGpuAddr_ + sizeof(PaddedConstantBuffer) * ctx.GetFrameIndex();
+	commandList->SetGraphicsRootConstantBufferView(0, baseGpuAddress);
 
-	ctx.commandList_->SetGraphicsRootDescriptorTable(1, srvHeap_->GetGPUDescriptorHandleForHeapStart());
-	ctx.commandList_->RSSetViewports(1, &viewport_);
-	ctx.commandList_->RSSetScissorRects(1, &scissor_);
+	commandList->SetGraphicsRootDescriptorTable(1, srvHeap_->GetGPUDescriptorHandleForHeapStart());
+	commandList->RSSetViewports(1, &viewport_);
+	commandList->RSSetScissorRects(1, &scissor_);
 
 	// Indicate that the back buffer will be used as a render target.
 	{
-		auto resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(renderTargets_[ctx.frameIndex_].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-		ctx.commandList_->ResourceBarrier(1, &resourceBarrier);
+		auto resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(renderTargets_[ctx.GetFrameIndex()].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		commandList->ResourceBarrier(1, &resourceBarrier);
 	}
 
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvHeap_->GetCPUDescriptorHandleForHeapStart(), ctx.frameIndex_, rtvDescriptorSize_);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvHeap_->GetCPUDescriptorHandleForHeapStart(), ctx.GetFrameIndex(), rtvDescriptorSize_);
 	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(dsvHeap_->GetCPUDescriptorHandleForHeapStart());
-	ctx.commandList_->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
+	commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
 
 	// TODO Only one mesh for now
 	Mesh& mesh = scene_->model_.meshes_[0];
 
 	// Record commands.
 	const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
-	ctx.commandList_->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
-	ctx.commandList_->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-	ctx.commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	ctx.commandList_->IASetVertexBuffers(0, 1, &(mesh.vertexBuffer_.vertexBufferView_));
-	ctx.commandList_->IASetIndexBuffer(&mesh.indexBuffer_.indexBufferView_);
-	ctx.commandList_->DrawIndexedInstanced(mesh.vertexCount_, 1, 0, 0, 0);
+	commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	commandList->IASetVertexBuffers(0, 1, &(mesh.vertexBuffer_.vertexBufferView_));
+	commandList->IASetIndexBuffer(&mesh.indexBuffer_.indexBufferView_);
+	commandList->DrawIndexedInstanced(mesh.vertexCount_, 1, 0, 0, 0);
 
 	// Indicate that the back buffer will now be used to present
 	{
 		auto resourceBarrier = 
 			CD3DX12_RESOURCE_BARRIER::Transition(
-				renderTargets_[ctx.frameIndex_].Get(),
+				renderTargets_[ctx.GetFrameIndex()].Get(),
 				D3D12_RESOURCE_STATE_RENDER_TARGET, 
 				D3D12_RESOURCE_STATE_PRESENT);
-		ctx.commandList_->ResourceBarrier(1, &resourceBarrier);
+		commandList->ResourceBarrier(1, &resourceBarrier);
 	}
 }

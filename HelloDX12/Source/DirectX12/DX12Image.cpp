@@ -62,7 +62,7 @@ D3D12_STATIC_SAMPLER_DESC DX12Image::GetSampler()
 }
 
 // Generate a simple black and white checkerboard texture.
-std::vector<UINT8> DX12Image::GenerateTextureData(DX12Context& ctx)
+std::vector<uint8_t> DX12Image::GenerateTextureData(DX12Context& ctx)
 {
 	const uint32_t rowPitch = width_ * pixelSize_;
 	const uint32_t cellPitch = rowPitch >> 6;        // The width of a cell in the checkboard texture.

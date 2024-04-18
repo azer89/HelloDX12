@@ -3,8 +3,14 @@
 #include "Win32Application.h"
 #include "Configs.h"
 
-DX12Context::~DX12Context()
+void DX12Context::Destroy()
 {
+	if (dmaAllocator_ != nullptr)
+	{
+		dmaAllocator_->Release();
+		dmaAllocator_ = nullptr;
+	}
+	CloseHandle(fenceEvent_);
 }
 
 void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
@@ -31,7 +37,7 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 #endif
 
 	ComPtr<IDXGIFactory4> factory;
-	ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory)));
+	ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory)))
 	{
 		GetHardwareAdapter(factory.Get(), &adapter_);
 
@@ -39,7 +45,7 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 			adapter_.Get(),
 			D3D_FEATURE_LEVEL_11_0,
 			IID_PPV_ARGS(&device_)
-		));
+		))
 	}
 
 	// Describe and create the command queue.
@@ -47,7 +53,7 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 	queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
-	ThrowIfFailed(device_->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&commandQueue_)));
+	ThrowIfFailed(device_->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&commandQueue_)))
 
 	// Describe and create the swap chain.
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc =
@@ -69,22 +75,26 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 		nullptr,
 		nullptr,
 		&swapChain
-	));
+	))
 
 	// This sample does not support fullscreen transitions.
-	ThrowIfFailed(factory->MakeWindowAssociation(Win32Application::GetHwnd(), DXGI_MWA_NO_ALT_ENTER));
+	ThrowIfFailed(factory->MakeWindowAssociation(Win32Application::GetHwnd(), DXGI_MWA_NO_ALT_ENTER))
 
-	ThrowIfFailed(swapChain.As(&swapchain_));
+	ThrowIfFailed(swapChain.As(&swapchain_))
 	frameIndex_ = swapchain_->GetCurrentBackBufferIndex();
 
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
-		ThrowIfFailed(device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocators_[i])));
+		ThrowIfFailed(device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocators_[i])))
 	}
-	//ThrowIfFailed(device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&oneTimeCommandAllocator_)));
 
 	// TODO Why only one command list?
-	ThrowIfFailed(device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocators_[frameIndex_].Get(), nullptr, IID_PPV_ARGS(&commandList_)));
+	ThrowIfFailed(device_->CreateCommandList(
+		0, 
+		D3D12_COMMAND_LIST_TYPE_DIRECT, 
+		commandAllocators_[frameIndex_].Get(), 
+		nullptr, 
+		IID_PPV_ARGS(&commandList_)))
 	commandList_->Close();
 
 	// Memory allocator
@@ -94,28 +104,33 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 			.pAdapter = adapter_.Get(),
 		};
 
-		ThrowIfFailed(D3D12MA::CreateAllocator(&desc, &dmaAllocator_));
+		ThrowIfFailed(D3D12MA::CreateAllocator(&desc, &dmaAllocator_))
 	}
 }
 
-void DX12Context::WaitForGpu()
+void DX12Context::WaitForGPU()
 {
 	// Schedule a Signal command in the queue.
-	ThrowIfFailed(commandQueue_->Signal(fence_.Get(), fenceValues_[frameIndex_]));
+	ThrowIfFailed(commandQueue_->Signal(fence_.Get(), fenceValues_[frameIndex_]))
 
 	// Wait until the fence has been processed.
-	ThrowIfFailed(fence_->SetEventOnCompletion(fenceValues_[frameIndex_], fenceEvent_));
+	ThrowIfFailed(fence_->SetEventOnCompletion(fenceValues_[frameIndex_], fenceEvent_))
 	WaitForSingleObjectEx(fenceEvent_, INFINITE, FALSE);
 
 	// Increment the fence value for the current frame.
 	fenceValues_[frameIndex_]++;
 }
 
+void DX12Context::PresentSwapchain() const
+{
+	ThrowIfFailed(swapchain_->Present(1, 0))
+}
+
 void DX12Context::MoveToNextFrame()
 {
 	// Schedule a Signal command in the queue.
-	const UINT64 currentFenceValue = fenceValues_[frameIndex_];
-	ThrowIfFailed(commandQueue_->Signal(fence_.Get(), currentFenceValue));
+	const uint64_t currentFenceValue = fenceValues_[frameIndex_];
+	ThrowIfFailed(commandQueue_->Signal(fence_.Get(), currentFenceValue))
 
 	// Update the frame index.
 	frameIndex_ = swapchain_->GetCurrentBackBufferIndex();
@@ -123,7 +138,7 @@ void DX12Context::MoveToNextFrame()
 	// If the next frame is not ready to be rendered yet, wait until it is ready.
 	if (fence_->GetCompletedValue() < fenceValues_[frameIndex_])
 	{
-		ThrowIfFailed(fence_->SetEventOnCompletion(fenceValues_[frameIndex_], fenceEvent_));
+		ThrowIfFailed(fence_->SetEventOnCompletion(fenceValues_[frameIndex_], fenceEvent_))
 		WaitForSingleObjectEx(fenceEvent_, INFINITE, FALSE);
 	}
 
@@ -131,45 +146,55 @@ void DX12Context::MoveToNextFrame()
 	fenceValues_[frameIndex_] = currentFenceValue + 1;
 }
 
-void DX12Context::ResetCommandAllocator()
+void DX12Context::ResetCommandAllocator() const
 {
-	ThrowIfFailed(commandAllocators_[frameIndex_]->Reset());
+	ThrowIfFailed(commandAllocators_[frameIndex_]->Reset())
 }
 
-void DX12Context::ResetCommandList()
+void DX12Context::ResetCommandList() const
 {
-	ThrowIfFailed(commandList_->Reset(commandAllocators_[frameIndex_].Get(), nullptr));
+	ThrowIfFailed(commandList_->Reset(commandAllocators_[frameIndex_].Get(), nullptr))
 }
 
-void DX12Context::SubmitCommandList()
+void DX12Context::CloseCommandList() const
 {
-	ThrowIfFailed(commandList_->Close());
+	ThrowIfFailed(commandList_->Close())
+}
+
+void DX12Context::SubmitCommandList() const
+{
+	ThrowIfFailed(commandList_->Close())
 	ID3D12CommandList* ppCommandLists[] = { GetCommandList() };
 	commandQueue_->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-	WaitForGpu();
 }
 
-void DX12Context::SetPipelineState(ID3D12PipelineState* pipeline)
+void DX12Context::SubmitCommandListAndWaitForGPU()
+{
+	SubmitCommandList();
+	WaitForGPU();
+}
+
+void DX12Context::SetPipelineState(ID3D12PipelineState* pipeline) const
 {
 	commandList_->SetPipelineState(pipeline);
 }
 
 void DX12Context::CreateFence()
 {
-	ThrowIfFailed(device_->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_)));
+	ThrowIfFailed(device_->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_)))
 	fenceValues_[frameIndex_]++;
 
 	// Create an event handle to use for frame synchronization.
 	fenceEvent_ = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 	if (fenceEvent_ == nullptr)
 	{
-		ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()));
+		ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()))
 	}
 
 	// Wait for the command list to execute; we are reusing the same command 
 	// list in our main loop but for now, we just want to wait for setup to 
 	// complete before continuing.
-	WaitForGpu();
+	WaitForGPU();
 }
 
 // Helper function for acquiring the first available hardware adapter that supports Direct3D 12.
@@ -240,7 +265,7 @@ void DX12Context::GetHardwareAdapter(
 	*ppAdapter = adapter.Detach();
 }
 
-CD3DX12_VIEWPORT DX12Context::GetViewport()
+CD3DX12_VIEWPORT DX12Context::GetViewport() const
 {
 	return
 		CD3DX12_VIEWPORT(
@@ -250,7 +275,7 @@ CD3DX12_VIEWPORT DX12Context::GetViewport()
 			static_cast<float>(swapchainHeight_));
 }
 
-CD3DX12_RECT DX12Context::GetScissor()
+CD3DX12_RECT DX12Context::GetScissor() const
 {
 	return
 		CD3DX12_RECT(
