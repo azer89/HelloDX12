@@ -3,8 +3,14 @@
 #include "Win32Application.h"
 #include "Configs.h"
 
-DX12Context::~DX12Context()
+void DX12Context::Destroy()
 {
+	if (dmaAllocator_ != nullptr)
+	{
+		dmaAllocator_->Release();
+		dmaAllocator_ = nullptr;
+	}
+	CloseHandle(fenceEvent_);
 }
 
 void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
@@ -98,7 +104,7 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 	}
 }
 
-void DX12Context::WaitForGpu()
+void DX12Context::WaitForGPU()
 {
 	// Schedule a Signal command in the queue.
 	ThrowIfFailed(commandQueue_->Signal(fence_.Get(), fenceValues_[frameIndex_]));
@@ -109,6 +115,11 @@ void DX12Context::WaitForGpu()
 
 	// Increment the fence value for the current frame.
 	fenceValues_[frameIndex_]++;
+}
+
+void DX12Context::PresentSwapchain()
+{
+	ThrowIfFailed(swapchain_->Present(1, 0));
 }
 
 void DX12Context::MoveToNextFrame()
@@ -141,12 +152,22 @@ void DX12Context::ResetCommandList()
 	ThrowIfFailed(commandList_->Reset(commandAllocators_[frameIndex_].Get(), nullptr));
 }
 
-void DX12Context::SubmitCommandList()
+void DX12Context::CloseCommandList()
+{
+	ThrowIfFailed(commandList_->Close());
+}
+
+void DX12Context::SubmitCommandList1()
 {
 	ThrowIfFailed(commandList_->Close());
 	ID3D12CommandList* ppCommandLists[] = { GetCommandList() };
 	commandQueue_->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-	WaitForGpu();
+}
+
+void DX12Context::SubmitCommandListAndWaitForGPU()
+{
+	SubmitCommandList1();
+	WaitForGPU();
 }
 
 void DX12Context::SetPipelineState(ID3D12PipelineState* pipeline)
@@ -169,7 +190,7 @@ void DX12Context::CreateFence()
 	// Wait for the command list to execute; we are reusing the same command 
 	// list in our main loop but for now, we just want to wait for setup to 
 	// complete before continuing.
-	WaitForGpu();
+	WaitForGPU();
 }
 
 // Helper function for acquiring the first available hardware adapter that supports Direct3D 12.

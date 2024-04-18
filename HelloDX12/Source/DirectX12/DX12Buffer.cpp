@@ -27,7 +27,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t buffe
 	resourceDesc.SampleDesc.Quality = 0;
 	
 	ID3D12Resource* vertexBufferPtr;
-	ThrowIfFailed(ctx.dmaAllocator_->CreateResource(
+	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&allocDesc,
 		&resourceDesc,
 		D3D12_RESOURCE_STATE_COMMON,
@@ -80,7 +80,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t buffe
 	ctx.GetCommandList()->ResourceBarrier(1, &barrier);
 
 	// End recording
-	ctx.SubmitCommandList();
+	ctx.SubmitCommandListAndWaitForGPU();
 
 	// Release
 	bufferUploadHeapAllocation->Release();
@@ -114,7 +114,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t buffer
 	resourceDesc.SampleDesc.Count = 1;
 	resourceDesc.SampleDesc.Quality = 0;
 
-	ThrowIfFailed(ctx.dmaAllocator_->CreateResource(
+	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&allocDesc,
 		&resourceDesc,
 		D3D12_RESOURCE_STATE_COMMON,
@@ -165,7 +165,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t buffer
 	ctx.GetCommandList()->ResourceBarrier(1, &barrier);
 
 	// End recording 
-	ctx.SubmitCommandList();
+	ctx.SubmitCommandListAndWaitForGPU();
 
 	// Release
 	bufferUploadHeapAllocation->Release();
@@ -203,7 +203,7 @@ void DX12Buffer::CreateImage(
 	{
 		.HeapType = D3D12_HEAP_TYPE_DEFAULT
 	};
-	ThrowIfFailed(ctx.dmaAllocator_->CreateResource(
+	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&textureAllocDesc,
 		&textureDesc,
 		D3D12_RESOURCE_STATE_COPY_DEST,
@@ -262,7 +262,7 @@ void DX12Buffer::CreateImage(
 	ctx.GetCommandList()->ResourceBarrier(1, &barrier);
 
 	// End recording 
-	ctx.SubmitCommandList();
+	ctx.SubmitCommandListAndWaitForGPU();
 
 	// Release
 	bufferUploadHeapAllocation->Release();
@@ -294,7 +294,7 @@ void DX12Buffer::CreateUploadHeap(DX12Context& ctx,
 	uploadResourceDesc.SampleDesc.Count = 1;
 	uploadResourceDesc.SampleDesc.Quality = 0;
 
-	ThrowIfFailed(ctx.dmaAllocator_->CreateResource(
+	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&uploadAllocDesc,
 		&uploadResourceDesc,
 		D3D12_RESOURCE_STATE_GENERIC_READ,
