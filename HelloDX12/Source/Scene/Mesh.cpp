@@ -15,7 +15,8 @@ Mesh::Mesh(
 
 	CreateBuffers(ctx);
 
-	image_ = std::make_unique<DX12Image>(ctx);
+	image_ = std::make_unique<DX12Image>();
+	image_->Load(ctx, AppConfig::ModelFolder + "HorseStatue/Textures/horse_statue_01_diff_1k.jpg");
 }
 
 void Mesh::CreateCube(DX12Context& ctx)
@@ -25,7 +26,7 @@ void Mesh::CreateCube(DX12Context& ctx)
 
 	CreateBuffers(ctx);
 
-	image_ = std::make_unique<DX12Image>(ctx);
+	//image_ = std::make_unique<DX12Image>();
 }
 
 void Mesh::CreateBuffers(DX12Context& ctx)

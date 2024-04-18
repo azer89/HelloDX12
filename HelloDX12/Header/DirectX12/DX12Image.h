@@ -7,13 +7,15 @@
 class DX12Image
 {
 public:
-	DX12Image(DX12Context& ctx);
+	DX12Image();
 	~DX12Image() = default;
 
 	void Destroy()
 	{
 		buffer_.Destroy();
 	}
+
+	void Load(DX12Context& ctx, std::string filename);
 
 	D3D12_STATIC_SAMPLER_DESC GetSampler();
 
