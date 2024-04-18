@@ -45,6 +45,7 @@
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\ConsoleDisplay.cpp" />
     <ClCompile Include="Source\DirectX12\DX12Buffer.cpp" />
+    <ClCompile Include="Source\DirectX12\DX12ConstantBuffer.cpp" />
     <ClCompile Include="Source\DirectX12\DX12Context.cpp" />
     <ClCompile Include="Source\DirectX12\DX12Exception.cpp" />
     <ClCompile Include="Source\DirectX12\DX12Image.cpp" />

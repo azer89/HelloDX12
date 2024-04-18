@@ -1,6 +1,8 @@
 #include "PipelineSimple.h"
 #include "DX12Exception.h"
 
+#include "ConstantBuffers.h"
+
 PipelineSimple::PipelineSimple(DX12Context& ctx, Scene* scene, Camera* camera) : 
 	PipelineBase(),
 	scene_(scene),
@@ -113,22 +115,6 @@ void PipelineSimple::CreateDSV(DX12Context& ctx)
 
 void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
 {
-	/*const D3D12_HEAP_PROPERTIES uploadHeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-	size_t cbSize = AppConfig::FrameCount * sizeof(PaddedConstantBuffer);
-
-	const D3D12_RESOURCE_DESC constantBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(cbSize);
-	ThrowIfFailed(ctx.GetDevice()->CreateCommittedResource(
-		&uploadHeapProperties,
-		D3D12_HEAP_FLAG_NONE,
-		&constantBufferDesc,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(constantPerFrame_.ReleaseAndGetAddressOf())))
-
-	ThrowIfFailed(constantPerFrame_->Map(0, nullptr, reinterpret_cast<void**>(&constantMappedData_)))
-
-	// GPU virtual address of the resource
-	constantDataGpuAddr_ = constantPerFrame_->GetGPUVirtualAddress();*/
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
 		constantBuffers_[i].Init(ctx, sizeof(CBMVP));

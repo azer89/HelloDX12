@@ -173,6 +173,9 @@
     <ClCompile Include="Source\Pipelines\PipelineBase.cpp">
       <Filter>Source\Pipelines</Filter>
     </ClCompile>
+    <ClCompile Include="Source\DirectX12\DX12ConstantBuffer.cpp">
+      <Filter>Source\DirectX12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Shader\Shader.hlsl">

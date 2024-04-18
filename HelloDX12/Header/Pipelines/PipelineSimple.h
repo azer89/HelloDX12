@@ -45,13 +45,6 @@ public:
 	Camera* camera_;
 
 private:
-	struct CBMVP
-	{
-		glm::mat4 worldMatrix;
-		glm::mat4 viewMatrix;
-		glm::mat4 projectionMatrix;
-	};
-
 	std::array<DX12ConstantBuffer, AppConfig::FrameCount> constantBuffers_;
 };
 
