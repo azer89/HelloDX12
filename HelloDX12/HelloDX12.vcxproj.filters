@@ -37,6 +37,9 @@
     <Filter Include="Header\Resources">
       <UniqueIdentifier>{00ea7521-acce-41bb-be72-d443172201be}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Resources">
+      <UniqueIdentifier>{933f8fb1-7a7a-4105-b37b-47a7fbd808fa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\Win32Application.h">
@@ -169,6 +172,9 @@
     </ClCompile>
     <ClCompile Include="Source\Pipelines\PipelineBase.cpp">
       <Filter>Source\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Resources\ResourcesLights.cpp">
+      <Filter>Source\Resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
