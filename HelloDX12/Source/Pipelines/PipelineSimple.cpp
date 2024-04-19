@@ -214,25 +214,25 @@ void PipelineSimple::Update(DX12Context& ctx)
 
 void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 {
-	ctx.SetPipelineState(pipelineState_.Get());
-
 	ID3D12GraphicsCommandList* commandList = ctx.GetCommandList();
-	
-	// Set necessary state.
+
+	commandList->SetPipelineState(pipelineState_.Get());
+	commandList->RSSetViewports(1, &viewport_);
+	commandList->RSSetScissorRects(1, &scissor_);
 	commandList->SetGraphicsRootSignature(rootSignature_.Get());
 
 	ID3D12DescriptorHeap* ppHeaps[] = { srvHeap_.Get() };
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
-
 	commandList->SetGraphicsRootConstantBufferView(0, constantBuffers_[ctx.GetFrameIndex()].gpuAddress_);
-
 	commandList->SetGraphicsRootDescriptorTable(1, srvHeap_->GetGPUDescriptorHandleForHeapStart());
-	commandList->RSSetViewports(1, &viewport_);
-	commandList->RSSetScissorRects(1, &scissor_);
-
+	
 	// Indicate that the back buffer will be used as a render target.
 	{
-		auto resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(renderTargets_[ctx.GetFrameIndex()].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		auto resourceBarrier = 
+			CD3DX12_RESOURCE_BARRIER::Transition(
+				renderTargets_[ctx.GetFrameIndex()].Get(), 
+				D3D12_RESOURCE_STATE_PRESENT, 
+				D3D12_RESOURCE_STATE_RENDER_TARGET);
 		commandList->ResourceBarrier(1, &resourceBarrier);
 	}
 

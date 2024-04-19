@@ -174,11 +174,6 @@ void DX12Context::SubmitCommandListAndWaitForGPU()
 	WaitForGPU();
 }
 
-void DX12Context::SetPipelineState(ID3D12PipelineState* pipeline) const
-{
-	commandList_->SetPipelineState(pipeline);
-}
-
 void DX12Context::CreateFence()
 {
 	ThrowIfFailed(device_->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_)))
