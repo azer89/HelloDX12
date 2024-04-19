@@ -5,6 +5,7 @@
 #include "DX12Shader.h"
 #include "DX12Buffer.h"
 #include "PipelineBase.h"
+#include "ResourcesLights.h"
 #include "Scene.h"
 #include "Camera.h"
 #include "Configs.h"
@@ -16,7 +17,7 @@
 class PipelineSimple final : PipelineBase
 {
 public:
-	PipelineSimple(DX12Context& ctx, Scene* scene, Camera* camera);
+	PipelineSimple(DX12Context& ctx, Scene* scene, Camera* camera, ResourcesLights* resourcesLights);
 	~PipelineSimple() = default;
 
 	void Update(DX12Context& ctx) override;
@@ -45,6 +46,7 @@ public:
 
 	Scene* scene_;
 	Camera* camera_;
+	ResourcesLights* resourcesLights_;
 
 private:
 	std::array<DX12Buffer, AppConfig::FrameCount> constantBuffers_;

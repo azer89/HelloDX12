@@ -3,10 +3,15 @@
 
 #include "ConstantBuffers.h"
 
-PipelineSimple::PipelineSimple(DX12Context& ctx, Scene* scene, Camera* camera) : 
+PipelineSimple::PipelineSimple(
+	DX12Context& ctx, 
+	Scene* scene, 
+	Camera* camera,
+	ResourcesLights* resourcesLights) :
 	PipelineBase(),
 	scene_(scene),
-	camera_(camera)
+	camera_(camera),
+	resourcesLights_(resourcesLights)
 {
 	viewport_ = ctx.GetViewport();
 	scissor_ = ctx.GetScissor();
@@ -142,11 +147,17 @@ void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 	}
 
 	CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
-	ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+	ranges[0].Init(
+		D3D12_DESCRIPTOR_RANGE_TYPE_SRV, // rangeType
+		1, // numDescriptors
+		0, // baseShaderRegister
+		0, // registerSpace
+		D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
 
-	CD3DX12_ROOT_PARAMETER1 rootParameters[2];
+	CD3DX12_ROOT_PARAMETER1 rootParameters[3];
 	rootParameters[0].InitAsConstantBufferView(0, 0);
 	rootParameters[1].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
+	rootParameters[2].InitAsShaderResourceView(1, 0);
 
 	// Image
 	D3D12_STATIC_SAMPLER_DESC sampler = scene_->model_.meshes_[0].image_->GetSampler();
@@ -225,6 +236,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 	commandList->SetGraphicsRootConstantBufferView(0, constantBuffers_[ctx.GetFrameIndex()].gpuAddress_);
 	commandList->SetGraphicsRootDescriptorTable(1, srvHeap_->GetGPUDescriptorHandleForHeapStart());
+	commandList->SetGraphicsRootShaderResourceView(2, resourcesLights_->buffer_.gpuAddress_);
 	
 	// Indicate that the back buffer will be used as a render target.
 	{

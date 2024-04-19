@@ -13,6 +13,7 @@ struct LightData
 {
 	glm::vec4 position_;
 	glm::vec4 color_;
+	float radius_ = 1.0f;
 };
 
 class ResourcesLights final : ResourcesBase

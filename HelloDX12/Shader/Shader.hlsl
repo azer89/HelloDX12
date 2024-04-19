@@ -22,6 +22,15 @@ cbuffer Constants : register(b0)
 Texture2D g_texture : register(t0);
 SamplerState g_sampler : register(s0);
 
+struct LightData
+{
+    float4 position;
+    float4 color;
+    float radius;
+};
+
+StructuredBuffer<LightData> lightDataArray : register(t1);
+
 PSInput VSMain(VSInput input)
 {
     PSInput result;
