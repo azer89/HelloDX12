@@ -48,5 +48,8 @@ PSInput VSMain(VSInput input)
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
+    //LightData light = lightDataArray[3];
+    //return light.color;
+    
     return g_texture.Sample(g_sampler, input.uv);
 }
