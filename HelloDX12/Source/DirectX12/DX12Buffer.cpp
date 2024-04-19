@@ -74,16 +74,14 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t buffe
 	};
 	resourceDesc.SampleDesc.Count = 1;
 	resourceDesc.SampleDesc.Quality = 0;
-	
-	ID3D12Resource* vertexBufferPtr;
+
 	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&allocDesc,
 		&resourceDesc,
 		D3D12_RESOURCE_STATE_COMMON,
 		nullptr,
 		&dmaAllocation_,
-		IID_PPV_ARGS(&vertexBufferPtr)))
-	resource_.Attach(vertexBufferPtr);
+		IID_PPV_ARGS(&resource_)))
 
 	resource_->SetName(L"Vertex_Buffer_Resource");
 	dmaAllocation_->SetName(L"Vertex_Buffer_Allocation_DMA");
