@@ -6,8 +6,8 @@
 class DX12Buffer
 {
 public:
-	void CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t bufferSize, uint32_t stride);
-	void CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t bufferSize, DXGI_FORMAT format);
+	void CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t bufferSize, uint32_t stride);
+	void CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t bufferSize, DXGI_FORMAT format);
 	void CreateImage(
 		DX12Context& ctx,
 		void* imageData,
@@ -34,7 +34,7 @@ private:
 		D3D12MA::Allocation** bufferUploadHeapAllocation);
 
 public:
-	uint64_t size_;
+	uint64_t bufferSize_;
 	ComPtr<ID3D12Resource> resource_ = nullptr;
 	D3D12MA::Allocation* dmaAllocation_ = nullptr;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_ = {};

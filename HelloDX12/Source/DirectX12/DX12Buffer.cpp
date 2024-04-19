@@ -4,8 +4,10 @@
 
 #include "d3dx12_resource_helpers.h"
 
-void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t bufferSize, uint32_t stride)
+void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t bufferSize, uint32_t stride)
 {
+	bufferSize_ = bufferSize;
+
 	constexpr D3D12MA::ALLOCATION_DESC allocDesc = 
 	{
 		.HeapType = D3D12_HEAP_TYPE_DEFAULT
@@ -15,7 +17,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t buffe
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,
-		.Width = bufferSize,
+		.Width = bufferSize_,
 		.Height = 1,
 		.DepthOrArraySize = 1,
 		.MipLevels = 1,
@@ -42,7 +44,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t buffe
 	// Upload heap
 	ComPtr<ID3D12Resource> bufferUploadHeap;
 	D3D12MA::Allocation* bufferUploadHeapAllocation;
-	CreateUploadHeap(ctx, static_cast<uint64_t>(bufferSize), 1, bufferUploadHeap, &bufferUploadHeapAllocation);
+	CreateUploadHeap(ctx, static_cast<uint64_t>(bufferSize_), 1, bufferUploadHeap, &bufferUploadHeapAllocation);
 	bufferUploadHeap->SetName(L"Vertex_Buffer_Upload_Heap");
 	bufferUploadHeapAllocation->SetName(L"Vertex Buffer_Upload_Heap_Allocation_DMA");
 
@@ -50,8 +52,8 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t buffe
 	D3D12_SUBRESOURCE_DATA subresourceData = 
 	{
 		.pData = reinterpret_cast<BYTE*>(data), // Pointer to our vertex array
-		.RowPitch = bufferSize, // Size of all our triangle vertex data
-		.SlicePitch = bufferSize, // Also the size of our triangle vertex data
+		.RowPitch = static_cast<LONG_PTR>(bufferSize_), // Size of all our triangle vertex data
+		.SlicePitch = static_cast<LONG_PTR>(bufferSize_), // Also the size of our triangle vertex data
 	};
 	
 	// Start recording 
@@ -88,11 +90,13 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint32_t buffe
 	// Create view
 	vertexBufferView_.BufferLocation = resource_->GetGPUVirtualAddress();
 	vertexBufferView_.StrideInBytes = stride;
-	vertexBufferView_.SizeInBytes = static_cast<uint32_t>(bufferSize);
+	vertexBufferView_.SizeInBytes = static_cast<uint32_t>(bufferSize_);
 }
 
-void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t bufferSize, DXGI_FORMAT format)
+void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t bufferSize, DXGI_FORMAT format)
 {
+	bufferSize_ = bufferSize;
+
 	// Create default heap to hold index buffer
 	constexpr D3D12MA::ALLOCATION_DESC allocDesc = 
 	{
@@ -103,7 +107,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t buffer
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,
-		.Width = bufferSize,
+		.Width = bufferSize_,
 		.Height = 1,
 		.DepthOrArraySize = 1,
 		.MipLevels = 1,
@@ -127,7 +131,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t buffer
 	// Upload heap
 	ComPtr<ID3D12Resource> bufferUploadHeap;
 	D3D12MA::Allocation* bufferUploadHeapAllocation;
-	CreateUploadHeap(ctx, static_cast<uint64_t>(bufferSize), 1, bufferUploadHeap, &bufferUploadHeapAllocation);
+	CreateUploadHeap(ctx, static_cast<uint64_t>(bufferSize_), 1, bufferUploadHeap, &bufferUploadHeapAllocation);
 	bufferUploadHeap->SetName(L"Index_Buffer_Upload_Heap");
 	bufferUploadHeapAllocation->SetName(L"Index_Buffer_Upload_Heap_Allocation");
 
@@ -135,8 +139,8 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t buffer
 	D3D12_SUBRESOURCE_DATA subresourceData = 
 	{
 		.pData = data, // Pointer to our index array
-		.RowPitch = bufferSize, // Size of all our index buffer
-		.SlicePitch = bufferSize // Also the size of our index buffer
+		.RowPitch = static_cast<LONG_PTR>(bufferSize_), // Size of all our index buffer
+		.SlicePitch = static_cast<LONG_PTR>(bufferSize_) // Also the size of our index buffer
 	};
 
 	// Start recording 
@@ -173,7 +177,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint32_t buffer
 	// Create view
 	indexBufferView_.BufferLocation = resource_->GetGPUVirtualAddress();
 	indexBufferView_.Format = format;
-	indexBufferView_.SizeInBytes = static_cast<uint32_t>(bufferSize);
+	indexBufferView_.SizeInBytes = static_cast<uint32_t>(bufferSize_);
 }
 
 void DX12Buffer::CreateImage(
@@ -213,7 +217,6 @@ void DX12Buffer::CreateImage(
 	resource_->SetName(L"Texture");
 	dmaAllocation_->SetName(L"Texture_Allocation_DMA");
 
-	uint64_t textureUploadBufferSize;
 	ctx.GetDevice()->GetCopyableFootprints(
 		&textureDesc,
 		0, // FirstSubresource
@@ -222,12 +225,12 @@ void DX12Buffer::CreateImage(
 		nullptr, // pLayouts
 		nullptr, // pNumRows
 		nullptr, // pRowSizeInBytes
-		&textureUploadBufferSize); // pTotalBytes
+		&bufferSize_); // pTotalBytes
 
 	// Upload heap
 	ComPtr<ID3D12Resource> bufferUploadHeap;
 	D3D12MA::Allocation* bufferUploadHeapAllocation;
-	CreateUploadHeap(ctx, textureUploadBufferSize, 1, bufferUploadHeap, &bufferUploadHeapAllocation);
+	CreateUploadHeap(ctx, bufferSize_, 1, bufferUploadHeap, &bufferUploadHeapAllocation);
 	bufferUploadHeap->SetName(L"Image_Upload_Heap");
 	bufferUploadHeapAllocation->SetName(L"Image_Upload_Heap_Allocation");
 
