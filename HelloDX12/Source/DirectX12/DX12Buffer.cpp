@@ -9,23 +9,26 @@ void DX12Buffer::CreateConstantBuffer(DX12Context& ctx, uint64_t bufferSize)
 	bufferSize_ = bufferSize;
 	constantBufferSize_ = GetConstantBufferByteSize(bufferSize_);
 
-	D3D12MA::ALLOCATION_DESC constantBufferUploadAllocDesc = {};
-	constantBufferUploadAllocDesc.HeapType = D3D12_HEAP_TYPE_UPLOAD;
+	D3D12MA::ALLOCATION_DESC constantBufferUploadAllocDesc = 
+	{
+		.HeapType = D3D12_HEAP_TYPE_UPLOAD
+	};
 
-	D3D12_RESOURCE_DESC constantBufferResourceDesc = {};
-	constantBufferResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	constantBufferResourceDesc.Alignment = 0;
-	constantBufferResourceDesc.Width = constantBufferSize_;
-	constantBufferResourceDesc.Height = 1;
-	constantBufferResourceDesc.DepthOrArraySize = 1;
-	constantBufferResourceDesc.MipLevels = 1;
-	constantBufferResourceDesc.Format = DXGI_FORMAT_UNKNOWN;
-	
-	constantBufferResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-	constantBufferResourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
-
+	D3D12_RESOURCE_DESC constantBufferResourceDesc = 
+	{
+		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
+		.Alignment = 0,
+		.Width = constantBufferSize_,
+		.Height = 1,
+		.DepthOrArraySize = 1,
+		.MipLevels = 1,
+		.Format = DXGI_FORMAT_UNKNOWN,
+		.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
+		.Flags = D3D12_RESOURCE_FLAG_NONE
+	};
 	constantBufferResourceDesc.SampleDesc.Count = 1;
 	constantBufferResourceDesc.SampleDesc.Quality = 0;
+
 	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&constantBufferUploadAllocDesc,
 		&constantBufferResourceDesc,
