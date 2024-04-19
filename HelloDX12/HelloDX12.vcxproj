@@ -19,7 +19,6 @@
     <ClInclude Include="Header\ConsoleDisplay.h" />
     <ClInclude Include="Header\ConstantBuffers.h" />
     <ClInclude Include="Header\DirectX12\DX12Buffer.h" />
-    <ClInclude Include="Header\DirectX12\DX12ConstantBuffer.h" />
     <ClInclude Include="Header\DirectX12\DX12Context.h" />
     <ClInclude Include="Header\DirectX12\DX12Exception.h" />
     <ClInclude Include="Header\DirectX12\DX12Helper.h" />
@@ -45,7 +44,6 @@
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\ConsoleDisplay.cpp" />
     <ClCompile Include="Source\DirectX12\DX12Buffer.cpp" />
-    <ClCompile Include="Source\DirectX12\DX12ConstantBuffer.cpp" />
     <ClCompile Include="Source\DirectX12\DX12Context.cpp" />
     <ClCompile Include="Source\DirectX12\DX12Exception.cpp" />
     <ClCompile Include="Source\DirectX12\DX12Image.cpp" />

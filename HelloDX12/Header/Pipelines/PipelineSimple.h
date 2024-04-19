@@ -3,7 +3,7 @@
 
 #include "DX12Context.h"
 #include "DX12Shader.h"
-#include "DX12ConstantBuffer.h"
+#include "DX12Buffer.h"
 #include "PipelineBase.h"
 #include "Scene.h"
 #include "Camera.h"
@@ -19,8 +19,10 @@ public:
 	PipelineSimple(DX12Context& ctx, Scene* scene, Camera* camera);
 	~PipelineSimple() = default;
 
-	void Update(DX12Context& ctx);
-	void PopulateCommandList(DX12Context& ctx);
+	void Update(DX12Context& ctx) override;
+	void PopulateCommandList(DX12Context& ctx) override;
+
+	void Destroy() override;
 
 private:
 	void CreateSRV(DX12Context& ctx);
@@ -45,7 +47,7 @@ public:
 	Camera* camera_;
 
 private:
-	std::array<DX12ConstantBuffer, AppConfig::FrameCount> constantBuffers_;
+	std::array<DX12Buffer, AppConfig::FrameCount> constantBuffers_;
 };
 
 #endif

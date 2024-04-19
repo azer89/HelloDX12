@@ -50,6 +50,7 @@ void AppSimple::PopulateCommandList()
 void AppSimple::OnDestroy()
 {
 	context_.WaitForGPU();
+	pip_->Destroy();
 	scene_->Destroy();
 	context_.Destroy();
 }

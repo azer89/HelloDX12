@@ -44,7 +44,6 @@ public:
 	void WaitForGPU();
 	void MoveToNextFrame();
 	void PresentSwapchain() const;
-	void SetPipelineState(ID3D12PipelineState* pipeline) const;
 	
 	void ResetCommandList() const;
 	void CloseCommandList() const;

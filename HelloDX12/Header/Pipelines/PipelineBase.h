@@ -13,6 +13,10 @@ public:
 	virtual void Update(DX12Context& ctx) = 0;
 	virtual void PopulateCommandList(DX12Context& ctx) = 0;
 
+	virtual void Destroy()
+	{
+	}
+
 protected:
 	ComPtr<ID3D12PipelineState> pipelineState_;
 	ComPtr<ID3D12RootSignature> rootSignature_;
