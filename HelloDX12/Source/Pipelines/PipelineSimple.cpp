@@ -20,6 +20,14 @@ PipelineSimple::PipelineSimple(DX12Context& ctx, Scene* scene, Camera* camera) :
 	CreateGraphicsPipeline(ctx);
 }
 
+void PipelineSimple::Destroy()
+{
+	for (auto& buff : constantBuffers_)
+	{
+		buff.Destroy();
+	}
+}
+
 void PipelineSimple::CreateSRV(DX12Context& ctx)
 {
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc =
@@ -117,7 +125,7 @@ void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
 {
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
-		constantBuffers_[i].Init(ctx, sizeof(CBMVP));
+		constantBuffers_[i].CreateConstantBuffer(ctx, sizeof(CBMVP));
 	}
 }
 

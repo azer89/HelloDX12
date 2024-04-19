@@ -4,6 +4,50 @@
 
 #include "d3dx12_resource_helpers.h"
 
+void DX12Buffer::CreateConstantBuffer(DX12Context& ctx, uint64_t bufferSize)
+{
+	bufferSize_ = bufferSize;
+	constantBufferSize_ = GetConstantBufferByteSize(bufferSize_);
+
+	D3D12MA::ALLOCATION_DESC constantBufferUploadAllocDesc = {};
+	constantBufferUploadAllocDesc.HeapType = D3D12_HEAP_TYPE_UPLOAD;
+
+	D3D12_RESOURCE_DESC constantBufferResourceDesc = {};
+	constantBufferResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	constantBufferResourceDesc.Alignment = 0;
+	constantBufferResourceDesc.Width = constantBufferSize_;
+	constantBufferResourceDesc.Height = 1;
+	constantBufferResourceDesc.DepthOrArraySize = 1;
+	constantBufferResourceDesc.MipLevels = 1;
+	constantBufferResourceDesc.Format = DXGI_FORMAT_UNKNOWN;
+	
+	constantBufferResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	constantBufferResourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+
+	constantBufferResourceDesc.SampleDesc.Count = 1;
+	constantBufferResourceDesc.SampleDesc.Quality = 0;
+	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
+		&constantBufferUploadAllocDesc,
+		&constantBufferResourceDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		&dmaAllocation_,
+		IID_PPV_ARGS(&resource_)));
+	resource_->SetName(L"Constant_Buffer");
+	dmaAllocation_->SetName(L"Constant_Buffer_Allocation_DMA");
+
+	// Mapping
+	ThrowIfFailed(resource_->Map(0, nullptr, reinterpret_cast<void**>(&mappedData_)))
+
+	// GPU virtual address
+	gpuAddress_ = resource_->GetGPUVirtualAddress();
+}
+
+void DX12Buffer::UploadData(void* data)
+{
+	memcpy(mappedData_, data, bufferSize_);
+}
+
 void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t bufferSize, uint32_t stride)
 {
 	bufferSize_ = bufferSize;
@@ -304,4 +348,20 @@ void DX12Buffer::CreateUploadHeap(DX12Context& ctx,
 		nullptr,
 		bufferUploadHeapAllocation,
 		IID_PPV_ARGS(&bufferUploadHeap)))
+}
+
+uint32_t DX12Buffer::GetConstantBufferByteSize(uint64_t byteSize)
+{
+	// Constant buffers must be a multiple of the minimum hardware
+	// allocation size (usually 256 bytes).  So round up to nearest
+	// multiple of 256.  We do this by adding 255 and then masking off
+	// the lower 2 bytes which store all bits < 256.
+	// Example: Suppose byteSize = 300.
+	// (300 + 255) & ~255
+	// 555 & ~255
+	// 0x022B & ~0x00ff
+	// 0x022B & 0xff00
+	// 0x0200
+	// 512
+	return (byteSize + 255) & ~255;
 }
