@@ -181,5 +181,8 @@
     <Text Include="Shader\Shader.hlsl">
       <Filter>Shader</Filter>
     </Text>
+    <Text Include="Shader\LightData.hlsl">
+      <Filter>Shader</Filter>
+    </Text>
   </ItemGroup>
 </Project>

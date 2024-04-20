@@ -1,3 +1,6 @@
+
+
+
 struct VSInput
 {
     float4 position : POSITION;
@@ -22,12 +25,7 @@ cbuffer Constants : register(b0)
 Texture2D g_texture : register(t0);
 SamplerState g_sampler : register(s0);
 
-struct LightData
-{
-    float4 position;
-    float4 color;
-    float radius;
-};
+#include "LightData.hlsl"
 
 StructuredBuffer<LightData> lightDataArray : register(t1);
 
