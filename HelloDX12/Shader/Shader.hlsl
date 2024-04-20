@@ -20,8 +20,8 @@ cbuffer Constants : register(b0)
     float4x4 projectionMatrix;
 };
 
-Texture2D g_texture : register(t0);
-SamplerState g_sampler : register(s0);
+Texture2D albedoTexture : register(t0);
+SamplerState albedoSampler : register(s0);
 
 #include "LightData.hlsl"
 
@@ -35,9 +35,7 @@ PSInput VSMain(VSInput input)
     result.worldPosition = result.fragPosition;
     result.fragPosition = mul(result.fragPosition, viewMatrix);
     result.fragPosition = mul(result.fragPosition, projectionMatrix);
-    
     result.normal = mul(input.normal, ((float3x3) modelMatrix));
-    
     result.uv = input.uv.xy;
 
     return result;
@@ -49,11 +47,19 @@ float4 PSMain(PSInput input) : SV_TARGET
     uint stride;
     lightDataArray.GetDimensions(len, stride);
     
+    float4 albedo = albedoTexture.Sample(albedoSampler, input.uv);
+    float specular = albedo.a;
+    
     for (uint i = 0; i < len; ++i)
     {
+        LightData light = lightDataArray[i];
         
+        // Diffuse
+        float3 lightDir = normalize(light.position - input.worldPosition);
+        float3 diffuse = max(dot(input.normal, lightDir), 0.0) * albedo.xyz * light.color.xyz;
     }
     
+    // TODO Temporary
     LightData light = lightDataArray[len - 1];
     return light.color;
     
