@@ -26,9 +26,6 @@ public:
 
 	void AddLights(DX12Context& ctx, const std::vector<LightData>& lights);
 
-private:
-	void CreateSRV(DX12Context& ctx);
-
 public:
 	std::vector<LightData> lights_ = {};
 	DX12Buffer buffer_;

@@ -35,15 +35,18 @@ private:
 	void CreateGraphicsPipeline(DX12Context& ctx);
 
 public:
-	ComPtr<ID3D12Resource> depthStencil_;
-
-	ComPtr<ID3D12DescriptorHeap> rtvHeap_; // Render target view
-	ComPtr<ID3D12DescriptorHeap> srvHeap_; // Shader resource view
-	ComPtr<ID3D12DescriptorHeap> dsvHeap_; // Depth stencil view
-	
-	uint32_t rtvDescriptorSize_;
+	// Render target
+	uint32_t rtvIncrementSize_;
+	ComPtr<ID3D12DescriptorHeap> rtvHeap_;
 	ComPtr<ID3D12Resource> renderTargets_[AppConfig::FrameCount];
 
+	// Depth stencil view
+	ComPtr<ID3D12Resource> depthStencil_;
+	ComPtr<ID3D12DescriptorHeap> dsvHeap_; 
+	
+	// Shader resources
+	ComPtr<ID3D12DescriptorHeap> srvHeap_; 
+	
 	Scene* scene_;
 	Camera* camera_;
 	ResourcesLights* resourcesLights_;

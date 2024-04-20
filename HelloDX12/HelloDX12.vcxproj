@@ -51,6 +51,7 @@
     <ClCompile Include="Source\Pipelines\PipelineBase.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineSimple.cpp" />
     <ClCompile Include="Source\Resources\ResourcesLights.cpp" />
+    <ClCompile Include="Source\Resources\ResourcesShared.cpp" />
     <ClCompile Include="Source\Scene\Mesh.cpp" />
     <ClCompile Include="Source\Scene\Model.cpp" />
     <ClCompile Include="Source\Scene\Scene.cpp" />

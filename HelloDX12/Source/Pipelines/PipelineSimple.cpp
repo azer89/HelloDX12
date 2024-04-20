@@ -35,23 +35,47 @@ void PipelineSimple::Destroy()
 
 void PipelineSimple::CreateSRV(DX12Context& ctx)
 {
+	constexpr uint32_t srvCount = 2;
+
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc =
 	{
 		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-		.NumDescriptors = 1,
+		.NumDescriptors = srvCount,
 		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE
 	};
 	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&srvHeap_)))
 
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc =
+	uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE handle1(srvHeap_->GetCPUDescriptorHandleForHeapStart(), 0, incrementSize); // Texture
+	CD3DX12_CPU_DESCRIPTOR_HANDLE handle2(srvHeap_->GetCPUDescriptorHandleForHeapStart(), 1, incrementSize); // Lights
+
+	// Texture
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc1 =
 	{
 		.Format = DXGI_FORMAT_R8G8B8A8_UNORM, // Image format
 		.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D,
 		.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
 	};
-	srvDesc.Texture2D.MipLevels = 1;
+	srvDesc1.Texture2D.MipLevels = 1;
 	auto imageResource = scene_->model_.meshes_[0].image_->buffer_.resource_.Get();
-	ctx.GetDevice()->CreateShaderResourceView(imageResource, &srvDesc, srvHeap_->GetCPUDescriptorHandleForHeapStart());
+	ctx.GetDevice()->CreateShaderResourceView(imageResource, &srvDesc1, handle1);
+
+	// Lights
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc2 = 
+	{
+		.Format = DXGI_FORMAT_UNKNOWN,
+		.ViewDimension = D3D12_SRV_DIMENSION_BUFFER,
+		.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
+	};
+	srvDesc2.Buffer.FirstElement = 0;
+	srvDesc2.Buffer.NumElements = resourcesLights_->lights_.size();
+	srvDesc2.Buffer.StructureByteStride = sizeof(LightData);
+	srvDesc2.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+
+	ctx.GetDevice()->CreateShaderResourceView(
+		resourcesLights_->buffer_.resource_.Get(),
+		&srvDesc2,
+		handle2);
 }
 
 void PipelineSimple::CreateRTV(DX12Context& ctx)
@@ -66,12 +90,12 @@ void PipelineSimple::CreateRTV(DX12Context& ctx)
 
 	// Create a RTV for each frame
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvHeap_->GetCPUDescriptorHandleForHeapStart());
-	rtvDescriptorSize_ = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	rtvIncrementSize_ = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	for (uint32_t n = 0; n < AppConfig::FrameCount; n++)
 	{
 		ThrowIfFailed(ctx.GetSwapchain()->GetBuffer(n, IID_PPV_ARGS(&renderTargets_[n])))
 		ctx.GetDevice()->CreateRenderTargetView(renderTargets_[n].Get(), nullptr, rtvHandle);
-		rtvHandle.Offset(1, rtvDescriptorSize_);
+		rtvHandle.Offset(1, rtvIncrementSize_);
 	}
 }
 
@@ -86,7 +110,7 @@ void PipelineSimple::CreateDSV(DX12Context& ctx)
 	};
 	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&dsvHeap_)))
 
-	rtvDescriptorSize_ = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	rtvIncrementSize_ = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
 	D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = 
 	{
@@ -229,11 +253,15 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	commandList->RSSetScissorRects(1, &scissor_);
 	commandList->SetGraphicsRootSignature(rootSignature_.Get());
 
+	// Descriptors
+	uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(srvHeap_->GetGPUDescriptorHandleForHeapStart(), 0, incrementSize);
+	CD3DX12_GPU_DESCRIPTOR_HANDLE handle2(srvHeap_->GetGPUDescriptorHandleForHeapStart(), 1, incrementSize);
 	ID3D12DescriptorHeap* ppHeaps[] = { srvHeap_.Get()};
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 	commandList->SetGraphicsRootConstantBufferView(0, constantBuffers_[ctx.GetFrameIndex()].gpuAddress_);
-	commandList->SetGraphicsRootDescriptorTable(1, srvHeap_->GetGPUDescriptorHandleForHeapStart());
-	commandList->SetGraphicsRootDescriptorTable(2, resourcesLights_->srvHeap_->GetGPUDescriptorHandleForHeapStart());
+	commandList->SetGraphicsRootDescriptorTable(1, handle1);
+	commandList->SetGraphicsRootDescriptorTable(2, handle2);
 	
 	// Indicate that the back buffer will be used as a render target.
 	{
@@ -245,9 +273,10 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 		commandList->ResourceBarrier(1, &resourceBarrier);
 	}
 
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvHeap_->GetCPUDescriptorHandleForHeapStart(), ctx.GetFrameIndex(), rtvDescriptorSize_);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvHeap_->GetCPUDescriptorHandleForHeapStart(), ctx.GetFrameIndex(), rtvIncrementSize_);
 	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(dsvHeap_->GetCPUDescriptorHandleForHeapStart());
-	commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
+	constexpr uint32_t renderTargetCount = 1;
+	commandList->OMSetRenderTargets(renderTargetCount, &rtvHandle, FALSE, &dsvHandle);
 
 	// TODO Only one mesh for now
 	Mesh& mesh = scene_->model_.meshes_[0];

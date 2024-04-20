@@ -176,6 +176,9 @@
     <ClCompile Include="Source\Resources\ResourcesLights.cpp">
       <Filter>Source\Resources</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Resources\ResourcesShared.cpp">
+      <Filter>Source\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Shader\Shader.hlsl">
