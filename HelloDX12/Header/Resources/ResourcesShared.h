@@ -6,7 +6,12 @@
 
 class ResourcesShared final : ResourcesBase
 {
+public:
 	void Init(DX12Context& ctx);
+
+	ID3D12Resource* GetRenderTarget(uint32_t frameIndex);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE GetRTVHandle(uint32_t frameIndex);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE GetDSVHandle();
 
 private:
 	// Render target

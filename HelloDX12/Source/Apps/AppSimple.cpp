@@ -20,6 +20,7 @@ void AppSimple::OnInit()
 
 	// Render target and depth
 	resourcesShared_ = std::make_unique<ResourcesShared>();
+	resourcesShared_->Init(context_);
 
 	// Lights
 	resourcesLights_ = std::make_unique<ResourcesLights>();

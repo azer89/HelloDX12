@@ -33,8 +33,8 @@ public:
 
 private:
 	void CreateSRV(DX12Context& ctx);
-	void CreateRTV(DX12Context& ctx);
-	void CreateDSV(DX12Context& ctx);
+	//void CreateRTV(DX12Context& ctx);
+	//void CreateDSV(DX12Context& ctx);
 	void CreateConstantBuffer(DX12Context& ctx);
 	void CreateRootSignature(DX12Context& ctx);
 	void CreateShaders(DX12Context& ctx);
@@ -42,13 +42,13 @@ private:
 
 public:
 	// Render target
-	uint32_t rtvIncrementSize_;
-	ComPtr<ID3D12DescriptorHeap> rtvHeap_;
-	ComPtr<ID3D12Resource> renderTargets_[AppConfig::FrameCount];
+	//uint32_t rtvIncrementSize_;
+	//ComPtr<ID3D12DescriptorHeap> rtvHeap_;
+	//ComPtr<ID3D12Resource> renderTargets_[AppConfig::FrameCount];
 
 	// Depth stencil view
-	ComPtr<ID3D12Resource> depthStencil_;
-	ComPtr<ID3D12DescriptorHeap> dsvHeap_; 
+	//ComPtr<ID3D12Resource> depthStencil_;
+	//ComPtr<ID3D12DescriptorHeap> dsvHeap_; 
 	
 	// Shader resources
 	ComPtr<ID3D12DescriptorHeap> srvHeap_; 

@@ -78,3 +78,18 @@ void ResourcesShared::CreateDSV(DX12Context& ctx)
 		&depthStencilDesc,
 		dsvHeap_->GetCPUDescriptorHandleForHeapStart());
 }
+
+ID3D12Resource* ResourcesShared::GetRenderTarget(uint32_t frameIndex)
+{
+	return renderTargets_[frameIndex].Get();
+}
+
+CD3DX12_CPU_DESCRIPTOR_HANDLE ResourcesShared::GetRTVHandle( uint32_t frameIndex)
+{
+	return CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvHeap_->GetCPUDescriptorHandleForHeapStart(), frameIndex, rtvIncrementSize_);
+}
+
+CD3DX12_CPU_DESCRIPTOR_HANDLE ResourcesShared::GetDSVHandle()
+{
+	return CD3DX12_CPU_DESCRIPTOR_HANDLE(dsvHeap_->GetCPUDescriptorHandleForHeapStart());
+}

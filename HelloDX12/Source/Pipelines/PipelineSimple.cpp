@@ -19,8 +19,8 @@ PipelineSimple::PipelineSimple(
 	scissor_ = ctx.GetScissor();
 
 	CreateSRV(ctx);
-	CreateRTV(ctx);
-	CreateDSV(ctx);
+	//CreateRTV(ctx);
+	//CreateDSV(ctx);
 	CreateRootSignature(ctx);
 	CreateConstantBuffer(ctx);
 	CreateShaders(ctx);
@@ -80,7 +80,7 @@ void PipelineSimple::CreateSRV(DX12Context& ctx)
 		handle2);
 }
 
-void PipelineSimple::CreateRTV(DX12Context& ctx)
+/*void PipelineSimple::CreateRTV(DX12Context& ctx)
 {
 	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
 	{
@@ -99,9 +99,9 @@ void PipelineSimple::CreateRTV(DX12Context& ctx)
 		ctx.GetDevice()->CreateRenderTargetView(renderTargets_[n].Get(), nullptr, rtvHandle);
 		rtvHandle.Offset(1, rtvIncrementSize_);
 	}
-}
+}*/
 
-void PipelineSimple::CreateDSV(DX12Context& ctx)
+/*void PipelineSimple::CreateDSV(DX12Context& ctx)
 {
 	// Describe and create a depth stencil view (DSV) descriptor heap.
 	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = 
@@ -150,7 +150,7 @@ void PipelineSimple::CreateDSV(DX12Context& ctx)
 		depthStencil_.Get(), 
 		&depthStencilDesc, 
 		dsvHeap_->GetCPUDescriptorHandleForHeapStart());
-}
+}*/
 
 void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
 {
@@ -269,14 +269,17 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	{
 		auto resourceBarrier = 
 			CD3DX12_RESOURCE_BARRIER::Transition(
-				renderTargets_[ctx.GetFrameIndex()].Get(), 
+				//renderTargets_[ctx.GetFrameIndex()].Get(), 
+				resourcesShared_->GetRenderTarget(ctx.GetFrameIndex()),
 				D3D12_RESOURCE_STATE_PRESENT, 
 				D3D12_RESOURCE_STATE_RENDER_TARGET);
 		commandList->ResourceBarrier(1, &resourceBarrier);
 	}
 
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvHeap_->GetCPUDescriptorHandleForHeapStart(), ctx.GetFrameIndex(), rtvIncrementSize_);
-	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(dsvHeap_->GetCPUDescriptorHandleForHeapStart());
+	//CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvHeap_->GetCPUDescriptorHandleForHeapStart(), ctx.GetFrameIndex(), rtvIncrementSize_);
+	//CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(dsvHeap_->GetCPUDescriptorHandleForHeapStart());
+	auto rtvHandle = resourcesShared_->GetRTVHandle(ctx.GetFrameIndex());
+	auto dsvHandle = resourcesShared_->GetDSVHandle();
 	constexpr uint32_t renderTargetCount = 1;
 	commandList->OMSetRenderTargets(renderTargetCount, &rtvHandle, FALSE, &dsvHandle);
 
@@ -296,7 +299,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	{
 		auto resourceBarrier = 
 			CD3DX12_RESOURCE_BARRIER::Transition(
-				renderTargets_[ctx.GetFrameIndex()].Get(),
+				resourcesShared_->GetRenderTarget(ctx.GetFrameIndex()),
 				D3D12_RESOURCE_STATE_RENDER_TARGET, 
 				D3D12_RESOURCE_STATE_PRESENT);
 		commandList->ResourceBarrier(1, &resourceBarrier);
