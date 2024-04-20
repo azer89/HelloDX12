@@ -13,7 +13,7 @@ void DX12Buffer::CreateBuffer(DX12Context& ctx, uint64_t bufferSize)
 		.HeapType = D3D12_HEAP_TYPE_UPLOAD
 	};
 
-	D3D12_RESOURCE_DESC constantBufferResourceDesc =
+	D3D12_RESOURCE_DESC resourceDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,
@@ -25,12 +25,12 @@ void DX12Buffer::CreateBuffer(DX12Context& ctx, uint64_t bufferSize)
 		.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
 		.Flags = D3D12_RESOURCE_FLAG_NONE
 	};
-	constantBufferResourceDesc.SampleDesc.Count = 1;
-	constantBufferResourceDesc.SampleDesc.Quality = 0;
+	resourceDesc.SampleDesc.Count = 1;
+	resourceDesc.SampleDesc.Quality = 0;
 
 	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&constantBufferUploadAllocDesc,
-		&constantBufferResourceDesc,
+		&resourceDesc,
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
 		&dmaAllocation_,
