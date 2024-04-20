@@ -1,3 +1,6 @@
+#include "LightData.hlsli"
+#include "CameraData.hlsli"
+
 struct VSInput
 {
     float4 position : POSITION;
@@ -13,29 +16,20 @@ struct PSInput
     float2 uv : TEXCOORD;
 };
 
-cbuffer Constants : register(b0)
-{
-    float4x4 modelMatrix;
-    float4x4 viewMatrix;
-    float4x4 projectionMatrix;
-};
-
+cbuffer C0 : register(b0) {  CameraData camData; };
 Texture2D albedoTexture : register(t0);
 SamplerState albedoSampler : register(s0);
-
-#include "LightData.hlsl"
-
 StructuredBuffer<LightData> lightDataArray : register(t1);
 
 PSInput VSMain(VSInput input)
 {
     PSInput result;
     
-    result.fragPosition = mul(input.position, modelMatrix);
+    result.fragPosition = mul(input.position, camData.modelMatrix);
     result.worldPosition = result.fragPosition;
-    result.fragPosition = mul(result.fragPosition, viewMatrix);
-    result.fragPosition = mul(result.fragPosition, projectionMatrix);
-    result.normal = mul(input.normal, ((float3x3) modelMatrix));
+    result.fragPosition = mul(result.fragPosition, camData.viewMatrix);
+    result.fragPosition = mul(result.fragPosition, camData.projectionMatrix);
+    result.normal = mul(input.normal, ((float3x3) camData.modelMatrix));
     result.uv = input.uv.xy;
 
     return result;

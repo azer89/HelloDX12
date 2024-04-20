@@ -68,9 +68,12 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Shader\LightData.hlsl">
+    <Text Include="Shader\LightData.hlsli">
       <FileType>Document</FileType>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\CameraData.hlsli" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{16B13BB4-D82D-4AC1-8B40-C6BCCC99954B}</ProjectGuid>

@@ -184,8 +184,13 @@
     <Text Include="Shader\Shader.hlsl">
       <Filter>Shader</Filter>
     </Text>
-    <Text Include="Shader\LightData.hlsl">
+    <Text Include="Shader\LightData.hlsli">
       <Filter>Shader</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\CameraData.hlsli">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>
