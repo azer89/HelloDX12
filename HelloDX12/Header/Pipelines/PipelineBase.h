@@ -7,7 +7,7 @@
 class PipelineBase
 {
 public:
-	explicit PipelineBase();
+	explicit PipelineBase(DX12Context& ctx);
 	virtual ~PipelineBase();
 
 	virtual void Update(DX12Context& ctx) = 0;
@@ -20,6 +20,7 @@ public:
 protected:
 	ComPtr<ID3D12PipelineState> pipelineState_;
 	ComPtr<ID3D12RootSignature> rootSignature_;
+	ComPtr<ID3D12DescriptorHeap> srvHeap_;
 
 	DX12Shader vertexShader_;
 	DX12Shader fragmentShader_;
