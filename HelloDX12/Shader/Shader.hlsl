@@ -1,6 +1,3 @@
-
-
-
 struct VSInput
 {
     float4 position : POSITION;
@@ -10,16 +7,17 @@ struct VSInput
 
 struct PSInput
 {
-    float4 position : SV_POSITION;
+    float4 fragPosition : SV_POSITION;
+    float4 worldPosition : POSITION0;
     float3 normal : NORMAL;
     float2 uv : TEXCOORD;
 };
 
 cbuffer Constants : register(b0)
 {
-    float4x4 mWorld;
-    float4x4 mView;
-    float4x4 mProjection;
+    float4x4 modelMatrix;
+    float4x4 viewMatrix;
+    float4x4 projectionMatrix;
 };
 
 Texture2D g_texture : register(t0);
@@ -33,11 +31,12 @@ PSInput VSMain(VSInput input)
 {
     PSInput result;
     
-    result.position = mul(input.position, mWorld);
-    result.position = mul(result.position, mView);
-    result.position = mul(result.position, mProjection);
+    result.fragPosition = mul(input.position, modelMatrix);
+    result.worldPosition = result.fragPosition;
+    result.fragPosition = mul(result.fragPosition, viewMatrix);
+    result.fragPosition = mul(result.fragPosition, projectionMatrix);
     
-    result.normal = mul(input.normal, ((float3x3) mWorld));
+    result.normal = mul(input.normal, ((float3x3) modelMatrix));
     
     result.uv = input.uv.xy;
 
@@ -46,11 +45,16 @@ PSInput VSMain(VSInput input)
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    uint l;
-    uint s;
-    lightDataArray.GetDimensions(l, s);
+    uint len;
+    uint stride;
+    lightDataArray.GetDimensions(len, stride);
     
-    LightData light = lightDataArray[l - 1];
+    for (uint i = 0; i < len; ++i)
+    {
+        
+    }
+    
+    LightData light = lightDataArray[len - 1];
     return light.color;
     
     //return g_texture.Sample(g_sampler, input.uv);
