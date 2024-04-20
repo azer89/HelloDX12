@@ -146,18 +146,14 @@ void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
 	}
 
-	CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
-	ranges[0].Init(
-		D3D12_DESCRIPTOR_RANGE_TYPE_SRV, // rangeType
-		1, // numDescriptors
-		0, // baseShaderRegister
-		0, // registerSpace
-		D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+	CD3DX12_DESCRIPTOR_RANGE1 ranges[2];
+	ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+	ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
 
 	CD3DX12_ROOT_PARAMETER1 rootParameters[3];
 	rootParameters[0].InitAsConstantBufferView(0, 0);
 	rootParameters[1].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
-	rootParameters[2].InitAsShaderResourceView(1, 0);
+	rootParameters[2].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
 
 	// Image
 	D3D12_STATIC_SAMPLER_DESC sampler = scene_->model_.meshes_[0].image_->GetSampler();
@@ -168,6 +164,7 @@ void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
+	
 
 	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
 	rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 1, &sampler, rootSignatureFlags);
@@ -232,11 +229,11 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	commandList->RSSetScissorRects(1, &scissor_);
 	commandList->SetGraphicsRootSignature(rootSignature_.Get());
 
-	ID3D12DescriptorHeap* ppHeaps[] = { srvHeap_.Get() };
+	ID3D12DescriptorHeap* ppHeaps[] = { srvHeap_.Get()};
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 	commandList->SetGraphicsRootConstantBufferView(0, constantBuffers_[ctx.GetFrameIndex()].gpuAddress_);
 	commandList->SetGraphicsRootDescriptorTable(1, srvHeap_->GetGPUDescriptorHandleForHeapStart());
-	commandList->SetGraphicsRootShaderResourceView(2, resourcesLights_->buffer_.gpuAddress_);
+	commandList->SetGraphicsRootDescriptorTable(2, resourcesLights_->srvHeap_->GetGPUDescriptorHandleForHeapStart());
 	
 	// Indicate that the back buffer will be used as a render target.
 	{
