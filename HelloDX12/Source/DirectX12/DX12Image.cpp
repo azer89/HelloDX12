@@ -41,6 +41,19 @@ void DX12Image::Load(DX12Context& ctx, std::string filename)
 	buffer_.CreateImage(ctx, pixels, width_, height_, pixelSize_, format_);
 }
 
+D3D12_SHADER_RESOURCE_VIEW_DESC DX12Image::GetSRVDescription()
+{
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc =
+	{
+		.Format = format_, // Image format
+		.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D,
+		.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
+	};
+	srvDesc.Texture2D.MipLevels = 1;
+	
+	return srvDesc;
+}
+
 D3D12_STATIC_SAMPLER_DESC DX12Image::GetSampler()
 {
 	return

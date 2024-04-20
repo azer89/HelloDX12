@@ -47,31 +47,15 @@ void PipelineSimple::CreateSRV(DX12Context& ctx)
 	CD3DX12_CPU_DESCRIPTOR_HANDLE handle2(srvHeap_->GetCPUDescriptorHandleForHeapStart(), 1, incrementSize); // Lights
 
 	// Texture
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc1 =
-	{
-		.Format = DXGI_FORMAT_R8G8B8A8_UNORM, // Image format
-		.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D,
-		.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
-	};
-	srvDesc1.Texture2D.MipLevels = 1;
+	auto imgSRVDesc = scene_->model_.meshes_[0].image_->GetSRVDescription();
 	auto imageResource = scene_->model_.meshes_[0].image_->buffer_.resource_.Get();
-	ctx.GetDevice()->CreateShaderResourceView(imageResource, &srvDesc1, handle1);
+	ctx.GetDevice()->CreateShaderResourceView(imageResource, &imgSRVDesc, handle1);
 
 	// Lights
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc2 = 
-	{
-		.Format = DXGI_FORMAT_UNKNOWN,
-		.ViewDimension = D3D12_SRV_DIMENSION_BUFFER,
-		.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
-	};
-	srvDesc2.Buffer.FirstElement = 0;
-	srvDesc2.Buffer.NumElements = resourcesLights_->lights_.size();
-	srvDesc2.Buffer.StructureByteStride = sizeof(LightData);
-	srvDesc2.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-
+	auto lightSRVDesc = resourcesLights_->GetSRVDescription();
 	ctx.GetDevice()->CreateShaderResourceView(
 		resourcesLights_->buffer_.resource_.Get(),
-		&srvDesc2,
+		&lightSRVDesc,
 		handle2);
 }
 
