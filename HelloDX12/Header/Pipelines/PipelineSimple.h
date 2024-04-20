@@ -5,6 +5,7 @@
 #include "DX12Shader.h"
 #include "DX12Buffer.h"
 #include "PipelineBase.h"
+#include "ResourcesShared.h"
 #include "ResourcesLights.h"
 #include "Scene.h"
 #include "Camera.h"
@@ -17,7 +18,12 @@
 class PipelineSimple final : PipelineBase
 {
 public:
-	PipelineSimple(DX12Context& ctx, Scene* scene, Camera* camera, ResourcesLights* resourcesLights);
+	PipelineSimple(
+		DX12Context& ctx, 
+		Scene* scene, 
+		Camera* camera, 
+		ResourcesShared* resourcesShared,
+		ResourcesLights* resourcesLights);
 	~PipelineSimple() = default;
 
 	void Update(DX12Context& ctx) override;
@@ -49,6 +55,7 @@ public:
 	
 	Scene* scene_;
 	Camera* camera_;
+	ResourcesShared* resourcesShared_;
 	ResourcesLights* resourcesLights_;
 
 private:

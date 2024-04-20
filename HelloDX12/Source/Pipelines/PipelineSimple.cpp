@@ -7,10 +7,12 @@ PipelineSimple::PipelineSimple(
 	DX12Context& ctx, 
 	Scene* scene, 
 	Camera* camera,
+	ResourcesShared* resourcesShared,
 	ResourcesLights* resourcesLights) :
 	PipelineBase(),
 	scene_(scene),
 	camera_(camera),
+	resourcesShared_(resourcesShared),
 	resourcesLights_(resourcesLights)
 {
 	viewport_ = ctx.GetViewport();

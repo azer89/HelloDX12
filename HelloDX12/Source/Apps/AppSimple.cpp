@@ -18,6 +18,9 @@ void AppSimple::OnInit()
 	scene_ = std::make_unique<Scene>();
 	scene_->Init(context_);
 
+	// Render target and depth
+	resourcesShared_ = std::make_unique<ResourcesShared>();
+
 	// Lights
 	resourcesLights_ = std::make_unique<ResourcesLights>();
 	resourcesLights_->AddLights(context_,
@@ -29,7 +32,11 @@ void AppSimple::OnInit()
 	});
 
 	// Pipelines
-	pip_ = std::make_unique<PipelineSimple>(context_, scene_.get(), camera_.get(), resourcesLights_.get());
+	pip_ = std::make_unique<PipelineSimple>(
+		context_, scene_.get(), 
+		camera_.get(), 
+		resourcesShared_.get(),
+		resourcesLights_.get());
 }
 
 // Update frame-based values.

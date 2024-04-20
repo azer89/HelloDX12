@@ -9,7 +9,10 @@ class ResourcesShared final : ResourcesBase
 	void Init(DX12Context& ctx);
 
 private:
+	// Render target
 	void CreateRTV(DX12Context& ctx);
+
+	// Depth stencil
 	void CreateDSV(DX12Context& ctx);
 
 public:
@@ -18,7 +21,7 @@ public:
 	ComPtr<ID3D12DescriptorHeap> rtvHeap_;
 	ComPtr<ID3D12Resource> renderTargets_[AppConfig::FrameCount];
 
-	// Depth stencil view
+	// Depth stencil
 	ComPtr<ID3D12Resource> depthStencil_;
 	ComPtr<ID3D12DescriptorHeap> dsvHeap_;
 };

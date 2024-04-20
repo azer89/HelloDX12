@@ -4,6 +4,7 @@
 #include "AppBase.h"
 #include "DX12Context.h"
 #include "PipelineSimple.h"
+#include "ResourcesShared.h"
 #include "ResourcesLights.h"
 #include "Scene.h"
 
@@ -25,6 +26,7 @@ private:
 	DX12Context context_;
 	std::unique_ptr<Scene> scene_ = nullptr;
 	std::unique_ptr<PipelineSimple> pip_ = nullptr;
+	std::unique_ptr<ResourcesShared> resourcesShared_ = nullptr;
 	std::unique_ptr<ResourcesLights> resourcesLights_ = nullptr;
 
 private:
