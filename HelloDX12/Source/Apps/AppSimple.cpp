@@ -18,8 +18,26 @@ void AppSimple::OnInit()
 	scene_ = std::make_unique<Scene>();
 	scene_->Init(context_);
 
+	// Render target and depth
+	resourcesShared_ = std::make_unique<ResourcesShared>();
+	resourcesShared_->Init(context_);
+
+	// Lights
+	resourcesLights_ = std::make_unique<ResourcesLights>();
+	resourcesLights_->AddLights(context_,
+	{
+		{.position_ = glm::vec4(-1.5f, 2.7f,  1.5f, 1.f), .color_ = glm::vec4(1.f, 1.f, 1.f, 1.f), .radius_ = 10.0f },
+		{.position_ = glm::vec4(1.5f, 2.7f,  1.5f, 1.f), .color_ = glm::vec4(1.f, 1.f, 1.f, 1.f), .radius_ = 10.0f },
+		{.position_ = glm::vec4(-1.5f, 2.7f, -1.5f, 1.f), .color_ = glm::vec4(1.f, 1.f, 1.f, 1.f), .radius_ = 10.0f },
+		{.position_ = glm::vec4(1.5f, 2.7f, -1.5f, 1.f), .color_ = glm::vec4(1.f, 1.f, 1.f, 1.f), .radius_ = 10.0f }
+	});
+
 	// Pipelines
-	pip_ = std::make_unique<PipelineSimple>(context_, scene_.get(), camera_.get());
+	pip_ = std::make_unique<PipelineSimple>(
+		context_, scene_.get(), 
+		camera_.get(), 
+		resourcesShared_.get(),
+		resourcesLights_.get());
 }
 
 // Update frame-based values.
@@ -52,5 +70,6 @@ void AppSimple::OnDestroy()
 	context_.WaitForGPU();
 	pip_->Destroy();
 	scene_->Destroy();
+	resourcesLights_->Destroy();
 	context_.Destroy();
 }

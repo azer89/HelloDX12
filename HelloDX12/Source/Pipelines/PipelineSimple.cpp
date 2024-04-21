@@ -1,19 +1,21 @@
 #include "PipelineSimple.h"
 #include "DX12Exception.h"
 
-#include "ConstantBuffers.h"
+#include "ConstantDefinitions.h"
 
-PipelineSimple::PipelineSimple(DX12Context& ctx, Scene* scene, Camera* camera) : 
-	PipelineBase(),
+PipelineSimple::PipelineSimple(
+	DX12Context& ctx, 
+	Scene* scene, 
+	Camera* camera,
+	ResourcesShared* resourcesShared,
+	ResourcesLights* resourcesLights) :
+	PipelineBase(ctx),
 	scene_(scene),
-	camera_(camera)
+	camera_(camera),
+	resourcesShared_(resourcesShared),
+	resourcesLights_(resourcesLights)
 {
-	viewport_ = ctx.GetViewport();
-	scissor_ = ctx.GetScissor();
-
 	CreateSRV(ctx);
-	CreateRTV(ctx);
-	CreateDSV(ctx);
 	CreateRootSignature(ctx);
 	CreateConstantBuffer(ctx);
 	CreateShaders(ctx);
@@ -22,7 +24,7 @@ PipelineSimple::PipelineSimple(DX12Context& ctx, Scene* scene, Camera* camera) :
 
 void PipelineSimple::Destroy()
 {
-	for (auto& buff : constantBuffers_)
+	for (auto& buff : constBuffCamera_)
 	{
 		buff.Destroy();
 	}
@@ -30,102 +32,38 @@ void PipelineSimple::Destroy()
 
 void PipelineSimple::CreateSRV(DX12Context& ctx)
 {
+	constexpr uint32_t srvCount = 2;
+
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc =
 	{
 		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-		.NumDescriptors = 1,
+		.NumDescriptors = srvCount,
 		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE
 	};
 	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&srvHeap_)))
 
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc =
-	{
-		.Format = DXGI_FORMAT_R8G8B8A8_UNORM, // Image format
-		.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D,
-		.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
-	};
-	srvDesc.Texture2D.MipLevels = 1;
+	uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE handle1(srvHeap_->GetCPUDescriptorHandleForHeapStart(), 0, incrementSize); // Texture
+	CD3DX12_CPU_DESCRIPTOR_HANDLE handle2(srvHeap_->GetCPUDescriptorHandleForHeapStart(), 1, incrementSize); // Lights
+
+	// Texture
+	auto imgSRVDesc = scene_->model_.meshes_[0].image_->GetSRVDescription();
 	auto imageResource = scene_->model_.meshes_[0].image_->buffer_.resource_.Get();
-	ctx.GetDevice()->CreateShaderResourceView(imageResource, &srvDesc, srvHeap_->GetCPUDescriptorHandleForHeapStart());
-}
+	ctx.GetDevice()->CreateShaderResourceView(imageResource, &imgSRVDesc, handle1);
 
-void PipelineSimple::CreateRTV(DX12Context& ctx)
-{
-	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
-	{
-		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
-		.NumDescriptors = AppConfig::FrameCount,
-		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
-	};
-	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&rtvHeap_)))
-
-	// Create a RTV for each frame
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvHeap_->GetCPUDescriptorHandleForHeapStart());
-	rtvDescriptorSize_ = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	for (uint32_t n = 0; n < AppConfig::FrameCount; n++)
-	{
-		ThrowIfFailed(ctx.GetSwapchain()->GetBuffer(n, IID_PPV_ARGS(&renderTargets_[n])))
-		ctx.GetDevice()->CreateRenderTargetView(renderTargets_[n].Get(), nullptr, rtvHandle);
-		rtvHandle.Offset(1, rtvDescriptorSize_);
-	}
-}
-
-void PipelineSimple::CreateDSV(DX12Context& ctx)
-{
-	// Describe and create a depth stencil view (DSV) descriptor heap.
-	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = 
-	{
-		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV,
-		.NumDescriptors = 1,
-		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
-	};
-	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&dsvHeap_)))
-
-	rtvDescriptorSize_ = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-
-	D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = 
-	{
-		.Format = DXGI_FORMAT_D32_FLOAT,
-		.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D,
-		.Flags = D3D12_DSV_FLAG_NONE
-	};
-
-	CD3DX12_HEAP_PROPERTIES heapProperties = 
-		CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-	// Performance tip: Deny shader resource access to resources that don't need shader resource views.
-	CD3DX12_RESOURCE_DESC resourceDescription = 
-		CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, 
-			ctx.GetSwapchainWidth(), 
-			ctx.GetSwapchainHeight(), 
-			1, 
-			0, 
-			1, 
-			0, 
-			D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL | D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE);
-	// Performance tip: Tell the runtime at resource creation the desired clear value.
-	CD3DX12_CLEAR_VALUE clearValue = 
-		CD3DX12_CLEAR_VALUE(DXGI_FORMAT_D32_FLOAT, 1.0f, 0); 
-
-	ThrowIfFailed(ctx.GetDevice()->CreateCommittedResource(
-		&heapProperties,
-		D3D12_HEAP_FLAG_NONE,
-		&resourceDescription,
-		D3D12_RESOURCE_STATE_DEPTH_WRITE,
-		&clearValue,
-		IID_PPV_ARGS(&depthStencil_)
-	))
-
-	ctx.GetDevice()->CreateDepthStencilView(
-		depthStencil_.Get(), 
-		&depthStencilDesc, 
-		dsvHeap_->GetCPUDescriptorHandleForHeapStart());
+	// Lights
+	auto lightSRVDesc = resourcesLights_->GetSRVDescription();
+	ctx.GetDevice()->CreateShaderResourceView(
+		resourcesLights_->buffer_.resource_.Get(),
+		&lightSRVDesc,
+		handle2);
 }
 
 void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
 {
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
-		constantBuffers_[i].CreateConstantBuffer(ctx, sizeof(CBMVP));
+		constBuffCamera_[i].CreateConstantBuffer(ctx, sizeof(CCamera));
 	}
 }
 
@@ -141,12 +79,15 @@ void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
 	}
 
-	CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
+	CD3DX12_DESCRIPTOR_RANGE1 ranges[2];
 	ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+	ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
 
-	CD3DX12_ROOT_PARAMETER1 rootParameters[2];
+	CD3DX12_ROOT_PARAMETER1 rootParameters[4];
 	rootParameters[0].InitAsConstantBufferView(0, 0);
-	rootParameters[1].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
+	rootParameters[1].InitAsConstantBufferView(1, 0);
+	rootParameters[2].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
+	rootParameters[3].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
 
 	// Image
 	D3D12_STATIC_SAMPLER_DESC sampler = scene_->model_.meshes_[0].image_->GetSampler();
@@ -157,6 +98,7 @@ void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
+	
 
 	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
 	rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 1, &sampler, rootSignatureFlags);
@@ -173,8 +115,8 @@ void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 
 void PipelineSimple::CreateShaders(DX12Context& ctx)
 {
-	vertexShader_.Create(ctx, AppConfig::ShaderFolder + "Shader.hlsl", ShaderType::Vertex);
-	fragmentShader_.Create(ctx, AppConfig::ShaderFolder + "Shader.hlsl", ShaderType::Fragment);
+	vertexShader_.Create(ctx, AppConfig::ShaderFolder + "BlinnPhong.hlsl", ShaderType::Vertex);
+	fragmentShader_.Create(ctx, AppConfig::ShaderFolder + "BlinnPhong.hlsl", ShaderType::Fragment);
 }
 
 void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
@@ -204,12 +146,12 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 
 void PipelineSimple::Update(DX12Context& ctx)
 {
-	CBMVP cb = {
-		.worldMatrix = glm::transpose(glm::mat4(1.0)),
+	CCamera cb = {
 		.viewMatrix = glm::transpose(camera_->GetViewMatrix()),
-		.projectionMatrix = glm::transpose(camera_->GetProjectionMatrix())
+		.projectionMatrix = glm::transpose(camera_->GetProjectionMatrix()),
+		.cameraPosition = camera_->Position()
 	};
-	constantBuffers_[ctx.GetFrameIndex()].UploadData(&cb);
+	constBuffCamera_[ctx.GetFrameIndex()].UploadData(&cb);
 }
 
 void PipelineSimple::PopulateCommandList(DX12Context& ctx)
@@ -221,24 +163,32 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	commandList->RSSetScissorRects(1, &scissor_);
 	commandList->SetGraphicsRootSignature(rootSignature_.Get());
 
-	ID3D12DescriptorHeap* ppHeaps[] = { srvHeap_.Get() };
+	// Descriptors
+	uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(srvHeap_->GetGPUDescriptorHandleForHeapStart(), 0, incrementSize);
+	CD3DX12_GPU_DESCRIPTOR_HANDLE handle2(srvHeap_->GetGPUDescriptorHandleForHeapStart(), 1, incrementSize);
+	ID3D12DescriptorHeap* ppHeaps[] = { srvHeap_.Get()};
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
-	commandList->SetGraphicsRootConstantBufferView(0, constantBuffers_[ctx.GetFrameIndex()].gpuAddress_);
-	commandList->SetGraphicsRootDescriptorTable(1, srvHeap_->GetGPUDescriptorHandleForHeapStart());
+	commandList->SetGraphicsRootConstantBufferView(0, constBuffCamera_[ctx.GetFrameIndex()].gpuAddress_);
+	commandList->SetGraphicsRootConstantBufferView(1, scene_->modelConstBuffs_[ctx.GetFrameIndex()].gpuAddress_);
+	commandList->SetGraphicsRootDescriptorTable(2, handle1);
+	commandList->SetGraphicsRootDescriptorTable(3, handle2);
 	
 	// Indicate that the back buffer will be used as a render target.
 	{
 		auto resourceBarrier = 
 			CD3DX12_RESOURCE_BARRIER::Transition(
-				renderTargets_[ctx.GetFrameIndex()].Get(), 
+				//renderTargets_[ctx.GetFrameIndex()].Get(), 
+				resourcesShared_->GetRenderTarget(ctx.GetFrameIndex()),
 				D3D12_RESOURCE_STATE_PRESENT, 
 				D3D12_RESOURCE_STATE_RENDER_TARGET);
 		commandList->ResourceBarrier(1, &resourceBarrier);
 	}
 
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvHeap_->GetCPUDescriptorHandleForHeapStart(), ctx.GetFrameIndex(), rtvDescriptorSize_);
-	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(dsvHeap_->GetCPUDescriptorHandleForHeapStart());
-	commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
+	auto rtvHandle = resourcesShared_->GetRTVHandle(ctx.GetFrameIndex());
+	auto dsvHandle = resourcesShared_->GetDSVHandle();
+	constexpr uint32_t renderTargetCount = 1;
+	commandList->OMSetRenderTargets(renderTargetCount, &rtvHandle, FALSE, &dsvHandle);
 
 	// TODO Only one mesh for now
 	Mesh& mesh = scene_->model_.meshes_[0];
@@ -256,7 +206,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	{
 		auto resourceBarrier = 
 			CD3DX12_RESOURCE_BARRIER::Transition(
-				renderTargets_[ctx.GetFrameIndex()].Get(),
+				resourcesShared_->GetRenderTarget(ctx.GetFrameIndex()),
 				D3D12_RESOURCE_STATE_RENDER_TARGET, 
 				D3D12_RESOURCE_STATE_PRESENT);
 		commandList->ResourceBarrier(1, &resourceBarrier);

@@ -2,6 +2,9 @@
 #include "Utility.h"
 #include "DX12Exception.h"
 
+#include <stdexcept>
+#include <iostream>
+
 void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderType shaderType)
 {
 #if defined(_DEBUG)
@@ -13,7 +16,24 @@ void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderTyp
 	std::wstring assetPath = Utility::WStringConvert(filename);
 
 	LPCSTR entryPoint = shaderType == ShaderType::Vertex ? "VSMain" : "PSMain";
-	LPCSTR target = shaderType == ShaderType::Vertex ? "vs_5_0" : "ps_5_0";
+	LPCSTR target = shaderType == ShaderType::Vertex ? "vs_5_1" : "ps_5_1";
 
-	ThrowIfFailed(D3DCompileFromFile(assetPath.c_str(), nullptr, nullptr, entryPoint, target, compileFlags, 0, &handle_, nullptr))
+	ID3DBlob* errorBuff; // Buffer holding the error data if any
+	HRESULT hr = D3DCompileFromFile(
+		assetPath.c_str(),
+		nullptr,
+		D3D_COMPILE_STANDARD_FILE_INCLUDE,
+		entryPoint,
+		target,
+		compileFlags,
+		0,
+		&handle_,
+		&errorBuff);
+	if (FAILED(hr))
+	{
+		char* errorMessage = (char*)errorBuff->GetBufferPointer();
+		OutputDebugStringA(errorMessage); // Print to Output window on Visual Studio
+		std::cerr << errorMessage << '\n'; // Print to console
+		throw std::runtime_error("Shader error");
+	}
 }

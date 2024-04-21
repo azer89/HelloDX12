@@ -6,6 +6,7 @@
 class DX12Buffer
 {
 public:
+	void CreateBuffer(DX12Context& ctx, uint64_t bufferSize);
 	void CreateConstantBuffer(DX12Context& ctx, uint64_t bufferSize);
 	void CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t bufferSize, uint32_t stride);
 	void CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t bufferSize, DXGI_FORMAT format);

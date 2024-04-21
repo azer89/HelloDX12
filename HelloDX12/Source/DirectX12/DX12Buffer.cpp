@@ -4,6 +4,47 @@
 
 #include "d3dx12_resource_helpers.h"
 
+void DX12Buffer::CreateBuffer(DX12Context& ctx, uint64_t bufferSize)
+{
+	bufferSize_ = bufferSize;
+
+	D3D12MA::ALLOCATION_DESC constantBufferUploadAllocDesc =
+	{
+		.HeapType = D3D12_HEAP_TYPE_UPLOAD
+	};
+
+	D3D12_RESOURCE_DESC resourceDesc =
+	{
+		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
+		.Alignment = 0,
+		.Width = bufferSize_,
+		.Height = 1,
+		.DepthOrArraySize = 1,
+		.MipLevels = 1,
+		.Format = DXGI_FORMAT_UNKNOWN,
+		.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
+		.Flags = D3D12_RESOURCE_FLAG_NONE
+	};
+	resourceDesc.SampleDesc.Count = 1;
+	resourceDesc.SampleDesc.Quality = 0;
+
+	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
+		&constantBufferUploadAllocDesc,
+		&resourceDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		&dmaAllocation_,
+		IID_PPV_ARGS(&resource_)));
+	resource_->SetName(L"Buffer");
+	dmaAllocation_->SetName(L"Buffer_Allocation_DMA");
+
+	// Mapping
+	ThrowIfFailed(resource_->Map(0, nullptr, reinterpret_cast<void**>(&mappedData_)))
+
+	// GPU virtual address
+	gpuAddress_ = resource_->GetGPUVirtualAddress();
+}
+
 void DX12Buffer::CreateConstantBuffer(DX12Context& ctx, uint64_t bufferSize)
 {
 	bufferSize_ = bufferSize;
