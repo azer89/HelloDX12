@@ -93,7 +93,7 @@ void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 	D3D12_STATIC_SAMPLER_DESC sampler = scene_->model_.meshes_[0].image_->GetSampler();
 
 	// Allow input layout and deny uneccessary access to certain pipeline stages.
-	D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
+	constexpr D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
@@ -164,9 +164,9 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	commandList->SetGraphicsRootSignature(rootSignature_.Get());
 
 	// Descriptors
-	uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(srvHeap_->GetGPUDescriptorHandleForHeapStart(), 0, incrementSize);
-	CD3DX12_GPU_DESCRIPTOR_HANDLE handle2(srvHeap_->GetGPUDescriptorHandleForHeapStart(), 1, incrementSize);
+	const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(srvHeap_->GetGPUDescriptorHandleForHeapStart(), 0, incrementSize);
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle2(srvHeap_->GetGPUDescriptorHandleForHeapStart(), 1, incrementSize);
 	ID3D12DescriptorHeap* ppHeaps[] = { srvHeap_.Get()};
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 	commandList->SetGraphicsRootConstantBufferView(0, constBuffCamera_[ctx.GetFrameIndex()].gpuAddress_);
@@ -176,7 +176,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	
 	// Indicate that the back buffer will be used as a render target.
 	{
-		auto resourceBarrier = 
+		const auto resourceBarrier = 
 			CD3DX12_RESOURCE_BARRIER::Transition(
 				//renderTargets_[ctx.GetFrameIndex()].Get(), 
 				resourcesShared_->GetRenderTarget(ctx.GetFrameIndex()),
@@ -185,16 +185,16 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 		commandList->ResourceBarrier(1, &resourceBarrier);
 	}
 
-	auto rtvHandle = resourcesShared_->GetRTVHandle(ctx.GetFrameIndex());
-	auto dsvHandle = resourcesShared_->GetDSVHandle();
+	const auto rtvHandle = resourcesShared_->GetRTVHandle(ctx.GetFrameIndex());
+	const auto dsvHandle = resourcesShared_->GetDSVHandle();
 	constexpr uint32_t renderTargetCount = 1;
 	commandList->OMSetRenderTargets(renderTargetCount, &rtvHandle, FALSE, &dsvHandle);
 
 	// TODO Only one mesh for now
-	Mesh& mesh = scene_->model_.meshes_[0];
+	const Mesh& mesh = scene_->model_.meshes_[0];
 
 	// Record commands.
-	const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
+	constexpr float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
 	commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -204,7 +204,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 
 	// Indicate that the back buffer will now be used to present
 	{
-		auto resourceBarrier = 
+		const auto resourceBarrier = 
 			CD3DX12_RESOURCE_BARRIER::Transition(
 				resourcesShared_->GetRenderTarget(ctx.GetFrameIndex()),
 				D3D12_RESOURCE_STATE_RENDER_TARGET, 
