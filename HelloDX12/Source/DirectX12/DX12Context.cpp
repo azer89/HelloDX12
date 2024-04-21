@@ -68,7 +68,7 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 				LPCSTR pDescription,
 				void* pContext)
 				{
-					std::cout << "Validation Layer: " << pDescription;
+					std::cerr << "Validation Layer: " << pDescription;
 				};
 
 			DWORD callbackCookie = 0;

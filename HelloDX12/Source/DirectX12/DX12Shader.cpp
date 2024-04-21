@@ -33,7 +33,7 @@ void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderTyp
 	{
 		char* errorMessage = (char*)errorBuff->GetBufferPointer();
 		OutputDebugStringA(errorMessage); // Print to Output window on Visual Studio
-		std::cout << errorMessage << '\n'; // Print to console
+		std::cerr << errorMessage << '\n'; // Print to console
 		throw std::runtime_error("Shader error");
 	}
 }
