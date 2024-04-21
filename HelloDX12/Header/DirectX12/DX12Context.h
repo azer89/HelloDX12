@@ -28,6 +28,7 @@ public:
 	DX12Context(DX12Context&&) = delete;
 	DX12Context& operator=(DX12Context&&) = delete;
 
+	void Init(uint32_t swapchainWidth, uint32_t swapchainHeight);
 	void Destroy();
 
 	[[nodiscard]] uint32_t GetFrameIndex() const { return frameIndex_; }
@@ -38,8 +39,6 @@ public:
 	[[nodiscard]] D3D12MA::Allocator* GetDMAAllocator() const { return dmaAllocator_; }
 	[[nodiscard]] ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
 	
-	void Init(uint32_t swapchainWidth, uint32_t swapchainHeight);
-
 	void CreateFence();
 	void WaitForGPU();
 	void MoveToNextFrame();
@@ -55,6 +54,8 @@ public:
 	CD3DX12_RECT GetScissor() const;
 
 private:
+	void SetInfoQueue();
+	
 	void GetHardwareAdapter(
 		_In_ IDXGIFactory1* pFactory,
 		_Outptr_result_maybenull_ IDXGIAdapter1** ppAdapter,
@@ -65,12 +66,12 @@ private:
 	uint32_t swapchainHeight_ = 0;
 	
 	// Pipeline objects.
-	ComPtr<IDXGISwapChain3> swapchain_;
-	ComPtr<ID3D12Device> device_;
-	ComPtr<IDXGIAdapter1> adapter_;
+	ComPtr<IDXGISwapChain3> swapchain_ = nullptr;
+	ComPtr<ID3D12Device> device_ = nullptr;
+	ComPtr<IDXGIAdapter1> adapter_ = nullptr;
 	ComPtr<ID3D12CommandAllocator> commandAllocators_[AppConfig::FrameCount] = {};
-	ComPtr<ID3D12CommandQueue> commandQueue_;
-	ComPtr<ID3D12GraphicsCommandList> commandList_;
+	ComPtr<ID3D12CommandQueue> commandQueue_ = nullptr;
+	ComPtr<ID3D12GraphicsCommandList> commandList_ = nullptr;
 
 	// Synchronization objects.
 	uint32_t frameIndex_ = 0;

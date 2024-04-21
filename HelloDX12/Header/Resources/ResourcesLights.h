@@ -22,7 +22,7 @@ public:
 	ResourcesLights() = default;
 	~ResourcesLights() = default;
 
-	void Destroy();
+	void Destroy() override;
 
 	void AddLights(DX12Context& ctx, const std::vector<LightData>& lights);
 

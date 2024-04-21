@@ -4,6 +4,16 @@
 
 #include "d3dx12_resource_helpers.h"
 
+void DX12Buffer::Destroy()
+{
+	if (dmaAllocation_ != nullptr)
+	{
+		dmaAllocation_->Release();
+		resource_ = nullptr;
+		dmaAllocation_ = nullptr;
+	}
+}
+
 void DX12Buffer::CreateBuffer(DX12Context& ctx, uint64_t bufferSize)
 {
 	bufferSize_ = bufferSize;

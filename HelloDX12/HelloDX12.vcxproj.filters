@@ -45,9 +45,6 @@
     <ClInclude Include="Header\Win32Application.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Header\ConsoleDisplay.h">
-      <Filter>Header</Filter>
-    </ClInclude>
     <ClInclude Include="Header\Configs.h">
       <Filter>Header</Filter>
     </ClInclude>
@@ -123,9 +120,6 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Win32Application.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ConsoleDisplay.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Utility.cpp">

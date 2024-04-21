@@ -1,16 +1,10 @@
-//*********************************************************
-//
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
-// ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
-// IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
-// PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
-//
-//*********************************************************
 #include "AppBase.h"
 #include "Configs.h"
 #include "Utility.h"
+
+#include <windows.h>
+#include <fcntl.h>
+#include <iostream>
 
 using namespace Microsoft::WRL;
 
@@ -21,6 +15,7 @@ AppBase::AppBase() :
 	aspectRatio_(static_cast<float>(AppConfig::InitialScreenWidth) / static_cast<float>(AppConfig::InitialScreenHeight)),
 	camera_(std::make_unique<Camera>(glm::vec3(0.0f)))
 {
+	ConsoleShow();
 }
 
 AppBase::~AppBase()
@@ -28,7 +23,7 @@ AppBase::~AppBase()
 }
 
 // Helper function for setting the window's title text.
-void AppBase::SetCustomWindowText(LPCWSTR text)
+void AppBase::SetCustomWindowText(LPCWSTR text) const
 {
 	std::wstring windowText = title_ + L": " + text;
 	SetWindowText(Win32Application::GetHwnd(), windowText.c_str());
@@ -92,4 +87,14 @@ void AppBase::OnKeyboardInput()
 	if (GetAsyncKeyState('S') & 0x8000) { camera_->ProcessKeyboard(CameraMovement::Backward, fpsTemp); }
 	if (GetAsyncKeyState('A') & 0x8000) { camera_->ProcessKeyboard(CameraMovement::Left, fpsTemp); }
 	if (GetAsyncKeyState('D') & 0x8000) { camera_->ProcessKeyboard(CameraMovement::Right, fpsTemp); }
+}
+
+void AppBase::ConsoleShow()
+{
+	if (AllocConsole())
+	{
+		FILE* fp;
+		freopen_s(&fp, "CONOUT$", "w", stdout);
+		freopen_s(&fp, "CONOUT$", "w", stderr);
+	}
 }

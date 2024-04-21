@@ -49,33 +49,7 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 	}
 
 	// Debug callback
-	// github.com/microsoft/DirectX-Specs/blob/master/d3d/MessageCallback.md
-	{
-		ComPtr<ID3D12InfoQueue> infoQueue;
-		if (device_->QueryInterface(IID_PPV_ARGS(infoQueue.GetAddressOf())) >= 0)
-		{
-			ThrowIfFailed(infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true))
-			ThrowIfFailed(infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true))
-			ThrowIfFailed(infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true))
-
-			ComPtr<ID3D12InfoQueue1> infoQueue1;
-			if (infoQueue->QueryInterface(IID_PPV_ARGS(infoQueue1.ReleaseAndGetAddressOf())) >= 0)
-			{
-				auto MessageCallback = [](
-					D3D12_MESSAGE_CATEGORY category,
-					D3D12_MESSAGE_SEVERITY severity,
-					D3D12_MESSAGE_ID id,
-					LPCSTR pDescription,
-					void* pContext)
-					{
-						std::cerr << "Validation Layer: " << pDescription;
-					};
-
-				DWORD callbackCookie = 0;
-				ThrowIfFailed(infoQueue1->RegisterMessageCallback(MessageCallback, D3D12_MESSAGE_CALLBACK_FLAG_NONE, this, &callbackCookie))
-			}
-		}
-	}
+	SetInfoQueue();
 
 	// Describe and create the command queue.
 	D3D12_COMMAND_QUEUE_DESC queueDesc = {};
@@ -134,6 +108,40 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 		};
 
 		ThrowIfFailed(D3D12MA::CreateAllocator(&desc, &dmaAllocator_))
+	}
+}
+
+// Debug callback
+// github.com/microsoft/DirectX-Specs/blob/master/d3d/MessageCallback.md
+void DX12Context::SetInfoQueue()
+{
+	ComPtr<ID3D12InfoQueue> infoQueue;
+	if (device_->QueryInterface(IID_PPV_ARGS(infoQueue.GetAddressOf())) >= 0)
+	{
+		ThrowIfFailed(infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true))
+		ThrowIfFailed(infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true))
+		ThrowIfFailed(infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true))
+
+		ComPtr<ID3D12InfoQueue1> infoQueue1;
+		if (infoQueue->QueryInterface(IID_PPV_ARGS(infoQueue1.ReleaseAndGetAddressOf())) >= 0)
+		{
+			auto MessageCallback = [](
+				D3D12_MESSAGE_CATEGORY category,
+				D3D12_MESSAGE_SEVERITY severity,
+				D3D12_MESSAGE_ID id,
+				LPCSTR pDescription,
+				void* pContext)
+			{
+				std::cerr << "Validation Layer: " << pDescription;
+			};
+
+			DWORD callbackCookie = 0;
+			ThrowIfFailed(infoQueue1->RegisterMessageCallback(
+				MessageCallback,
+				D3D12_MESSAGE_CALLBACK_FLAG_NONE,
+				this,
+				&callbackCookie))
+		}
 	}
 }
 

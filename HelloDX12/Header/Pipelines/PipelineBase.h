@@ -18,15 +18,15 @@ public:
 	}
 
 protected:
-	ComPtr<ID3D12PipelineState> pipelineState_;
-	ComPtr<ID3D12RootSignature> rootSignature_;
-	ComPtr<ID3D12DescriptorHeap> srvHeap_;
+	ComPtr<ID3D12PipelineState> pipelineState_ = nullptr;
+	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
+	ComPtr<ID3D12DescriptorHeap> srvHeap_ = nullptr;
 
-	DX12Shader vertexShader_;
-	DX12Shader fragmentShader_;
+	DX12Shader vertexShader_ = {};
+	DX12Shader fragmentShader_ = {};
 
-	CD3DX12_VIEWPORT viewport_;
-	CD3DX12_RECT scissor_;
+	CD3DX12_VIEWPORT viewport_ = {};
+	CD3DX12_RECT scissor_ = {};
 };
 
 #endif

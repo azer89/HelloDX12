@@ -44,7 +44,6 @@ float4 PSMain(PSInput input) : SV_TARGET
     lightDataArray.GetDimensions(len, stride);
     
     float4 albedo = albedoTexture.Sample(albedoSampler, input.uv);
-    float specular = albedo.a;
     
     float3 lighting = albedo.xyz * 0.01;
     float viewDir = normalize(camData.cameraPosition - input.worldPosition.xyz);

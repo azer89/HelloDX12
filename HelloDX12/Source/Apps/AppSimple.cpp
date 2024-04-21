@@ -12,7 +12,7 @@ void AppSimple::OnInit()
 	context_.CreateFence();
 
 	// Camera
-	camera_->SetPositionAndTarget(glm::vec3(1.0f, 3.0f, 5.0f), glm::vec3(0.0));
+	camera_->SetPositionAndTarget(glm::vec3(1.0f, 3.0f, 5.0f), glm::vec3(0.0, 1.5, 0.0));
 
 	// Scene
 	scene_ = std::make_unique<Scene>();
@@ -26,10 +26,10 @@ void AppSimple::OnInit()
 	resourcesLights_ = std::make_unique<ResourcesLights>();
 	resourcesLights_->AddLights(context_,
 	{
-		{.position_ = glm::vec4(-1.5f, 2.7f,  1.5f, 1.f), .color_ = glm::vec4(1.f, 1.f, 1.f, 1.f), .radius_ = 10.0f },
-		{.position_ = glm::vec4(1.5f, 2.7f,  1.5f, 1.f), .color_ = glm::vec4(1.f, 1.f, 1.f, 1.f), .radius_ = 10.0f },
-		{.position_ = glm::vec4(-1.5f, 2.7f, -1.5f, 1.f), .color_ = glm::vec4(1.f, 1.f, 1.f, 1.f), .radius_ = 10.0f },
-		{.position_ = glm::vec4(1.5f, 2.7f, -1.5f, 1.f), .color_ = glm::vec4(1.f, 1.f, 1.f, 1.f), .radius_ = 10.0f }
+		{.position_ = glm::vec4(-1.5f, 3.5f,  1.5f, 1.f), .color_ = glm::vec4(1.f, 1.f, 1.f, 1.f), .radius_ = 10.0f },
+		{.position_ = glm::vec4(1.5f, 3.5f,  1.5f, 1.f), .color_ = glm::vec4(1.f, 1.f, 1.f, 1.f), .radius_ = 10.0f },
+		{.position_ = glm::vec4(-1.5f, 3.5f, -1.5f, 1.f), .color_ = glm::vec4(1.f, 1.f, 1.f, 1.f), .radius_ = 10.0f },
+		{.position_ = glm::vec4(1.5f, 3.5f, -1.5f, 1.f), .color_ = glm::vec4(1.f, 1.f, 1.f, 1.f), .radius_ = 10.0f }
 	});
 
 	// Pipelines

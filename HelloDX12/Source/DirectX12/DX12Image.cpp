@@ -13,14 +13,6 @@ DX12Image::DX12Image()
 
 void DX12Image::Load(DX12Context& ctx, std::string filename)
 {
-	// TODO Temporary
-	/*width_ = 256;
-	height_ = 256;
-	pixelSize_ = 4;
-	format_ = DXGI_FORMAT_R8G8B8A8_UNORM;
-	std::vector<uint8_t> imageData = GenerateTextureData(ctx);
-	buffer_.CreateImage(ctx, imageData.data(), width_, height_, pixelSize_, format_);*/
-
 	stbi_set_flip_vertically_on_load(false);
 
 	int texWidth, texHeight, texChannels;
@@ -75,7 +67,7 @@ D3D12_STATIC_SAMPLER_DESC DX12Image::GetSampler()
 }
 
 // Generate a simple black and white checkerboard texture.
-std::vector<uint8_t> DX12Image::GenerateTextureData(DX12Context& ctx)
+std::vector<uint8_t> DX12Image::GenerateCheckerboard(DX12Context& ctx)
 {
 	const uint32_t rowPitch = width_ * pixelSize_;
 	const uint32_t cellPitch = rowPitch >> 6;        // The width of a cell in the checkboard texture.

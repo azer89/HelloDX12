@@ -20,15 +20,7 @@ public:
 
 	void UploadData(void* data);
 
-	void Destroy()
-	{
-		if (dmaAllocation_ != nullptr)
-		{
-			dmaAllocation_->Release();
-			resource_ = nullptr;
-			dmaAllocation_ = nullptr;
-		}
-	}
+	void Destroy();
 
 private:
 	void CreateUploadHeap(DX12Context& ctx,
@@ -40,16 +32,16 @@ private:
 	static uint32_t GetConstantBufferByteSize(uint64_t byteSize);
 
 public:
-	uint64_t bufferSize_;
+	uint64_t bufferSize_ = 0;
 	ComPtr<ID3D12Resource> resource_ = nullptr;
 	D3D12MA::Allocation* dmaAllocation_ = nullptr;
 	
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_ = {};
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_ = {};
-
-	uint64_t constantBufferSize_;
-	unsigned char* mappedData_;
-	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress_;
+	
+	uint64_t constantBufferSize_ = 0;
+	unsigned char* mappedData_ = nullptr;
+	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress_ = 0;
 };
 
 #endif

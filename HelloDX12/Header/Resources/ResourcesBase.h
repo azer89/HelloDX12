@@ -3,6 +3,9 @@
 
 class ResourcesBase
 {
+	virtual void Destroy()
+	{
+	}
 };
 
 #endif
