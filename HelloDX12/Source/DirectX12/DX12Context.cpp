@@ -48,6 +48,33 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 		))
 	}
 
+	// Debug callback
+	{
+		ComPtr<ID3D12InfoQueue> infoQueue;
+		if (device_->QueryInterface(IID_PPV_ARGS(infoQueue.GetAddressOf())) >= 0)
+		{
+			ThrowIfFailed(infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true))
+			ThrowIfFailed(infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true))
+			ThrowIfFailed(infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true))
+
+			ComPtr<ID3D12InfoQueue1> infoQueue1;
+			ThrowIfFailed(infoQueue->QueryInterface(IID_PPV_ARGS(infoQueue1.ReleaseAndGetAddressOf())))
+
+			auto MessageCallback = [](
+				D3D12_MESSAGE_CATEGORY category,
+				D3D12_MESSAGE_SEVERITY severity,
+				D3D12_MESSAGE_ID id,
+				LPCSTR pDescription,
+				void* pContext)
+				{
+					std::cout << "Validation Layer: " << pDescription;
+				};
+
+			DWORD callbackCookie = 0;
+			ThrowIfFailed(infoQueue1->RegisterMessageCallback(MessageCallback, D3D12_MESSAGE_CALLBACK_FLAG_NONE, this, &callbackCookie))
+		}
+	}
+
 	// Describe and create the command queue.
 	D3D12_COMMAND_QUEUE_DESC queueDesc = {};
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
