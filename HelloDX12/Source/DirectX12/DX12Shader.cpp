@@ -1,7 +1,9 @@
 #include "DX12Shader.h"
 #include "Utility.h"
 #include "DX12Exception.h"
+
 #include <stdexcept>
+#include <iostream>
 
 void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderType shaderType)
 {
@@ -29,7 +31,9 @@ void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderTyp
 		&errorBuff);
 	if (FAILED(hr))
 	{
-		OutputDebugStringA((char*)errorBuff->GetBufferPointer());
+		char* errorMessage = (char*)errorBuff->GetBufferPointer();
+		OutputDebugStringA(errorMessage); // Print to Output window on Visual Studio
+		std::cout << errorMessage << '\n'; // Print to console
 		throw std::runtime_error("Shader error");
 	}
 }
