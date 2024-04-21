@@ -114,9 +114,7 @@
     <ClInclude Include="Header\Resources\ResourcesLights.h">
       <Filter>Header\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Header\ConstantBuffers.h">
-      <Filter>Header</Filter>
-    </ClInclude>
+    <ClInclude Include="Header\ConstantDefinitions.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -190,6 +188,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\CameraData.hlsli">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\ModelData.hlsli">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

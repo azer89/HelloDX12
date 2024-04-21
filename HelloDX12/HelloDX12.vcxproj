@@ -74,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\CameraData.hlsli" />
+    <None Include="Shader\ModelData.hlsli" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{16B13BB4-D82D-4AC1-8B40-C6BCCC99954B}</ProjectGuid>
