@@ -37,6 +37,9 @@ public:
 protected:
 	void SetCustomWindowText(LPCWSTR text);
 
+private:
+	void ConsoleShow();
+
 protected:
 	uint32_t width_;
 	uint32_t height_;

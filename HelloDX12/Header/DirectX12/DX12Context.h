@@ -66,12 +66,12 @@ private:
 	uint32_t swapchainHeight_ = 0;
 	
 	// Pipeline objects.
-	ComPtr<IDXGISwapChain3> swapchain_;
-	ComPtr<ID3D12Device> device_;
-	ComPtr<IDXGIAdapter1> adapter_;
+	ComPtr<IDXGISwapChain3> swapchain_ = nullptr;
+	ComPtr<ID3D12Device> device_ = nullptr;
+	ComPtr<IDXGIAdapter1> adapter_ = nullptr;
 	ComPtr<ID3D12CommandAllocator> commandAllocators_[AppConfig::FrameCount] = {};
-	ComPtr<ID3D12CommandQueue> commandQueue_;
-	ComPtr<ID3D12GraphicsCommandList> commandList_;
+	ComPtr<ID3D12CommandQueue> commandQueue_ = nullptr;
+	ComPtr<ID3D12GraphicsCommandList> commandList_ = nullptr;
 
 	// Synchronization objects.
 	uint32_t frameIndex_ = 0;

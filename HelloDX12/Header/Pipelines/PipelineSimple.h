@@ -40,13 +40,13 @@ private:
 
 public:
 	
-	Scene* scene_;
-	Camera* camera_;
-	ResourcesShared* resourcesShared_;
-	ResourcesLights* resourcesLights_;
+	Scene* scene_ = nullptr;
+	Camera* camera_ = nullptr;
+	ResourcesShared* resourcesShared_ = nullptr;
+	ResourcesLights* resourcesLights_ = nullptr;
 
 private:
-	std::array<DX12Buffer, AppConfig::FrameCount> constBuffCamera_;
+	std::array<DX12Buffer, AppConfig::FrameCount> constBuffCamera_ = {};
 };
 
 #endif
