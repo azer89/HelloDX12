@@ -1,6 +1,7 @@
 #include "DX12Shader.h"
 #include "Utility.h"
 #include "DX12Exception.h"
+#include <stdexcept>
 
 void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderType shaderType)
 {
@@ -15,14 +16,20 @@ void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderTyp
 	LPCSTR entryPoint = shaderType == ShaderType::Vertex ? "VSMain" : "PSMain";
 	LPCSTR target = shaderType == ShaderType::Vertex ? "vs_5_1" : "ps_5_1";
 
-	ThrowIfFailed(D3DCompileFromFile(
-		assetPath.c_str(), 
-		nullptr, 
-		D3D_COMPILE_STANDARD_FILE_INCLUDE, 
-		entryPoint, 
-		target, 
-		compileFlags, 
-		0, 
-		&handle_, 
-		nullptr))
+	ID3DBlob* errorBuff; // Buffer holding the error data if any
+	HRESULT hr = D3DCompileFromFile(
+		assetPath.c_str(),
+		nullptr,
+		D3D_COMPILE_STANDARD_FILE_INCLUDE,
+		entryPoint,
+		target,
+		compileFlags,
+		0,
+		&handle_,
+		&errorBuff);
+	if (FAILED(hr))
+	{
+		OutputDebugStringA((char*)errorBuff->GetBufferPointer());
+		throw std::runtime_error("Shader error");
+	}
 }
