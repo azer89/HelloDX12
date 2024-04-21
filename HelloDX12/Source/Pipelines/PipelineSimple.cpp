@@ -147,9 +147,9 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 void PipelineSimple::Update(DX12Context& ctx)
 {
 	CCamera cb = {
-		.worldMatrix = glm::transpose(glm::mat4(1.0)),
 		.viewMatrix = glm::transpose(camera_->GetViewMatrix()),
-		.projectionMatrix = glm::transpose(camera_->GetProjectionMatrix())
+		.projectionMatrix = glm::transpose(camera_->GetProjectionMatrix()),
+		.cameraPosition = camera_->Position()
 	};
 	constBuffCamera_[ctx.GetFrameIndex()].UploadData(&cb);
 }

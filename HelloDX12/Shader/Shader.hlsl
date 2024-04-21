@@ -31,7 +31,7 @@ PSInput VSMain(VSInput input)
     result.worldPosition = result.fragPosition;
     result.fragPosition = mul(result.fragPosition, camData.viewMatrix);
     result.fragPosition = mul(result.fragPosition, camData.projectionMatrix);
-    result.normal = mul(input.normal, ((float3x3) camData.modelMatrix));
+    result.normal = mul(input.normal, ((float3x3) modelData.modelMatrix));
     result.uv = input.uv.xy;
 
     return result;

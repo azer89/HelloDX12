@@ -5,9 +5,9 @@
 
 struct CCamera
 {
-	glm::mat4 worldMatrix;
 	glm::mat4 viewMatrix;
 	glm::mat4 projectionMatrix;
+	glm::vec3 cameraPosition;
 };
 
 struct CModel
