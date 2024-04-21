@@ -16,7 +16,7 @@ struct LightData
 	float radius_ = 1.0f;
 };
 
-class ResourcesLights final : ResourcesBase
+class ResourcesLights final : public ResourcesBase
 {
 public:
 	ResourcesLights() = default;

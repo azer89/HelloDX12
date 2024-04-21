@@ -1,5 +1,7 @@
 #include "AppSimple.h"
 #include "DX12Exception.h"
+#include "PipelineClear.h"
+#include "PipelinePresent.h"
 
 AppSimple::AppSimple() : AppBase()
 {
@@ -19,11 +21,11 @@ void AppSimple::OnInit()
 	scene_->Init(context_);
 
 	// Render target and depth
-	resourcesShared_ = std::make_unique<ResourcesShared>();
+	resourcesShared_ = AddResources<ResourcesShared>();
 	resourcesShared_->Init(context_);
 
 	// Lights
-	resourcesLights_ = std::make_unique<ResourcesLights>();
+	resourcesLights_ = AddResources<ResourcesLights>();
 	resourcesLights_->AddLights(context_,
 	{
 		{.position_ = glm::vec4(-1.5f, 3.5f,  1.5f, 1.f), .color_ = glm::vec4(1.f, 1.f, 1.f, 1.f), .radius_ = 10.0f },
@@ -33,22 +35,25 @@ void AppSimple::OnInit()
 	});
 
 	// Pipelines
-	pipClear_ = std::make_unique<PipelineClear>(context_, resourcesShared_.get());
-	pipSimple_ = std::make_unique<PipelineSimple>(
+	AddPipeline<PipelineClear>(context_, resourcesShared_);
+	pipSimple_ = AddPipeline<PipelineSimple>(
 		context_, 
 		scene_.get(), 
 		camera_.get(), 
-		resourcesShared_.get(),
-		resourcesLights_.get());
-	pipPresent_ = std::make_unique<PipelinePresent>(context_, resourcesShared_.get());
+		resourcesShared_,
+		resourcesLights_);
+	AddPipeline<PipelinePresent>(context_, resourcesShared_);
 }
 
 // Update frame-based values.
 void AppSimple::OnUpdate()
 {
 	OnKeyboardInput();
-	
-	pipSimple_->Update(context_);
+
+	for (auto& pip : pipelines_)
+	{
+		pip->Update(context_);
+	}
 }
 
 // Render the scene.
@@ -57,9 +62,10 @@ void AppSimple::OnRender()
 	context_.ResetCommandAllocator();
 	context_.ResetCommandList();
 
-	pipClear_->PopulateCommandList(context_);
-	pipSimple_->PopulateCommandList(context_);
-	pipPresent_->PopulateCommandList(context_);
+	for (auto& pip : pipelines_)
+	{
+		pip->PopulateCommandList(context_);
+	}
 
 	context_.SubmitCommandList();
 	context_.PresentSwapchain();
@@ -69,8 +75,16 @@ void AppSimple::OnRender()
 void AppSimple::OnDestroy()
 {
 	context_.WaitForGPU();
-	pipSimple_->Destroy();
 	scene_->Destroy();
-	resourcesLights_->Destroy();
+
+	for (auto& pip : pipelines_)
+	{
+		pip->Destroy();
+	}
+	for (auto& res : resources_)
+	{
+		res->Destroy();
+	}
+
 	context_.Destroy();
 }

@@ -5,7 +5,7 @@
 #include "PipelineBase.h"
 #include "ResourcesShared.h"
 
-class PipelineClear final : PipelineBase
+class PipelineClear final : public PipelineBase
 {
 public:
 	PipelineClear(

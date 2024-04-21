@@ -4,8 +4,6 @@
 #include "AppBase.h"
 #include "DX12Context.h"
 #include "PipelineSimple.h"
-#include "PipelineClear.h"
-#include "PipelinePresent.h"
 #include "ResourcesShared.h"
 #include "ResourcesLights.h"
 #include "Scene.h"
@@ -27,14 +25,9 @@ public:
 private:
 	DX12Context context_;
 	std::unique_ptr<Scene> scene_ = nullptr;
-	std::unique_ptr<PipelineClear> pipClear_ = nullptr;
-	std::unique_ptr<PipelineSimple> pipSimple_ = nullptr;
-	std::unique_ptr<PipelinePresent> pipPresent_ = nullptr;
-	std::unique_ptr<ResourcesShared> resourcesShared_ = nullptr;
-	std::unique_ptr<ResourcesLights> resourcesLights_ = nullptr;
-
-private:
-	//void PopulateCommandList();
+	PipelineSimple* pipSimple_ = nullptr;
+	ResourcesShared* resourcesShared_ = nullptr;
+	ResourcesLights* resourcesLights_ = nullptr;
 };
 
 #endif

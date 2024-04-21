@@ -3,9 +3,12 @@
 
 class ResourcesBase
 {
-	virtual void Destroy()
-	{
-	}
+public:
+	explicit ResourcesBase() = default;
+	virtual ~ResourcesBase() = default;
+
+public:
+	virtual void Destroy() = 0;
 };
 
 #endif

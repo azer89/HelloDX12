@@ -15,7 +15,7 @@
 
 #include <array>
 
-class PipelineSimple final : PipelineBase
+class PipelineSimple final : public PipelineBase
 {
 public:
 	PipelineSimple(

@@ -8,7 +8,7 @@ class PipelineBase
 {
 public:
 	explicit PipelineBase(DX12Context& ctx);
-	virtual ~PipelineBase();
+	virtual ~PipelineBase() = default;
 
 	virtual void Update(DX12Context& ctx) = 0;
 	virtual void PopulateCommandList(DX12Context& ctx) = 0;

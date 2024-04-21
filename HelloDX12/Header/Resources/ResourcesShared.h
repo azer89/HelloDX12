@@ -4,9 +4,16 @@
 #include "DX12Context.h"
 #include "ResourcesBase.h"
 
-class ResourcesShared final : ResourcesBase
+class ResourcesShared final : public ResourcesBase
 {
 public:
+	ResourcesShared() = default;
+	~ResourcesShared() = default;
+
+	void Destroy() override
+	{
+	}
+
 	void Init(DX12Context& ctx);
 
 	ID3D12Resource* GetRenderTarget(uint32_t frameIndex);
