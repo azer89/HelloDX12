@@ -73,7 +73,7 @@ float4 PSMain(PSInput input) : SV_TARGET
     
     // Gamma correction
     float gamma = 1.0 / 2.2;
-    lighting = pow(lighting, float3(gamma, gamma, gamma));
+    lighting = pow(lighting, gamma);
     
     return float4(lighting, 1.0f);
 }
