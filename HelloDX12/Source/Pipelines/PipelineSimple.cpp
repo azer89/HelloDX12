@@ -24,7 +24,7 @@ PipelineSimple::PipelineSimple(
 
 void PipelineSimple::Destroy()
 {
-	for (auto& buff : constantBuffers_)
+	for (auto& buff : constBuffCamera_)
 	{
 		buff.Destroy();
 	}
@@ -63,7 +63,7 @@ void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
 {
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
-		constantBuffers_[i].CreateConstantBuffer(ctx, sizeof(CCamera));
+		constBuffCamera_[i].CreateConstantBuffer(ctx, sizeof(CCamera));
 	}
 }
 
@@ -150,7 +150,7 @@ void PipelineSimple::Update(DX12Context& ctx)
 		.viewMatrix = glm::transpose(camera_->GetViewMatrix()),
 		.projectionMatrix = glm::transpose(camera_->GetProjectionMatrix())
 	};
-	constantBuffers_[ctx.GetFrameIndex()].UploadData(&cb);
+	constBuffCamera_[ctx.GetFrameIndex()].UploadData(&cb);
 }
 
 void PipelineSimple::PopulateCommandList(DX12Context& ctx)
@@ -168,7 +168,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	CD3DX12_GPU_DESCRIPTOR_HANDLE handle2(srvHeap_->GetGPUDescriptorHandleForHeapStart(), 1, incrementSize);
 	ID3D12DescriptorHeap* ppHeaps[] = { srvHeap_.Get()};
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
-	commandList->SetGraphicsRootConstantBufferView(0, constantBuffers_[ctx.GetFrameIndex()].gpuAddress_);
+	commandList->SetGraphicsRootConstantBufferView(0, constBuffCamera_[ctx.GetFrameIndex()].gpuAddress_);
 	commandList->SetGraphicsRootDescriptorTable(1, handle1);
 	commandList->SetGraphicsRootDescriptorTable(2, handle2);
 	

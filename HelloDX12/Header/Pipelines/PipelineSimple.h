@@ -46,7 +46,7 @@ public:
 	ResourcesLights* resourcesLights_;
 
 private:
-	std::array<DX12Buffer, AppConfig::FrameCount> constantBuffers_;
+	std::array<DX12Buffer, AppConfig::FrameCount> constBuffCamera_;
 };
 
 #endif
