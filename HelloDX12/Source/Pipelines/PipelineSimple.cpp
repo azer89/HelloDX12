@@ -1,7 +1,7 @@
 #include "PipelineSimple.h"
 #include "DX12Exception.h"
 
-#include "ConstantBuffers.h"
+#include "ConstantDefinitions.h"
 
 PipelineSimple::PipelineSimple(
 	DX12Context& ctx, 
@@ -63,7 +63,7 @@ void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
 {
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
-		constantBuffers_[i].CreateConstantBuffer(ctx, sizeof(CBMVP));
+		constantBuffers_[i].CreateConstantBuffer(ctx, sizeof(CCamera));
 	}
 }
 
@@ -145,7 +145,7 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 
 void PipelineSimple::Update(DX12Context& ctx)
 {
-	CBMVP cb = {
+	CCamera cb = {
 		.worldMatrix = glm::transpose(glm::mat4(1.0)),
 		.viewMatrix = glm::transpose(camera_->GetViewMatrix()),
 		.projectionMatrix = glm::transpose(camera_->GetProjectionMatrix())

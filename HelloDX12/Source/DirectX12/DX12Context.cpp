@@ -49,6 +49,7 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 	}
 
 	// Debug callback
+	// github.com/microsoft/DirectX-Specs/blob/master/d3d/MessageCallback.md
 	{
 		ComPtr<ID3D12InfoQueue> infoQueue;
 		if (device_->QueryInterface(IID_PPV_ARGS(infoQueue.GetAddressOf())) >= 0)
