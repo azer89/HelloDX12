@@ -46,8 +46,6 @@ float4 PSMain(PSInput input) : SV_TARGET
     float4 albedo = albedoTexture.Sample(albedoSampler, input.uv);
     float specular = albedo.a;
     
-    const float LINEAR = 0.7f;
-    const float QUADRATIC = 1.8f;
     float3 lighting = albedo.xyz * 0.01;
     float viewDir = normalize(camData.cameraPosition - input.worldPosition.xyz);
     for (uint i = 0; i < len; ++i)
@@ -60,19 +58,22 @@ float4 PSMain(PSInput input) : SV_TARGET
         
         // Specular
         float3 halfwayDir = normalize(lightDir + viewDir);
-        float spec = pow(max(dot(input.normal, halfwayDir), 0.0), 2.0);
+        float spec = pow(max(dot(input.normal, halfwayDir), 0.0), 8.0);
         float3 specular = light.color.xyz * spec * albedo.xyz;
         
         // Attenuation
         float distance = length(light.position - input.worldPosition);
-        //float attenuation = 1.0 / (1.0 + LINEAR * distance + QUADRATIC * distance * distance);
-        float attenuation = 1.0 / pow(distance, 2.0f);
+        float attenuation = 1.0 / pow(distance, 2.0);
         
         diffuse *= attenuation;
         specular *= attenuation;
 
         lighting += diffuse + specular;
     }
+    
+    // Gamma correction
+    float gamma = 1.0 / 2.2;
+    lighting = pow(lighting, float3(gamma, gamma, gamma));
     
     return float4(lighting, 1.0f);
 }

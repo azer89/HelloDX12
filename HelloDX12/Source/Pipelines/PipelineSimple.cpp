@@ -115,8 +115,8 @@ void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 
 void PipelineSimple::CreateShaders(DX12Context& ctx)
 {
-	vertexShader_.Create(ctx, AppConfig::ShaderFolder + "Shader.hlsl", ShaderType::Vertex);
-	fragmentShader_.Create(ctx, AppConfig::ShaderFolder + "Shader.hlsl", ShaderType::Fragment);
+	vertexShader_.Create(ctx, AppConfig::ShaderFolder + "BlinnPhong.hlsl", ShaderType::Vertex);
+	fragmentShader_.Create(ctx, AppConfig::ShaderFolder + "BlinnPhong.hlsl", ShaderType::Fragment);
 }
 
 void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)

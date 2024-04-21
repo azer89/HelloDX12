@@ -181,7 +181,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Shader\Shader.hlsl">
+    <Text Include="Shader\BlinnPhong.hlsl">
       <Filter>Shader</Filter>
     </Text>
     <Text Include="Shader\LightData.hlsli">

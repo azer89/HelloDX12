@@ -16,7 +16,7 @@ void Scene::Destroy()
 
 void Scene::Init(DX12Context& ctx)
 {
-	std::string modelFile = AppConfig::ModelFolder + "HorseStatue/HorseStatue.gltf";
+	std::string modelFile = AppConfig::ModelFolder + "Zaku/Zaku.gltf";
 	std::cout << "Load " << modelFile << '\n';
 	model_.Load(ctx, modelFile);
 

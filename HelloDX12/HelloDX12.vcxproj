@@ -61,7 +61,7 @@
     <ClCompile Include="Source\Win32Application.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Shader\Shader.hlsl">
+    <Text Include="Shader\BlinnPhong.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ShaderType>
       <FileType>Document</FileType>
