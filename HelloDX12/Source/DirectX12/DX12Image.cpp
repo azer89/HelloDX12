@@ -28,7 +28,7 @@ void DX12Image::Load(DX12Context& ctx, std::string filename)
 	width_ = texWidth;
 	height_ = texHeight;
 	pixelSize_ = 4; // texChannels is 3 eventhough STBI_rgb_alpha is used
-	format_ = DXGI_FORMAT_R8G8B8A8_UNORM;
+	format_ = ctx.GetSwapchainFormat();
 
 	buffer_.CreateImage(ctx, pixels, width_, height_, pixelSize_, format_);
 }
