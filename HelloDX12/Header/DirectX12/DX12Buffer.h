@@ -20,15 +20,7 @@ public:
 
 	void UploadData(void* data);
 
-	void Destroy()
-	{
-		if (dmaAllocation_ != nullptr)
-		{
-			dmaAllocation_->Release();
-			resource_ = nullptr;
-			dmaAllocation_ = nullptr;
-		}
-	}
+	void Destroy();
 
 private:
 	void CreateUploadHeap(DX12Context& ctx,

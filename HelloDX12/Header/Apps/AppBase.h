@@ -28,9 +28,9 @@ public:
 	void OnKeyboardInput();
 
 	// Accessors.
-	uint32_t GetWidth() const { return width_; }
-	uint32_t GetHeight() const { return height_; }
-	const WCHAR* GetTitle() const { return title_.c_str(); }
+	[[nodiscard]] uint32_t GetWidth() const { return width_; }
+	[[nodiscard]] uint32_t GetHeight() const { return height_; }
+	[[nodiscard]] const WCHAR* GetTitle() const { return title_.c_str(); }
 
 	void ParseCommandLineArgs(_In_reads_(argc) WCHAR* argv[], int argc);
 
