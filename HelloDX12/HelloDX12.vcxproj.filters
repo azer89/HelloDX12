@@ -114,6 +114,12 @@
     <ClInclude Include="Header\ConstantDefinitions.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Header\Pipelines\PipelineClear.h">
+      <Filter>Header\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Pipelines\PipelinePresent.h">
+      <Filter>Header\Pipelines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -172,6 +178,12 @@
     </ClCompile>
     <ClCompile Include="Source\Resources\ResourcesShared.cpp">
       <Filter>Source\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Pipelines\PipelineClear.cpp">
+      <Filter>Source\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Pipelines\PipelinePresent.cpp">
+      <Filter>Source\Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

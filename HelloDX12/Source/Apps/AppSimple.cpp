@@ -33,11 +33,14 @@ void AppSimple::OnInit()
 	});
 
 	// Pipelines
-	pip_ = std::make_unique<PipelineSimple>(
-		context_, scene_.get(), 
+	pipClear_ = std::make_unique<PipelineClear>(context_, resourcesShared_.get());
+	pipSimple_ = std::make_unique<PipelineSimple>(
+		context_, 
+		scene_.get(), 
 		camera_.get(), 
 		resourcesShared_.get(),
 		resourcesLights_.get());
+	pipPresent_ = std::make_unique<PipelinePresent>(context_, resourcesShared_.get());
 }
 
 // Update frame-based values.
@@ -45,30 +48,28 @@ void AppSimple::OnUpdate()
 {
 	OnKeyboardInput();
 	
-	pip_->Update(context_);
+	pipSimple_->Update(context_);
 }
 
 // Render the scene.
 void AppSimple::OnRender()
 {
-	PopulateCommandList();
+	context_.ResetCommandAllocator();
+	context_.ResetCommandList();
+
+	pipClear_->PopulateCommandList(context_);
+	pipSimple_->PopulateCommandList(context_);
+	pipPresent_->PopulateCommandList(context_);
+
 	context_.SubmitCommandList();
 	context_.PresentSwapchain();
 	context_.MoveToNextFrame();
 }
 
-void AppSimple::PopulateCommandList()
-{
-	context_.ResetCommandAllocator();
-	context_.ResetCommandList();
-
-	pip_->PopulateCommandList(context_);
-}
-
 void AppSimple::OnDestroy()
 {
 	context_.WaitForGPU();
-	pip_->Destroy();
+	pipSimple_->Destroy();
 	scene_->Destroy();
 	resourcesLights_->Destroy();
 	context_.Destroy();
