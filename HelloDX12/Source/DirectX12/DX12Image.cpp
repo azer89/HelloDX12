@@ -1,5 +1,6 @@
 #include "DX12Image.h"
 #include "DX12Exception.h"
+#include "Utility.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -29,8 +30,18 @@ void DX12Image::Load(DX12Context& ctx, std::string filename)
 	height_ = texHeight;
 	pixelSize_ = 4; // texChannels is 3 eventhough STBI_rgb_alpha is used
 	format_ = ctx.GetSwapchainFormat();
+	mipmapCount_ = Utility::MipMapCount(width_, height_);
 
-	buffer_.CreateImage(ctx, pixels, width_, height_, pixelSize_, format_);
+	buffer_.CreateImage(
+		ctx, 
+		pixels, 
+		width_, 
+		height_, 
+		mipmapCount_, 
+		pixelSize_, 
+		format_,
+		D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
+	);
 }
 
 D3D12_SHADER_RESOURCE_VIEW_DESC DX12Image::GetSRVDescription()
@@ -41,7 +52,7 @@ D3D12_SHADER_RESOURCE_VIEW_DESC DX12Image::GetSRVDescription()
 		.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D,
 		.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
 	};
-	srvDesc.Texture2D.MipLevels = 1;
+	srvDesc.Texture2D.MipLevels = mipmapCount_;
 	
 	return srvDesc;
 }
