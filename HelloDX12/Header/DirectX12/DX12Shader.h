@@ -9,6 +9,7 @@ enum class ShaderType
 {
 	Vertex,
 	Fragment,
+	Compute,
 };
 
 class DX12Shader

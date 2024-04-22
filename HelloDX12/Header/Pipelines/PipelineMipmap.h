@@ -12,6 +12,8 @@ public:
 		DX12Context& ctx);
 	~PipelineMipmap() = default;
 
+	void GenerateMipmap(DX12Context& ctx, DX12Image* image);
+
 	void Update(DX12Context& ctx) override {}
 	void PopulateCommandList(DX12Context& ctx) override {};
 };

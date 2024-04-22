@@ -8,7 +8,7 @@ cbuffer CB : register(b0)
 }
 
 [numthreads(8, 8, 1)]
-void GenerateMipMaps(uint3 DTid : SV_DispatchThreadID)
+void CSMain(uint3 DTid : SV_DispatchThreadID)
 {
 	//DTid is the thread ID * the values from numthreads above and in this case correspond to the pixels location in number of pixels.
 	//As a result texcoords (in 0-1 range) will point at the center between the 4 pixels used for the mipmap.

@@ -24,6 +24,7 @@ protected:
 
 	DX12Shader vertexShader_ = {};
 	DX12Shader fragmentShader_ = {};
+	DX12Shader ComputeShader_ = {};
 
 	CD3DX12_VIEWPORT viewport_ = {};
 	CD3DX12_RECT scissor_ = {};
