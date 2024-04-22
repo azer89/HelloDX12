@@ -16,6 +16,10 @@ public:
 
 	void Update(DX12Context& ctx) override {}
 	void PopulateCommandList(DX12Context& ctx) override {};
+
+private:
+	void CreatePipeline(DX12Context& ctx);
+	void GenerateShader(DX12Context& ctx);
 };
 
 #endif
