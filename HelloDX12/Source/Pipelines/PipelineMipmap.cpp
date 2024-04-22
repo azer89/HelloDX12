@@ -1,5 +1,10 @@
 #include "PipelineMipmap.h"
 
+/*
+	Adapted from
+	slindev.com/d3d12-texture-mipmap-generation
+*/
+
 // Union used for shader constants
 struct DWParam
 {
@@ -69,24 +74,12 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
 	ctx.GetDevice()->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
 
-	// Create the descriptor heap with layout: source texture - destination texture
-	uint32_t requiredHeapSize = image->mipmapCount_ - 1;
-	D3D12_DESCRIPTOR_HEAP_DESC heapDesc = 
-	{
-		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-		.NumDescriptors = 2 * requiredHeapSize,
-		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
-	};
-	ID3D12DescriptorHeap* descriptorHeap;
-	ctx.GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&descriptorHeap));
-	
 	// Create pipeline state object for the compute shader using the root signature.
 	D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc =
 	{
-		.pRootSignature = rootSignature_.Get()
+		.pRootSignature = rootSignature_.Get(),
+		.CS = CD3DX12_SHADER_BYTECODE(computeShader_.GetHandle())
 	};
-	psoDesc.CS = { reinterpret_cast<UINT8*>(computeShader_.GetHandle()->GetBufferPointer()),
-		computeShader_.GetHandle()->GetBufferSize() };
 	ctx.GetDevice()->CreateComputePipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_));
 
 	// Prepare the shader resource view description for the source texture
@@ -101,6 +94,19 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	{
 		.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D
 	};
+
+	/////////////////////
+
+	// Create the descriptor heap with layout: source texture - destination texture
+	uint32_t requiredHeapSize = image->mipmapCount_ - 1;
+	D3D12_DESCRIPTOR_HEAP_DESC heapDesc =
+	{
+		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+		.NumDescriptors = 2 * requiredHeapSize,
+		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
+	};
+	ID3D12DescriptorHeap* descriptorHeap;
+	ctx.GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&descriptorHeap));
 
 	UINT descriptorSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
@@ -119,8 +125,12 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	commandList->SetPipelineState(pipelineState_.Get());
 	commandList->SetDescriptorHeaps(1, &descriptorHeap);
 
-	// Transition from pixel shader resource to unordered access
-	auto barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(image->buffer_.resource_.Get(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+	// Barrier
+	auto barrier1 = 
+		CD3DX12_RESOURCE_BARRIER::Transition(
+			image->buffer_.resource_.Get(), 
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, 
+			D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 	commandList->ResourceBarrier(1, &barrier1);
 
 	//Loop through the mipmaps copying from the bigger mipmap to the smaller one with downsampling in a compute shader
@@ -156,14 +166,16 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 		// Dispatch the compute shader with one thread per 8x8 pixels
 		commandList->Dispatch(max(dstWidth / 8, 1u), max(dstHeight / 8, 1u), 1);
 
-		// Wait for all accesses to the destination texture UAV to be finished before generating the next mipmap, 
-		// as it will be the source texture for the next mipmap
+		// Barrier
 		auto barrier2 = CD3DX12_RESOURCE_BARRIER::UAV(image->buffer_.resource_.Get());
 		commandList->ResourceBarrier(1, &barrier2);
 	}
 
-	//When done with the texture, transition it's state back to be a pixel shader resource
-	auto barrier3 = CD3DX12_RESOURCE_BARRIER::Transition(image->buffer_.resource_.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	// Barrier
+	auto barrier3 = CD3DX12_RESOURCE_BARRIER::Transition(
+		image->buffer_.resource_.Get(), 
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS, 
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	commandList->ResourceBarrier(1, &barrier3);
 
 	ctx.SubmitCommandListAndWaitForGPU();
