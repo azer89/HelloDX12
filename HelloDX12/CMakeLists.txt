@@ -35,9 +35,6 @@ target_compile_definitions(HelloDX12 PRIVATE
     GLM_FORCE_DEPTH_ZERO_TO_ONE
 )
 
-# Tracy does not like /ZI so set it to /Zi
-target_compile_options(HelloDX12 PRIVATE "/Zi")
-
 # Include directories
 set(HEADER_FOLDER "${CMAKE_CURRENT_LIST_DIR}/Header")
 target_include_directories(HelloDX12 PRIVATE "${HEADER_FOLDER}")
