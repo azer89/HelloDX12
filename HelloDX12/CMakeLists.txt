@@ -47,4 +47,4 @@ target_include_directories(HelloDX12 PRIVATE
 )
 
 # Set dependencies
-target_link_libraries(HelloDX12 PRIVATE assimp D3D12MA)
+target_link_libraries(HelloDX12 PRIVATE assimp D3D12MemoryAllocator)
