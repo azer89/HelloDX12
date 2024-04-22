@@ -52,7 +52,7 @@ add_dependencies(DX12AgilitySDK CopyDX12AgilitySDKBins)
 target_include_directories(HelloDX12 PRIVATE
     "${PROJECT_SOURCE_DIR}/External/stb"
     "${PROJECT_SOURCE_DIR}/External/glm"
-    "${PROJECT_SOURCE_DIR}/External/D3D12/${AGILITY_SDK_VER}"
+    "${PROJECT_SOURCE_DIR}/External/D3D12/${AGILITY_SDK_VER}/d3dx12"
     "${PROJECT_SOURCE_DIR}/External/assimp/include"
     "${PROJECT_SOURCE_DIR}/External/Binaries/assimp/include"
     "${PROJECT_SOURCE_DIR}/External/D3D12MemoryAllocator/include"
@@ -60,3 +60,6 @@ target_include_directories(HelloDX12 PRIVATE
 
 # Set dependencies
 target_link_libraries(HelloDX12 PRIVATE assimp D3D12MemoryAllocator)
+
+# Set WinMain as the entry point
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS")
