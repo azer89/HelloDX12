@@ -25,6 +25,7 @@
     <ClInclude Include="Header\DirectX12\DX12Shader.h" />
     <ClInclude Include="Header\Pipelines\PipelineBase.h" />
     <ClInclude Include="Header\Pipelines\PipelineClear.h" />
+    <ClInclude Include="Header\Pipelines\PipelineMipmap.h" />
     <ClInclude Include="Header\Pipelines\PipelinePresent.h" />
     <ClInclude Include="Header\Pipelines\PipelineSimple.h" />
     <ClInclude Include="Header\Resources\ResourcesBase.h" />
@@ -50,6 +51,7 @@
     <ClCompile Include="Source\DirectX12\DX12Shader.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineBase.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineClear.cpp" />
+    <ClCompile Include="Source\Pipelines\PipelineMipmap.cpp" />
     <ClCompile Include="Source\Pipelines\PipelinePresent.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineSimple.cpp" />
     <ClCompile Include="Source\Resources\ResourcesLights.cpp" />
@@ -77,6 +79,11 @@
   <ItemGroup>
     <None Include="Shader\CameraData.hlsli" />
     <None Include="Shader\ModelData.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Shader\Mipmap.hlsl">
+      <FileType>Document</FileType>
+    </Text>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{16B13BB4-D82D-4AC1-8B40-C6BCCC99954B}</ProjectGuid>
