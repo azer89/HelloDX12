@@ -22,7 +22,6 @@ target_compile_definitions(HelloDX12 PRIVATE
     WIN32
     _WINDOWS
     _CRT_SECURE_NO_WARNINGS
-    TRACY_ENABLE # Disable this if tracy is not needed
     GLM_FORCE_DEPTH_ZERO_TO_ONE
 )
 
@@ -39,18 +38,6 @@ foreach(item ${ITEMS})
     endif()
 endforeach()
 
-# Include directories from dependencies
-target_include_directories(HelloDX12 PRIVATE
-    "${PROJECT_SOURCE_DIR}/External/stb"
-    "${PROJECT_SOURCE_DIR}/External/glm"
-    "${PROJECT_SOURCE_DIR}/External/D3D12MemoryAllocator/include"
-    "${PROJECT_SOURCE_DIR}/External/assimp/include"
-    "${PROJECT_SOURCE_DIR}/External/Binaries/assimp/include"
-)
-
-# Set dependencies
-target_link_libraries(HelloDX12 PRIVATE assimp D3D12MemoryAllocator)
-
 # Agility SDK
 SetupAgilitySDK(AGILITY_SDK_VER)
 add_library(DX12AgilitySDK INTERFACE)
@@ -60,3 +47,16 @@ set(DX12AgilitySDK_BIN
 
 Copy("${DX12AgilitySDK_BIN}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/D3D12/" CopyDX12AgilitySDKBins)
 add_dependencies(DX12AgilitySDK CopyDX12AgilitySDKBins)
+
+# Include directories from dependencies
+target_include_directories(HelloDX12 PRIVATE
+    "${PROJECT_SOURCE_DIR}/External/stb"
+    "${PROJECT_SOURCE_DIR}/External/glm"
+    "${PROJECT_SOURCE_DIR}/External/D3D12/${AGILITY_SDK_VER}"
+    "${PROJECT_SOURCE_DIR}/External/assimp/include"
+    "${PROJECT_SOURCE_DIR}/External/Binaries/assimp/include"
+    "${PROJECT_SOURCE_DIR}/External/D3D12MemoryAllocator/include"
+)
+
+# Set dependencies
+target_link_libraries(HelloDX12 PRIVATE assimp D3D12MemoryAllocator)
