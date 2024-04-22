@@ -31,6 +31,7 @@
     <ClInclude Include="Header\Resources\ResourcesBase.h" />
     <ClInclude Include="Header\Resources\ResourcesLights.h" />
     <ClInclude Include="Header\Resources\ResourcesShared.h" />
+    <ClInclude Include="Header\RootConstParam.h" />
     <ClInclude Include="Header\Scene\Mesh.h" />
     <ClInclude Include="Header\Scene\Model.h" />
     <ClInclude Include="Header\Scene\Scene.h" />

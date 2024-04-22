@@ -123,6 +123,9 @@
     <ClInclude Include="Header\Pipelines\PipelineMipmap.h">
       <Filter>Header\Pipelines</Filter>
     </ClInclude>
+    <ClInclude Include="Header\RootConstParam.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">

@@ -1,25 +1,5 @@
 #include "PipelineMipmap.h"
-
-/*
-	Adapted from
-	slindev.com/d3d12-texture-mipmap-generation
-*/
-
-// Union used for shader constants
-struct DWParam
-{
-	DWParam(FLOAT f) : Float(f) {}
-	DWParam(UINT u) : Uint(u) {}
-
-	void operator= (FLOAT f) { Float = f; }
-	void operator= (UINT u) { Uint = u; }
-
-	union
-	{
-		FLOAT Float;
-		UINT Uint;
-	};
-};
+#include "RootConstParam.h"
 
 PipelineMipmap::PipelineMipmap(
 	DX12Context& ctx) :
@@ -36,10 +16,6 @@ void PipelineMipmap::GenerateShader(DX12Context& ctx)
 
 void PipelineMipmap::CreatePipeline(DX12Context& ctx)
 {
-}
-
-void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
-{
 	CD3DX12_DESCRIPTOR_RANGE srvCbvRanges[2] = {};
 	CD3DX12_ROOT_PARAMETER rootParameters[3] = {};
 	srvCbvRanges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0);
@@ -49,7 +25,7 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	rootParameters[2].InitAsDescriptorTable(1, &srvCbvRanges[1]);
 
 	// Static sampler used to get the linearly interpolated color for the mipmaps
-	D3D12_STATIC_SAMPLER_DESC samplerDesc = 
+	D3D12_STATIC_SAMPLER_DESC samplerDesc =
 	{
 		.Filter = D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT,
 		.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
@@ -65,7 +41,7 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 		.RegisterSpace = 0,
 		.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL
 	};
-	
+
 	// Create the root signature for the mipmap compute shader from the parameters and sampler above
 	ID3DBlob* signature;
 	ID3DBlob* error;
@@ -81,9 +57,10 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 		.CS = CD3DX12_SHADER_BYTECODE(computeShader_.GetHandle())
 	};
 	ctx.GetDevice()->CreateComputePipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_));
+}
 
-	/////////////////////
-
+void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
+{
 	// Prepare the shader resource view description for the source texture
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvSrcDesc =
 	{
@@ -118,7 +95,6 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 
 	// Start recording 
 	ctx.ResetCommandList();
-	
 	auto commandList = ctx.GetCommandList();
 
 	commandList->SetComputeRootSignature(rootSignature_.Get());
@@ -136,26 +112,26 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	//Loop through the mipmaps copying from the bigger mipmap to the smaller one with downsampling in a compute shader
 	for (uint32_t currMipLevel = 0; currMipLevel < image->mipmapCount_ - 1; ++currMipLevel)
 	{
-		// Get mipmap dimensions
+		// Mipmap dimensions
 		uint32_t dstWidth = max(image->width_ >> (currMipLevel + 1), 1);
 		uint32_t dstHeight = max(image->height_ >> (currMipLevel + 1), 1);
 
-		// Create shader resource view for the source texture in the descriptor heap
+		// SRV for source texture
 		srvSrcDesc.Format = image->format_;
 		srvSrcDesc.Texture2D.MipLevels = 1;
 		srvSrcDesc.Texture2D.MostDetailedMip = currMipLevel;
 		ctx.GetDevice()->CreateShaderResourceView(image->GetResource(), &srvSrcDesc, currentCPUHandle);
 		currentCPUHandle.Offset(1, descriptorSize);
 
-		// Create unordered access view for the destination texture in the descriptor heap
+		// UAV for destination texture
 		uavDstDesc.Format = image->format_;
 		uavDstDesc.Texture2D.MipSlice = currMipLevel + 1;
 		ctx.GetDevice()->CreateUnorderedAccessView(image->GetResource(), nullptr, &uavDstDesc, currentCPUHandle);
 		currentCPUHandle.Offset(1, descriptorSize);
 
-		// Pass the destination texture pixel size to the shader as constants
-		commandList->SetComputeRoot32BitConstant(0, DWParam(1.0f / dstWidth).Uint, 0);
-		commandList->SetComputeRoot32BitConstant(0, DWParam(1.0f / dstHeight).Uint, 1);
+		// Root constants
+		commandList->SetComputeRoot32BitConstant(0, RootConstParam(1.0f / dstWidth).uint_, 0);
+		commandList->SetComputeRoot32BitConstant(0, RootConstParam(1.0f / dstHeight).uint_, 1);
 
 		// Pass the source and destination texture views to the shader via descriptor tables
 		commandList->SetComputeRootDescriptorTable(1, currentGPUHandle);
