@@ -15,8 +15,10 @@ public:
 		void* imageData,
 		uint32_t width,
 		uint32_t height,
+		uint16_t mipmapCount,
 		uint32_t bytesPerPixel,
-		DXGI_FORMAT imageFormat);
+		DXGI_FORMAT imageFormat,
+		D3D12_RESOURCE_FLAGS flags);
 
 	void UploadData(void* data);
 

@@ -17,6 +17,8 @@ public:
 
 	void Load(DX12Context& ctx, std::string filename);
 
+	ID3D12Resource* GetResource() const { return buffer_.resource_.Get(); }
+
 	D3D12_SHADER_RESOURCE_VIEW_DESC GetSRVDescription();
 
 	D3D12_STATIC_SAMPLER_DESC GetSampler();
@@ -28,6 +30,7 @@ public:
 	uint32_t width_ = 0;
 	uint32_t height_ = 0;
 	uint32_t pixelSize_ = 0;
+	uint32_t mipmapCount_ = 0;
 	DXGI_FORMAT format_ = DXGI_FORMAT_UNKNOWN;
 
 	DX12Buffer buffer_ = {};

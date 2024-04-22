@@ -1,6 +1,7 @@
 #include "Mesh.h"
 #include "ShapeGenerator.h"
 #include "DX12Exception.h"
+#include "PipelineMipmap.h"
 
 Mesh::Mesh(
 	DX12Context& ctx,
@@ -17,6 +18,9 @@ Mesh::Mesh(
 
 	image_ = std::make_unique<DX12Image>();
 	image_->Load(ctx, AppConfig::ModelFolder + "Zaku/Textures/m_14_baseColor.png");
+
+	PipelineMipmap pip(ctx);
+	pip.GenerateMipmap(ctx, image_.get());
 }
 
 void Mesh::CreateCube(DX12Context& ctx)

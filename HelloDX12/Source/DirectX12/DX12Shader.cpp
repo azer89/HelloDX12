@@ -5,6 +5,22 @@
 #include <stdexcept>
 #include <iostream>
 
+LPCSTR GetEntryPoint(ShaderType shaderType)
+{
+	if (shaderType == ShaderType::Vertex) { return "VSMain"; }
+	else if (shaderType == ShaderType::Fragment) { return "PSMain"; } 
+	else if (shaderType == ShaderType::Compute) { return "CSMain"; }
+	throw std::runtime_error("Shader type not recognized");
+}
+
+LPCSTR GetTarget(ShaderType shaderType)
+{
+	if (shaderType == ShaderType::Vertex) { return "vs_5_1"; }
+	else if (shaderType == ShaderType::Fragment) { return "ps_5_1"; }
+	else if (shaderType == ShaderType::Compute) { return "cs_5_1"; }
+	throw std::runtime_error("Shader type not recognized");
+}
+
 void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderType shaderType)
 {
 #if defined(_DEBUG)
@@ -15,8 +31,8 @@ void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderTyp
 #endif
 	std::wstring assetPath = Utility::WStringConvert(filename);
 
-	LPCSTR entryPoint = shaderType == ShaderType::Vertex ? "VSMain" : "PSMain";
-	LPCSTR target = shaderType == ShaderType::Vertex ? "vs_5_1" : "ps_5_1";
+	LPCSTR entryPoint = GetEntryPoint(shaderType);
+	LPCSTR target = GetTarget(shaderType);
 
 	ID3DBlob* errorBuff; // Buffer holding the error data if any
 	HRESULT hr = D3DCompileFromFile(

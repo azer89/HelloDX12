@@ -277,12 +277,14 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t buffer
 }
 
 void DX12Buffer::CreateImage(
-	DX12Context& ctx, 
-	void* imageData, 
-	uint32_t width, 
-	uint32_t height, 
-	uint32_t bytesPerPixel, 
-	DXGI_FORMAT imageFormat)
+	DX12Context& ctx,
+	void* imageData,
+	uint32_t width,
+	uint32_t height,
+	uint16_t mipmapCount,
+	uint32_t bytesPerPixel,
+	DXGI_FORMAT imageFormat,
+	D3D12_RESOURCE_FLAGS flags)
 {
 	D3D12_RESOURCE_DESC textureDesc = 
 	{
@@ -291,10 +293,10 @@ void DX12Buffer::CreateImage(
 		.Width = width,
 		.Height = height,
 		.DepthOrArraySize = 1,
-		.MipLevels = 1,
+		.MipLevels = mipmapCount,
 		.Format = imageFormat,
 		.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN,
-		.Flags = D3D12_RESOURCE_FLAG_NONE
+		.Flags = flags
 	};
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.SampleDesc.Quality = 0;

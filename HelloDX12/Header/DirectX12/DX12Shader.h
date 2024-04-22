@@ -9,6 +9,7 @@ enum class ShaderType
 {
 	Vertex,
 	Fragment,
+	Compute,
 };
 
 class DX12Shader
@@ -21,7 +22,7 @@ public:
 
 	void Create(DX12Context& ctx, const std::string& filename, ShaderType shaderType);
 
-public:
+private:
 	ComPtr<ID3DBlob> handle_ = nullptr;
 };
 
