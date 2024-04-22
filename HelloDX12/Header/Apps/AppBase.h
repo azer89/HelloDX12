@@ -3,11 +3,16 @@
 
 #include "DX12Helper.h"
 #include "Win32Application.h"
+#include "PipelineBase.h"
+#include "resourcesBase.h"
 #include "Camera.h"
 #include "UIData.h"
 
+#include <vector>
 #include <memory>
+#include <utility>
 #include <iostream>
+#include <type_traits>
 
 class AppBase
 {
@@ -37,6 +42,28 @@ public:
 protected:
 	void SetCustomWindowText(LPCWSTR text) const;
 
+	template<class T, class... U>
+	requires (std::is_base_of_v<PipelineBase, T>)
+	T* AddPipeline(U&&... u)
+	{
+		// Create std::unique_ptr of Pipeline
+		std::unique_ptr<T> pipeline = std::make_unique<T>(std::forward<U>(u)...);
+		T* ptr = pipeline.get();
+		pipelines_.push_back(std::move(pipeline)); // Put it in std::vector
+		return ptr;
+	}
+
+	template<class T, class... U>
+	requires (std::is_base_of_v<ResourcesBase, T>)
+	T* AddResources(U&&... u)
+	{
+		// Create std::unique_ptr of Resources
+		std::unique_ptr<T> resources = std::make_unique<T>(std::forward<U>(u)...);
+		T* ptr = resources.get();
+		resources_.push_back(std::move(resources)); // Put it in std::vector
+		return ptr;
+	}
+
 private:
 	void ConsoleShow();
 
@@ -48,6 +75,8 @@ protected:
 	UIData uiData_;
 
 	std::unique_ptr<Camera> camera_;
+	std::vector<std::unique_ptr<PipelineBase>> pipelines_ = {};
+	std::vector<std::unique_ptr<ResourcesBase>> resources_ = {};
 
 private:
 	// Window title.

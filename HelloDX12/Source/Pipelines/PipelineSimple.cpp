@@ -138,7 +138,7 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 		.NumRenderTargets = 1,
 		.DSVFormat = DXGI_FORMAT_D32_FLOAT,
 	};
-	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	psoDesc.RTVFormats[0] = ctx.GetSwapchainFormat();
 	psoDesc.SampleDesc.Count = 1;
 	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 	ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)))
@@ -173,17 +173,6 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	commandList->SetGraphicsRootConstantBufferView(1, scene_->modelConstBuffs_[ctx.GetFrameIndex()].gpuAddress_);
 	commandList->SetGraphicsRootDescriptorTable(2, handle1);
 	commandList->SetGraphicsRootDescriptorTable(3, handle2);
-	
-	// Indicate that the back buffer will be used as a render target.
-	{
-		const auto resourceBarrier = 
-			CD3DX12_RESOURCE_BARRIER::Transition(
-				//renderTargets_[ctx.GetFrameIndex()].Get(), 
-				resourcesShared_->GetRenderTarget(ctx.GetFrameIndex()),
-				D3D12_RESOURCE_STATE_PRESENT, 
-				D3D12_RESOURCE_STATE_RENDER_TARGET);
-		commandList->ResourceBarrier(1, &resourceBarrier);
-	}
 
 	const auto rtvHandle = resourcesShared_->GetRTVHandle(ctx.GetFrameIndex());
 	const auto dsvHandle = resourcesShared_->GetDSVHandle();
@@ -193,22 +182,8 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	// TODO Only one mesh for now
 	const Mesh& mesh = scene_->model_.meshes_[0];
 
-	// Record commands.
-	constexpr float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
-	commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
-	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	commandList->IASetVertexBuffers(0, 1, &(mesh.vertexBuffer_.vertexBufferView_));
 	commandList->IASetIndexBuffer(&mesh.indexBuffer_.indexBufferView_);
 	commandList->DrawIndexedInstanced(mesh.vertexCount_, 1, 0, 0, 0);
-
-	// Indicate that the back buffer will now be used to present
-	{
-		const auto resourceBarrier = 
-			CD3DX12_RESOURCE_BARRIER::Transition(
-				resourcesShared_->GetRenderTarget(ctx.GetFrameIndex()),
-				D3D12_RESOURCE_STATE_RENDER_TARGET, 
-				D3D12_RESOURCE_STATE_PRESENT);
-		commandList->ResourceBarrier(1, &resourceBarrier);
-	}
 }

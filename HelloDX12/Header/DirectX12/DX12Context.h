@@ -35,6 +35,7 @@ public:
 	[[nodiscard]] ID3D12Device* GetDevice() const { return device_.Get(); }
 	[[nodiscard]] uint32_t GetSwapchainWidth() const { return swapchainWidth_; }
 	[[nodiscard]] uint32_t GetSwapchainHeight() const { return swapchainHeight_; }
+	[[nodiscard]] DXGI_FORMAT GetSwapchainFormat() const { return swapchainFormat_; }
 	[[nodiscard]] IDXGISwapChain3* GetSwapchain() const { return swapchain_.Get(); }
 	[[nodiscard]] D3D12MA::Allocator* GetDMAAllocator() const { return dmaAllocator_; }
 	[[nodiscard]] ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
@@ -64,6 +65,7 @@ private:
 private:
 	uint32_t swapchainWidth_ = 0;
 	uint32_t swapchainHeight_ = 0;
+	DXGI_FORMAT swapchainFormat_ = DXGI_FORMAT_R8G8B8A8_UNORM;
 	
 	// Pipeline objects.
 	ComPtr<IDXGISwapChain3> swapchain_ = nullptr;

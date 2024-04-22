@@ -25,12 +25,9 @@ public:
 private:
 	DX12Context context_;
 	std::unique_ptr<Scene> scene_ = nullptr;
-	std::unique_ptr<PipelineSimple> pip_ = nullptr;
-	std::unique_ptr<ResourcesShared> resourcesShared_ = nullptr;
-	std::unique_ptr<ResourcesLights> resourcesLights_ = nullptr;
-
-private:
-	void PopulateCommandList();
+	PipelineSimple* pipSimple_ = nullptr;
+	ResourcesShared* resourcesShared_ = nullptr;
+	ResourcesLights* resourcesLights_ = nullptr;
 };
 
 #endif

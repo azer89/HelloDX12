@@ -24,6 +24,8 @@
     <ClInclude Include="Header\DirectX12\DX12Image.h" />
     <ClInclude Include="Header\DirectX12\DX12Shader.h" />
     <ClInclude Include="Header\Pipelines\PipelineBase.h" />
+    <ClInclude Include="Header\Pipelines\PipelineClear.h" />
+    <ClInclude Include="Header\Pipelines\PipelinePresent.h" />
     <ClInclude Include="Header\Pipelines\PipelineSimple.h" />
     <ClInclude Include="Header\Resources\ResourcesBase.h" />
     <ClInclude Include="Header\Resources\ResourcesLights.h" />
@@ -47,6 +49,8 @@
     <ClCompile Include="Source\DirectX12\DX12Image.cpp" />
     <ClCompile Include="Source\DirectX12\DX12Shader.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineBase.cpp" />
+    <ClCompile Include="Source\Pipelines\PipelineClear.cpp" />
+    <ClCompile Include="Source\Pipelines\PipelinePresent.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineSimple.cpp" />
     <ClCompile Include="Source\Resources\ResourcesLights.cpp" />
     <ClCompile Include="Source\Resources\ResourcesShared.cpp" />
@@ -130,7 +134,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;GLM_FORCE_DEPTH_ZERO_TO_ONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;GLM_FORCE_DEPTH_ZERO_TO_ONE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>Header;Header\Apps;Header\DirectX12;Header\Pipelines;Header\Scene;Header\Resources;..\External\stb;..\External\assimp\include;..\External\glm;..\External\Binaries\assimp\include;..\External\D3D12MemoryAllocator\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>false</CompileAsWinRT>
