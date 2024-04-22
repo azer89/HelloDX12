@@ -57,6 +57,12 @@ void PipelineMipmap::CreatePipeline(DX12Context& ctx)
 		.CS = CD3DX12_SHADER_BYTECODE(computeShader_.GetHandle())
 	};
 	ctx.GetDevice()->CreateComputePipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_));
+
+	signature->Release();
+	if (error)
+	{
+		error->Release();
+	}
 }
 
 void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
@@ -84,7 +90,7 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	};
 	ID3D12DescriptorHeap* descriptorHeap;
 	ctx.GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&descriptorHeap));
-
+	
 	UINT descriptorSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	// CPU handle for the first descriptor on the descriptor heap, used to fill the heap
@@ -130,8 +136,8 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 		currentCPUHandle.Offset(1, descriptorSize);
 
 		// Root constants
-		commandList->SetComputeRoot32BitConstant(0, RootConstParam(1.0f / dstWidth).uint_, 0);
-		commandList->SetComputeRoot32BitConstant(0, RootConstParam(1.0f / dstHeight).uint_, 1);
+		commandList->SetComputeRoot32BitConstant(0, RootConstParam(1.0f / static_cast<float>(dstWidth)).uint_, 0);
+		commandList->SetComputeRoot32BitConstant(0, RootConstParam(1.0f / static_cast<float>(dstHeight)).uint_, 1);
 
 		// Pass the source and destination texture views to the shader via descriptor tables
 		commandList->SetComputeRootDescriptorTable(1, currentGPUHandle);
@@ -155,4 +161,6 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	commandList->ResourceBarrier(1, &barrier3);
 
 	ctx.SubmitCommandListAndWaitForGPU();
+
+	descriptorHeap->Release();
 }

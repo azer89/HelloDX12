@@ -1,5 +1,4 @@
 #include "AppSimple.h"
-#include "DX12Exception.h"
 #include "PipelineClear.h"
 #include "PipelinePresent.h"
 
@@ -10,7 +9,7 @@ AppSimple::AppSimple() : AppBase()
 void AppSimple::OnInit()
 {
 	// Initialize Context
-	context_.Init(width_, height_);
+	context_.Init(windowWidth_, windowHeight_);
 	context_.CreateFence();
 
 	// Camera

@@ -21,9 +21,9 @@ private:
 	void CreateModelBuffers(DX12Context& ctx);
 
 public:
-	Model model_;
-	std::array<CModel, AppConfig::FrameCount> modelConsts_;
-	std::array<DX12Buffer, AppConfig::FrameCount> modelConstBuffs_;
+	Model model_ = {};
+	std::array<CModel, AppConfig::FrameCount> modelConsts_ = {};
+	std::array<DX12Buffer, AppConfig::FrameCount> modelConstBuffs_ = {};
 };
 
 #endif

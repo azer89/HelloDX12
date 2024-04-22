@@ -3,6 +3,8 @@
 #include "Win32Application.h"
 #include "Configs.h"
 
+#include <iostream>
+
 void DX12Context::Destroy()
 {
 	if (dmaAllocator_ != nullptr)
