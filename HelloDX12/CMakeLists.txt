@@ -1,0 +1,50 @@
+
+file(GLOB_RECURSE SHADER_FILES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Shader/*")
+file(GLOB_RECURSE H_FILES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Header/*.h")
+file(GLOB_RECURSE CPP_FILES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Source/*.cpp")
+
+add_executable(HelloDX12 
+    ${H_FILES}
+    ${CPP_FILES}
+    ${SHADER_FILES}
+)
+
+source_group(TREE "${CMAKE_CURRENT_LIST_DIR}/Shader" PREFIX "Shaders" FILES ${SHADER_FILES})
+source_group(TREE "${CMAKE_CURRENT_LIST_DIR}/Header" PREFIX "Header Files" FILES ${H_FILES})
+source_group(TREE "${CMAKE_CURRENT_LIST_DIR}/Source" PREFIX "Source Files" FILES ${CPP_FILES})
+
+target_compile_definitions(HelloDX12 PRIVATE
+    $<$<CONFIG:Debug>:_DEBUG>
+    $<$<CONFIG:Release>:NDEBUG>
+
+    WIN32
+    _WINDOWS
+    _CRT_SECURE_NO_WARNINGS
+    TRACY_ENABLE # Disable this if tracy is not needed
+    GLM_FORCE_DEPTH_ZERO_TO_ONE
+)
+
+# Tracy does not like /ZI so set it to /Zi
+target_compile_options(HelloDX12 PRIVATE "/Zi")
+
+# Include directories
+set(HEADER_FOLDER "${CMAKE_CURRENT_LIST_DIR}/Header")
+target_include_directories(HelloDX12 PRIVATE "${HEADER_FOLDER}")
+file(GLOB ITEMS LIST_DIRECTORIES true "${HEADER_FOLDER}/*")
+foreach(item ${ITEMS})
+    if(IS_DIRECTORY ${item})
+        target_include_directories(HelloDX12 PRIVATE ${item})
+    endif()
+endforeach()
+
+# Include directories from dependencies
+target_include_directories(HelloDX12 PRIVATE
+    "${PROJECT_SOURCE_DIR}/External/stb"
+    "${PROJECT_SOURCE_DIR}/External/glm"
+    "${PROJECT_SOURCE_DIR}/External/D3D12MemoryAllocator/include"
+    "${PROJECT_SOURCE_DIR}/External/assimp/include"
+    "${PROJECT_SOURCE_DIR}/External/Binaries/assimp/include"
+)
+
+# Set dependencies
+target_link_libraries(HelloDX12 PRIVATE assimp D3D12MA)
