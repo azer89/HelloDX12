@@ -14,7 +14,7 @@ void ResourcesLights::AddLights(DX12Context& ctx, const std::vector<LightData>& 
 	buffer_.UploadData(lights_.data());
 }
 
-D3D12_SHADER_RESOURCE_VIEW_DESC ResourcesLights::GetSRVDescription()
+D3D12_SHADER_RESOURCE_VIEW_DESC ResourcesLights::GetSRVDescription() const
 {
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc =
 	{

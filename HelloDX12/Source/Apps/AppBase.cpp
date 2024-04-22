@@ -9,10 +9,10 @@
 using namespace Microsoft::WRL;
 
 AppBase::AppBase() :
-	width_(AppConfig::InitialScreenWidth),
-	height_(AppConfig::InitialScreenHeight),
+	windowWidth_(AppConfig::InitialScreenWidth),
+	windowHeight_(AppConfig::InitialScreenHeight),
 	title_(Utility::WStringConvert(AppConfig::ScreenTitle)),
-	aspectRatio_(static_cast<float>(AppConfig::InitialScreenWidth) / static_cast<float>(AppConfig::InitialScreenHeight)),
+	windowAspectRatio_(static_cast<float>(AppConfig::InitialScreenWidth) / static_cast<float>(AppConfig::InitialScreenHeight)),
 	camera_(std::make_unique<Camera>(glm::vec3(0.0f)))
 {
 	ConsoleShow();

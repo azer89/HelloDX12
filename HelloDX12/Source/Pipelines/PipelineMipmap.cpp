@@ -130,8 +130,8 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 		currentCPUHandle.Offset(1, descriptorSize);
 
 		// Root constants
-		commandList->SetComputeRoot32BitConstant(0, RootConstParam(1.0f / dstWidth).uint_, 0);
-		commandList->SetComputeRoot32BitConstant(0, RootConstParam(1.0f / dstHeight).uint_, 1);
+		commandList->SetComputeRoot32BitConstant(0, RootConstParam(1.0f / static_cast<float>(dstWidth)).uint_, 0);
+		commandList->SetComputeRoot32BitConstant(0, RootConstParam(1.0f / static_cast<float>(dstHeight)).uint_, 1);
 
 		// Pass the source and destination texture views to the shader via descriptor tables
 		commandList->SetComputeRootDescriptorTable(1, currentGPUHandle);

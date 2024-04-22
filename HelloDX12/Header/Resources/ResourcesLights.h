@@ -26,12 +26,12 @@ public:
 
 	void AddLights(DX12Context& ctx, const std::vector<LightData>& lights);
 
-	D3D12_SHADER_RESOURCE_VIEW_DESC GetSRVDescription();
+	D3D12_SHADER_RESOURCE_VIEW_DESC GetSRVDescription() const;
 
 public:
 	std::vector<LightData> lights_ = {};
-	DX12Buffer buffer_;
-	ComPtr<ID3D12DescriptorHeap> srvHeap_;
+	DX12Buffer buffer_ = {};
+	ComPtr<ID3D12DescriptorHeap> srvHeap_ = nullptr;
 };
 
 #endif

@@ -7,7 +7,6 @@
 #include <windows.h>
 #include <wrl.h>
 #include <shellapi.h>
-#include <memory>
 #include "include/d3dx12/d3dx12.h"
 
 #include "D3D12MemAlloc.h"

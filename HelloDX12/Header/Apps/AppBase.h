@@ -4,14 +4,13 @@
 #include "DX12Helper.h"
 #include "Win32Application.h"
 #include "PipelineBase.h"
-#include "resourcesBase.h"
+#include "ResourcesBase.h"
 #include "Camera.h"
 #include "UIData.h"
 
 #include <vector>
 #include <memory>
 #include <utility>
-#include <iostream>
 #include <type_traits>
 
 class AppBase
@@ -32,9 +31,9 @@ public:
 	void OnMouseLeftRelease();
 	void OnKeyboardInput();
 
-	// Accessors.
-	[[nodiscard]] uint32_t GetWidth() const { return width_; }
-	[[nodiscard]] uint32_t GetHeight() const { return height_; }
+	// Accessors
+	[[nodiscard]] uint32_t GetWidth() const { return windowWidth_; }
+	[[nodiscard]] uint32_t GetHeight() const { return windowHeight_; }
 	[[nodiscard]] const WCHAR* GetTitle() const { return title_.c_str(); }
 
 	void ParseCommandLineArgs(_In_reads_(argc) WCHAR* argv[], int argc);
@@ -68,11 +67,11 @@ private:
 	void ConsoleShow();
 
 protected:
-	uint32_t width_;
-	uint32_t height_;
-	float aspectRatio_;
+	uint32_t windowWidth_ = 0;
+	uint32_t windowHeight_ = 0;
+	float windowAspectRatio_ = 0;
 
-	UIData uiData_;
+	UIData uiData_ = {};
 
 	std::unique_ptr<Camera> camera_;
 	std::vector<std::unique_ptr<PipelineBase>> pipelines_ = {};
