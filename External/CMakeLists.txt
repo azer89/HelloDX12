@@ -15,6 +15,7 @@ add_subdirectory(D3D12MemoryAllocator)
 # Group libraries into a folder
 set_property(TARGET assimp PROPERTY FOLDER "External")
 set_property(TARGET zlibstatic PROPERTY FOLDER "External")
+set_property(TARGET D3D12MemoryAllocator PROPERTY FOLDER "External")
 
 if(TARGET UpdateAssimpLibsDebugSymbolsAndDLLs)
     set_property(TARGET UpdateAssimpLibsDebugSymbolsAndDLLs PROPERTY FOLDER "External")
