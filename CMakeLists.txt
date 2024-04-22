@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED on)
 
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
+set (CMAKE_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/CMake")
 
 # All external libraries from git modules
 add_subdirectory("${PROJECT_SOURCE_DIR}/External")

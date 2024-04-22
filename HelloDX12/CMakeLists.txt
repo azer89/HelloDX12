@@ -1,3 +1,5 @@
+include("${CMAKE_INCLUDE_DIR}/AgilitySDK.cmake")
+include("${CMAKE_INCLUDE_DIR}/Copy.cmake")
 
 file(GLOB_RECURSE SHADER_FILES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Shader/*")
 file(GLOB_RECURSE H_FILES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Header/*.h")
@@ -48,3 +50,13 @@ target_include_directories(HelloDX12 PRIVATE
 
 # Set dependencies
 target_link_libraries(HelloDX12 PRIVATE assimp D3D12MemoryAllocator)
+
+# Agility SDK
+SetupAgilitySDK(AGILITY_SDK_VER)
+add_library(DX12AgilitySDK INTERFACE)
+set(DX12AgilitySDK_BIN
+    "${PROJECT_SOURCE_DIR}/External/D3D12/${AGILITY_SDK_VER}/D3D12Core.dll"
+    "${PROJECT_SOURCE_DIR}/External/D3D12/${AGILITY_SDK_VER}/d3d12SDKLayers.dll")
+
+Copy("${DX12AgilitySDK_BIN}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/D3D12/" CopyDX12AgilitySDKBins)
+add_dependencies(DX12AgilitySDK CopyDX12AgilitySDKBins)
