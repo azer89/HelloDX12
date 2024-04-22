@@ -5,11 +5,23 @@ file(GLOB_RECURSE SHADER_FILES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Shad
 file(GLOB_RECURSE H_FILES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Header/*.h")
 file(GLOB_RECURSE CPP_FILES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Source/*.cpp")
 
+# Exclude from HLSL compiler
+file(GLOB_RECURSE HLSL_FILES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Shader/*.hlsl")
+set_source_files_properties(SOURCE ${HLSL_FILES} PROPERTIES VS_SETTINGS "ExcludedFromBuild=true")
+
+# Set WinMain as the entry point
+set(CMAKE_EXE_LINKER_FLAGS "/SUBSYSTEM:WINDOWS")
+
+# Set unicode
+add_definitions(-DUNICODE -D_UNICODE)
+
 add_executable(HelloDX12 
     ${H_FILES}
     ${CPP_FILES}
     ${SHADER_FILES}
 )
+
+#set_target_properties(HelloDX12 PROPERTIES WIN32_EXECUTABLE TRUE)
 
 source_group(TREE "${CMAKE_CURRENT_LIST_DIR}/Shader" PREFIX "Shaders" FILES ${SHADER_FILES})
 source_group(TREE "${CMAKE_CURRENT_LIST_DIR}/Header" PREFIX "Header Files" FILES ${H_FILES})
@@ -60,6 +72,3 @@ target_include_directories(HelloDX12 PRIVATE
 
 # Set dependencies
 target_link_libraries(HelloDX12 PRIVATE assimp D3D12MemoryAllocator)
-
-# Set WinMain as the entry point
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS")
