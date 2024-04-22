@@ -35,10 +35,8 @@ void PipelineMipmap::CreatePipeline(DX12Context& ctx)
 
 void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 {
-	uint32_t requiredHeapSize = image->mipmapCount_ - 1;
-
-	CD3DX12_DESCRIPTOR_RANGE srvCbvRanges[2];
-	CD3DX12_ROOT_PARAMETER rootParameters[3];
+	CD3DX12_DESCRIPTOR_RANGE srvCbvRanges[2] = {};
+	CD3DX12_ROOT_PARAMETER rootParameters[3] = {};
 	srvCbvRanges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0);
 	srvCbvRanges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0, 0);
 	rootParameters[0].InitAsConstants(2, 0);
@@ -72,6 +70,7 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	ctx.GetDevice()->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
 
 	// Create the descriptor heap with layout: source texture - destination texture
+	uint32_t requiredHeapSize = image->mipmapCount_ - 1;
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc = 
 	{
 		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
@@ -80,8 +79,7 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	};
 	ID3D12DescriptorHeap* descriptorHeap;
 	ctx.GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&descriptorHeap));
-	UINT descriptorSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
+	
 	// Create pipeline state object for the compute shader using the root signature.
 	D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc =
 	{
@@ -92,17 +90,25 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	ctx.GetDevice()->CreateComputePipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_));
 
 	// Prepare the shader resource view description for the source texture
-	D3D12_SHADER_RESOURCE_VIEW_DESC srcTextureSRVDesc = 
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvSrcDesc = 
 	{
 		.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D,
 		.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
 	};
 	
 	// Prepare the unordered access view description for the destination texture
-	D3D12_UNORDERED_ACCESS_VIEW_DESC destTextureUAVDesc = 
+	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDstDesc = 
 	{
 		.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D
 	};
+
+	UINT descriptorSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+	// CPU handle for the first descriptor on the descriptor heap, used to fill the heap
+	CD3DX12_CPU_DESCRIPTOR_HANDLE currentCPUHandle(descriptorHeap->GetCPUDescriptorHandleForHeapStart(), 0, descriptorSize);
+
+	// GPU handle for the first descriptor on the descriptor heap, used to initialize the descriptor tables
+	CD3DX12_GPU_DESCRIPTOR_HANDLE currentGPUHandle(descriptorHeap->GetGPUDescriptorHandleForHeapStart(), 0, descriptorSize);
 
 	// Start recording 
 	ctx.ResetCommandList();
@@ -113,34 +119,28 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	commandList->SetPipelineState(pipelineState_.Get());
 	commandList->SetDescriptorHeaps(1, &descriptorHeap);
 
-	// CPU handle for the first descriptor on the descriptor heap, used to fill the heap
-	CD3DX12_CPU_DESCRIPTOR_HANDLE currentCPUHandle(descriptorHeap->GetCPUDescriptorHandleForHeapStart(), 0, descriptorSize);
-
-	// GPU handle for the first descriptor on the descriptor heap, used to initialize the descriptor tables
-	CD3DX12_GPU_DESCRIPTOR_HANDLE currentGPUHandle(descriptorHeap->GetGPUDescriptorHandleForHeapStart(), 0, descriptorSize);
-	
 	// Transition from pixel shader resource to unordered access
 	auto barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(image->buffer_.resource_.Get(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 	commandList->ResourceBarrier(1, &barrier1);
 
 	//Loop through the mipmaps copying from the bigger mipmap to the smaller one with downsampling in a compute shader
-	for (uint32_t TopMip = 0; TopMip < image->mipmapCount_ - 1; TopMip++)
+	for (uint32_t currMipLevel = 0; currMipLevel < image->mipmapCount_ - 1; ++currMipLevel)
 	{
 		// Get mipmap dimensions
-		uint32_t dstWidth = max(image->width_ >> (TopMip + 1), 1);
-		uint32_t dstHeight = max(image->height_ >> (TopMip + 1), 1);
+		uint32_t dstWidth = max(image->width_ >> (currMipLevel + 1), 1);
+		uint32_t dstHeight = max(image->height_ >> (currMipLevel + 1), 1);
 
 		// Create shader resource view for the source texture in the descriptor heap
-		srcTextureSRVDesc.Format = image->format_;
-		srcTextureSRVDesc.Texture2D.MipLevels = 1;
-		srcTextureSRVDesc.Texture2D.MostDetailedMip = TopMip;
-		ctx.GetDevice()->CreateShaderResourceView(image->buffer_.resource_.Get(), &srcTextureSRVDesc, currentCPUHandle);
+		srvSrcDesc.Format = image->format_;
+		srvSrcDesc.Texture2D.MipLevels = 1;
+		srvSrcDesc.Texture2D.MostDetailedMip = currMipLevel;
+		ctx.GetDevice()->CreateShaderResourceView(image->buffer_.resource_.Get(), &srvSrcDesc, currentCPUHandle);
 		currentCPUHandle.Offset(1, descriptorSize);
 
 		// Create unordered access view for the destination texture in the descriptor heap
-		destTextureUAVDesc.Format = image->format_;
-		destTextureUAVDesc.Texture2D.MipSlice = TopMip + 1;
-		ctx.GetDevice()->CreateUnorderedAccessView(image->buffer_.resource_.Get(), nullptr, &destTextureUAVDesc, currentCPUHandle);
+		uavDstDesc.Format = image->format_;
+		uavDstDesc.Texture2D.MipSlice = currMipLevel + 1;
+		ctx.GetDevice()->CreateUnorderedAccessView(image->buffer_.resource_.Get(), nullptr, &uavDstDesc, currentCPUHandle);
 		currentCPUHandle.Offset(1, descriptorSize);
 
 		// Pass the destination texture pixel size to the shader as constants
@@ -156,7 +156,8 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 		// Dispatch the compute shader with one thread per 8x8 pixels
 		commandList->Dispatch(max(dstWidth / 8, 1u), max(dstHeight / 8, 1u), 1);
 
-		// Wait for all accesses to the destination texture UAV to be finished before generating the next mipmap, as it will be the source texture for the next mipmap
+		// Wait for all accesses to the destination texture UAV to be finished before generating the next mipmap, 
+		// as it will be the source texture for the next mipmap
 		auto barrier2 = CD3DX12_RESOURCE_BARRIER::UAV(image->buffer_.resource_.Get());
 		commandList->ResourceBarrier(1, &barrier2);
 	}
