@@ -120,6 +120,9 @@
     <ClInclude Include="Header\Pipelines\PipelinePresent.h">
       <Filter>Header\Pipelines</Filter>
     </ClInclude>
+    <ClInclude Include="Header\Pipelines\PipelineMipmap.h">
+      <Filter>Header\Pipelines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -185,6 +188,9 @@
     <ClCompile Include="Source\Pipelines\PipelinePresent.cpp">
       <Filter>Source\Pipelines</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Pipelines\PipelineMipmap.cpp">
+      <Filter>Source\Pipelines</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Shader\BlinnPhong.hlsl">
@@ -193,6 +199,7 @@
     <Text Include="Shader\LightData.hlsli">
       <Filter>Shader</Filter>
     </Text>
+    <Text Include="Shader\Mipmap.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\CameraData.hlsli">

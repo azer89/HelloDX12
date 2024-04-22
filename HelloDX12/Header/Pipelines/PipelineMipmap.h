@@ -2,8 +2,8 @@
 #define HELLO_DX12_PIPELINE_MIPMAP
 
 #include "DX12Context.h"
+#include "DX12Image.h"
 #include "PipelineBase.h"
-#include "ResourcesShared.h"
 
 class PipelineMipmap final : public PipelineBase
 {
