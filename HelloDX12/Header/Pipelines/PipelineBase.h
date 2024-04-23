@@ -18,6 +18,9 @@ public:
 
 	virtual void Destroy()
 	{
+		vertexShader_.Destroy();
+		fragmentShader_.Destroy();
+		computeShader_.Destroy();
 		if (srvHeap_) { srvHeap_->Release(); }
 		if (rootSignature_) { rootSignature_->Release(); }
 		if (pipelineState_) { pipelineState_->Release(); }
