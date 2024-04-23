@@ -10,8 +10,6 @@
 
 #include <memory>
 
-using Microsoft::WRL::ComPtr;
-
 class AppSimple : public AppBase
 {
 public:

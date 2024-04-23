@@ -4,6 +4,8 @@
 #include "DX12Context.h"
 #include "ResourcesBase.h"
 
+#include <array>
+
 class ResourcesShared final : public ResourcesBase
 {
 public:
@@ -15,6 +17,13 @@ public:
 
 	void Destroy() override
 	{
+		if (rtvHeap_) { rtvHeap_->Release(); }
+		if (depthStencil_) { depthStencil_->Release(); }
+		if (dsvHeap_) { dsvHeap_->Release(); }
+		for (auto& rt : renderTargets_) 
+		{
+			if (rt) { rt->Release(); }
+		}
 	}
 
 	void Init(DX12Context& ctx);
@@ -33,12 +42,12 @@ private:
 public:
 	// Render target
 	uint32_t rtvIncrementSize_ = 0;
-	ComPtr<ID3D12DescriptorHeap> rtvHeap_ = nullptr;
-	ComPtr<ID3D12Resource> renderTargets_[AppConfig::FrameCount] = {};
+	ID3D12DescriptorHeap* rtvHeap_ = nullptr;
+	std::array<ID3D12Resource*, AppConfig::FrameCount> renderTargets_ = { nullptr };
 
 	// Depth stencil
-	ComPtr<ID3D12Resource> depthStencil_ = nullptr;
-	ComPtr<ID3D12DescriptorHeap> dsvHeap_ = nullptr;
+	ID3D12Resource* depthStencil_ = nullptr;
+	ID3D12DescriptorHeap* dsvHeap_ = nullptr;
 };
 
 #endif

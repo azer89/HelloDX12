@@ -20,10 +20,10 @@ void ResourcesShared::CreateRTV(DX12Context& ctx)
 	// Create a RTV for each frame
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvHeap_->GetCPUDescriptorHandleForHeapStart());
 	rtvIncrementSize_ = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	for (uint32_t n = 0; n < AppConfig::FrameCount; n++)
+	for (uint32_t i = 0; i < AppConfig::FrameCount; i++)
 	{
-		ThrowIfFailed(ctx.GetSwapchain()->GetBuffer(n, IID_PPV_ARGS(&renderTargets_[n])))
-			ctx.GetDevice()->CreateRenderTargetView(renderTargets_[n].Get(), nullptr, rtvHandle);
+		ThrowIfFailed(ctx.GetSwapchain()->GetBuffer(i, IID_PPV_ARGS(&renderTargets_[i])))
+		ctx.GetDevice()->CreateRenderTargetView(renderTargets_[i], nullptr, rtvHandle);
 		rtvHandle.Offset(1, rtvIncrementSize_);
 	}
 }
@@ -74,14 +74,14 @@ void ResourcesShared::CreateDSV(DX12Context& ctx)
 	))
 
 	ctx.GetDevice()->CreateDepthStencilView(
-		depthStencil_.Get(),
+		depthStencil_,
 		&depthStencilDesc,
 		dsvHeap_->GetCPUDescriptorHandleForHeapStart());
 }
 
 ID3D12Resource* ResourcesShared::GetRenderTarget(uint32_t frameIndex) const
 {
-	return renderTargets_[frameIndex].Get();
+	return renderTargets_[frameIndex];
 }
 
 CD3DX12_CPU_DESCRIPTOR_HANDLE ResourcesShared::GetRTVHandle(uint32_t frameIndex) const

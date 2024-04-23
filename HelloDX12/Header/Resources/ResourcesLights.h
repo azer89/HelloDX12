@@ -34,7 +34,6 @@ public:
 public:
 	std::vector<LightData> lights_ = {};
 	DX12Buffer buffer_ = {};
-	ComPtr<ID3D12DescriptorHeap> srvHeap_ = nullptr;
 };
 
 #endif
