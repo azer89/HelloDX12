@@ -179,7 +179,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	commandList->SetGraphicsRootDescriptorTable(2, handle1);
 	commandList->SetGraphicsRootDescriptorTable(3, handle2);
 
-	const auto rtvHandle = resourcesShared_->GetRTVHandle(ctx.GetFrameIndex());
+	const auto rtvHandle = resourcesShared_->GetSwapchainRTVHandle(ctx.GetFrameIndex());
 	const auto dsvHandle = resourcesShared_->GetDSVHandle();
 	constexpr uint32_t renderTargetCount = 1;
 	commandList->OMSetRenderTargets(renderTargetCount, &rtvHandle, FALSE, &dsvHandle);

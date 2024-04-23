@@ -14,12 +14,12 @@ void PipelineClear::PopulateCommandList(DX12Context& ctx)
 
 	const auto resourceBarrier =
 		CD3DX12_RESOURCE_BARRIER::Transition(
-			resourcesShared_->GetRenderTarget(ctx.GetFrameIndex()),
+			resourcesShared_->GetSwapchainRenderTarget(ctx.GetFrameIndex()),
 			D3D12_RESOURCE_STATE_PRESENT,
 			D3D12_RESOURCE_STATE_RENDER_TARGET);
 	commandList->ResourceBarrier(1, &resourceBarrier);
 
-	const auto rtvHandle = resourcesShared_->GetRTVHandle(ctx.GetFrameIndex());
+	const auto rtvHandle = resourcesShared_->GetSwapchainRTVHandle(ctx.GetFrameIndex());
 	const auto dsvHandle = resourcesShared_->GetDSVHandle();
 
 	constexpr float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };

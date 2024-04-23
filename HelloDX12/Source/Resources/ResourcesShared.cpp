@@ -8,25 +8,28 @@ ResourcesShared::~ResourcesShared()
 
 void ResourcesShared::Destroy()
 {
-	if (rtvHeap_) { rtvHeap_->Release(); }
+	if (swapchainRTVHeap_) { swapchainRTVHeap_->Release(); }
+
 	if (depthStencil_) { depthStencil_->Release(); }
 	if (dsvHeap_) { dsvHeap_->Release(); }
-	for (auto& rt : renderTargets_)
+	
+	if (offscreenRTVHeap_) { offscreenRTVHeap_->Release(); }
+	offcreenImage_.Destroy();
+
+	for (auto& rt : swapchainRenderTargets_)
 	{
 		if (rt) { rt->Release(); }
 	}
-	offcreenImage_.Destroy();
 }
 
 void ResourcesShared::Init(DX12Context& ctx)
 {
-	CreateRTV(ctx);
+	CreateSwapchainRTV(ctx);
+	CreateOffscreenRTV(ctx);
 	CreateDSV(ctx);
-
-	offcreenImage_.CreateColorAttachment(ctx);
 }
 
-void ResourcesShared::CreateRTV(DX12Context& ctx)
+void ResourcesShared::CreateSwapchainRTV(DX12Context& ctx)
 {
 	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
 	{
@@ -34,19 +37,40 @@ void ResourcesShared::CreateRTV(DX12Context& ctx)
 		.NumDescriptors = AppConfig::FrameCount,
 		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
 	};
-	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&rtvHeap_)))
+	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&swapchainRTVHeap_)))
 
 	// Create a RTV for each frame
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvHeap_->GetCPUDescriptorHandleForHeapStart());
-	rtvIncrementSize_ = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(swapchainRTVHeap_->GetCPUDescriptorHandleForHeapStart());
+	swapchainRTVIncrementSize_ = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	for (uint32_t i = 0; i < AppConfig::FrameCount; i++)
 	{
-		ThrowIfFailed(ctx.GetSwapchain()->GetBuffer(i, IID_PPV_ARGS(&renderTargets_[i])))
-		ctx.GetDevice()->CreateRenderTargetView(renderTargets_[i], nullptr, rtvHandle);
-		rtvHandle.Offset(1, rtvIncrementSize_);
+		ThrowIfFailed(ctx.GetSwapchain()->GetBuffer(i, IID_PPV_ARGS(&swapchainRenderTargets_[i])))
+		ctx.GetDevice()->CreateRenderTargetView(swapchainRenderTargets_[i], nullptr, rtvHandle);
+		rtvHandle.Offset(1, swapchainRTVIncrementSize_);
 	}
 }
 
+void ResourcesShared::CreateOffscreenRTV(DX12Context& ctx)
+{
+	// Create Image
+	offcreenImage_.CreateColorAttachment(ctx);
+
+	// Create RTV
+	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
+	{
+		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
+		.NumDescriptors = 1,
+		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
+	};
+	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&offscreenRTVHeap_)))
+
+	// Create a RTV for each frame
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(offscreenRTVHeap_->GetCPUDescriptorHandleForHeapStart());
+	offscreenRTVIncrementSize_ = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	ctx.GetDevice()->CreateRenderTargetView(offcreenImage_.buffer_.resource_, nullptr, rtvHandle);
+}
+
+// TODO Use DMA
 void ResourcesShared::CreateDSV(DX12Context& ctx)
 {
 	// Describe and create a depth stencil view (DSV) descriptor heap.
@@ -58,7 +82,7 @@ void ResourcesShared::CreateDSV(DX12Context& ctx)
 	};
 	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&dsvHeap_)))
 
-	rtvIncrementSize_ = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	swapchainRTVIncrementSize_ = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
 	D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc =
 	{
@@ -98,14 +122,14 @@ void ResourcesShared::CreateDSV(DX12Context& ctx)
 		dsvHeap_->GetCPUDescriptorHandleForHeapStart());
 }
 
-ID3D12Resource* ResourcesShared::GetRenderTarget(uint32_t frameIndex) const
+ID3D12Resource* ResourcesShared::GetSwapchainRenderTarget(uint32_t frameIndex) const
 {
-	return renderTargets_[frameIndex];
+	return swapchainRenderTargets_[frameIndex];
 }
 
-CD3DX12_CPU_DESCRIPTOR_HANDLE ResourcesShared::GetRTVHandle(uint32_t frameIndex) const
+CD3DX12_CPU_DESCRIPTOR_HANDLE ResourcesShared::GetSwapchainRTVHandle(uint32_t frameIndex) const
 {
-	return CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvHeap_->GetCPUDescriptorHandleForHeapStart(), frameIndex, rtvIncrementSize_);
+	return CD3DX12_CPU_DESCRIPTOR_HANDLE(swapchainRTVHeap_->GetCPUDescriptorHandleForHeapStart(), frameIndex, swapchainRTVIncrementSize_);
 }
 
 CD3DX12_CPU_DESCRIPTOR_HANDLE ResourcesShared::GetDSVHandle() const
