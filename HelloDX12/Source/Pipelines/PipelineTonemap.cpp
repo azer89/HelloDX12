@@ -46,7 +46,7 @@ void PipelineTonemap::CreateRootSignature(DX12Context& ctx)
 
 	D3D12_STATIC_SAMPLER_DESC samplerDesc =
 	{
-		.Filter = D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT,
+		.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR,
 		.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
 		.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
 		.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
@@ -58,7 +58,7 @@ void PipelineTonemap::CreateRootSignature(DX12Context& ctx)
 		.MaxLOD = D3D12_FLOAT32_MAX,
 		.ShaderRegister = 0,
 		.RegisterSpace = 0,
-		.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL
+		.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL
 	};
 
 	// Create the root signature for the mipmap compute shader from the parameters and sampler above
@@ -72,8 +72,6 @@ void PipelineTonemap::CreateRootSignature(DX12Context& ctx)
 
 void PipelineTonemap::CreateGraphicsPipeline(DX12Context& ctx)
 {
-	//std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs = VertexData::GetInputElementDescriptions();
-
 	// Describe and create the graphics pipeline state object (PSO).
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc =
 	{
