@@ -397,14 +397,17 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-#Rider
+# Rider
 .idea/
 
-#imgui
+# imgui
 */imgui.ini
 
-#CMake files
+# CMake files
 CMakeFiles/
 *.cmake
 
 CMakeCache.txt
+
+# Agility SDK
+External/D3D12/*
