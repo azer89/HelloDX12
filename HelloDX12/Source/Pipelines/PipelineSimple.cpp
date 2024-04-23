@@ -126,7 +126,7 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 	// Describe and create the graphics pipeline state object (PSO).
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc =
 	{
-		.pRootSignature = rootSignature_.Get(),
+		.pRootSignature = rootSignature_,
 		.VS = CD3DX12_SHADER_BYTECODE(vertexShader_.GetHandle()),
 		.PS = CD3DX12_SHADER_BYTECODE(fragmentShader_.GetHandle()),
 		.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT),
@@ -158,16 +158,16 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 {
 	ID3D12GraphicsCommandList* commandList = ctx.GetCommandList();
 
-	commandList->SetPipelineState(pipelineState_.Get());
+	commandList->SetPipelineState(pipelineState_);
 	commandList->RSSetViewports(1, &viewport_);
 	commandList->RSSetScissorRects(1, &scissor_);
-	commandList->SetGraphicsRootSignature(rootSignature_.Get());
+	commandList->SetGraphicsRootSignature(rootSignature_);
 
 	// Descriptors
 	const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(srvHeap_->GetGPUDescriptorHandleForHeapStart(), 0, incrementSize);
 	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle2(srvHeap_->GetGPUDescriptorHandleForHeapStart(), 1, incrementSize);
-	ID3D12DescriptorHeap* ppHeaps[] = { srvHeap_.Get()};
+	ID3D12DescriptorHeap* ppHeaps[] = { srvHeap_};
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 	commandList->SetGraphicsRootConstantBufferView(0, constBuffCamera_[ctx.GetFrameIndex()].gpuAddress_);
 	commandList->SetGraphicsRootConstantBufferView(1, scene_->modelConstBuffs_[ctx.GetFrameIndex()].gpuAddress_);

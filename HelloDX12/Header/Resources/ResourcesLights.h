@@ -20,7 +20,10 @@ class ResourcesLights final : public ResourcesBase
 {
 public:
 	ResourcesLights() = default;
-	~ResourcesLights() = default;
+	~ResourcesLights()
+	{
+		Destroy();
+	}
 
 	void Destroy() override;
 

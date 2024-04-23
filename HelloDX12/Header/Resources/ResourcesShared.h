@@ -8,7 +8,10 @@ class ResourcesShared final : public ResourcesBase
 {
 public:
 	ResourcesShared() = default;
-	~ResourcesShared() = default;
+	~ResourcesShared()
+	{
+		Destroy();
+	}
 
 	void Destroy() override
 	{

@@ -78,11 +78,11 @@ void AppSimple::OnDestroy()
 
 	for (auto& pip : pipelines_)
 	{
-		pip->Destroy();
+		pip.reset();
 	}
 	for (auto& res : resources_)
 	{
-		res->Destroy();
+		res.reset();
 	}
 
 	context_.Destroy();
