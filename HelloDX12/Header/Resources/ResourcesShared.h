@@ -15,9 +15,12 @@ public:
 
 	void Destroy() override;
 	void Init(DX12Context& ctx);
-	ID3D12Resource* GetSwapchainRenderTarget(uint32_t frameIndex) const;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE GetSwapchainRTVHandle(uint32_t frameIndex) const;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE GetDSVHandle() const;
+
+	ID3D12Resource* GetOffscreenRenderTarget() const { return offcreenImage_.GetResource(); }
+	CD3DX12_CPU_DESCRIPTOR_HANDLE GetOffscreenRTVHandle() const { return offscreenRTVHandle_; }
+	ID3D12Resource* GetSwapchainRenderTarget(uint32_t frameIndex) const { return swapchainRenderTargets_[frameIndex]; }
+	CD3DX12_CPU_DESCRIPTOR_HANDLE GetSwapchainRTVHandle(uint32_t frameIndex) const { return swapchainRTVHandles_[frameIndex]; }
+	CD3DX12_CPU_DESCRIPTOR_HANDLE GetDSVHandle() const { return dsvHandle_; }
 
 private:
 	// Render target
@@ -28,18 +31,21 @@ private:
 	void CreateDSV(DX12Context& ctx);
 
 private:
+	uint32_t rtvIncrementSize_ = 0;
+
 	// Swapchain RTV
-	uint32_t swapchainRTVIncrementSize_ = 0;
 	ID3D12DescriptorHeap* swapchainRTVHeap_ = nullptr;
+	std::array<CD3DX12_CPU_DESCRIPTOR_HANDLE, AppConfig::FrameCount> swapchainRTVHandles_ = {};
 	std::array<ID3D12Resource*, AppConfig::FrameCount> swapchainRenderTargets_ = { nullptr };
 
 	// Offcreen RTV
 	DX12Image offcreenImage_;
-	uint32_t offscreenRTVIncrementSize_ = 0;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE offscreenRTVHandle_ = {};
 	ID3D12DescriptorHeap* offscreenRTVHeap_ = nullptr;
 
 	// Depth stencil
-	ID3D12Resource* depthStencil_ = nullptr;
+	DX12Image depthImage_;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle_;
 	ID3D12DescriptorHeap* dsvHeap_ = nullptr;
 };
 

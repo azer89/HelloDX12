@@ -450,13 +450,12 @@ void DX12Buffer::CreateUploadHeap(DX12Context& ctx,
 void DX12Buffer::CreateDepthStencil(
 	DX12Context& ctx,
 	uint32_t width,
-	uint32_t height)
+	uint32_t height,
+	DXGI_FORMAT imageFormat) // DXGI_FORMAT_D32_FLOAT
 {
-	constexpr DXGI_FORMAT dsFormat = DXGI_FORMAT_D32_FLOAT;
-
 	D3D12_CLEAR_VALUE depthOptimizedClearValue = 
 	{
-		.Format = dsFormat
+		.Format = imageFormat
 	};
 	depthOptimizedClearValue.DepthStencil.Depth = 1.0f;
 	depthOptimizedClearValue.DepthStencil.Stencil = 0;
@@ -473,7 +472,7 @@ void DX12Buffer::CreateDepthStencil(
 		.Height = height,
 		.DepthOrArraySize = 1,
 		.MipLevels = 1,
-		.Format = dsFormat,
+		.Format = imageFormat,
 		.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN,
 		.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL
 	};

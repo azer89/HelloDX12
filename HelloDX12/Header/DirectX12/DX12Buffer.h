@@ -31,7 +31,8 @@ public:
 	void CreateDepthStencil(
 		DX12Context& ctx,
 		uint32_t width,
-		uint32_t height);
+		uint32_t height,
+		DXGI_FORMAT imageFormat);
 	
 	void UploadData(void* data);
 

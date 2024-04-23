@@ -72,6 +72,16 @@ void DX12Image::CreateColorAttachment(DX12Context& ctx)
 	);
 }
 
+void DX12Image::CreateDepthAttachment(DX12Context& ctx)
+{
+	width_ = ctx.GetSwapchainWidth();
+	height_ = ctx.GetSwapchainHeight();
+	pixelSize_ = 1; // TODO This may be incorrect
+	mipmapCount_ = 1;
+	format_ = DXGI_FORMAT_D32_FLOAT;
+	buffer_.CreateDepthStencil(ctx, width_, height_, format_);
+}
+
 D3D12_SHADER_RESOURCE_VIEW_DESC DX12Image::GetSRVDescription()
 {
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc =
