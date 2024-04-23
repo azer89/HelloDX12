@@ -16,11 +16,11 @@ public:
 	void Destroy() override;
 	void Init(DX12Context& ctx);
 
-	ID3D12Resource* GetOffscreenRenderTarget() const { return offcreenImage_.GetResource(); }
-	CD3DX12_CPU_DESCRIPTOR_HANDLE GetOffscreenRTVHandle() const { return offscreenRTVHandle_; }
-	ID3D12Resource* GetSwapchainRenderTarget(uint32_t frameIndex) const { return swapchainRenderTargets_[frameIndex]; }
-	CD3DX12_CPU_DESCRIPTOR_HANDLE GetSwapchainRTVHandle(uint32_t frameIndex) const { return swapchainRTVHandles_[frameIndex]; }
-	CD3DX12_CPU_DESCRIPTOR_HANDLE GetDSVHandle() const { return dsvHandle_; }
+	[[nodiscard]] ID3D12Resource* GetOffscreenRenderTarget() const { return offcreenImage_.GetResource(); }
+	[[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetOffscreenRTVHandle() const { return offscreenRTVHandle_; }
+	[[nodiscard]] ID3D12Resource* GetSwapchainRenderTarget(uint32_t frameIndex) const { return swapchainRenderTargets_[frameIndex]; }
+	[[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetSwapchainRTVHandle(uint32_t frameIndex) const { return swapchainRTVHandles_[frameIndex]; }
+	[[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetDSVHandle() const { return dsvHandle_; }
 
 private:
 	// Render target

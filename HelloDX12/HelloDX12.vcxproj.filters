@@ -211,6 +211,9 @@
     <Text Include="Shader\Mipmap.hlsl">
       <Filter>Shader</Filter>
     </Text>
+    <Text Include="Shader\Tonemap.hlsl">
+      <Filter>Shader</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\CameraData.hlsli">
