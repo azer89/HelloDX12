@@ -15,12 +15,15 @@ void ResourcesShared::Destroy()
 	{
 		if (rt) { rt->Release(); }
 	}
+	offcreenImage_.Destroy();
 }
 
 void ResourcesShared::Init(DX12Context& ctx)
 {
 	CreateRTV(ctx);
 	CreateDSV(ctx);
+
+	offcreenImage_.CreateColorAttachment(ctx);
 }
 
 void ResourcesShared::CreateRTV(DX12Context& ctx)

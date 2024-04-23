@@ -2,6 +2,7 @@
 #define HELLO_DX12_RESOURCES_SHARED
 
 #include "DX12Context.h"
+#include "DX12Image.h"
 #include "ResourcesBase.h"
 
 #include <array>
@@ -26,10 +27,13 @@ private:
 	void CreateDSV(DX12Context& ctx);
 
 public:
-	// Render target
+	// Swapchain RTV
 	uint32_t rtvIncrementSize_ = 0;
 	ID3D12DescriptorHeap* rtvHeap_ = nullptr;
 	std::array<ID3D12Resource*, AppConfig::FrameCount> renderTargets_ = { nullptr };
+
+	// Offcreen RTV
+	DX12Image offcreenImage_;
 
 	// Depth stencil
 	ID3D12Resource* depthStencil_ = nullptr;

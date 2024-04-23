@@ -52,7 +52,22 @@ void DX12Image::Load(DX12Context& ctx, std::string filename)
 
 void DX12Image::CreateColorAttachment(DX12Context& ctx)
 {
+	width_ = ctx.GetSwapchainWidth();
+	height_ = ctx.GetSwapchainHeight();
+	pixelSize_ = 4;
+	format_ = ctx.GetSwapchainFormat();
+	mipmapCount_ = 1;
+	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 
+	buffer_.CreateImage(
+		ctx,
+		width_,
+		height_,
+		mipmapCount_,
+		pixelSize_,
+		format_,
+		flags
+	);
 }
 
 D3D12_SHADER_RESOURCE_VIEW_DESC DX12Image::GetSRVDescription()
