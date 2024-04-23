@@ -82,7 +82,7 @@ void DX12Image::CreateDepthAttachment(DX12Context& ctx)
 	buffer_.CreateDepthStencil(ctx, width_, height_, format_);
 }
 
-D3D12_SHADER_RESOURCE_VIEW_DESC DX12Image::GetSRVDescription()
+D3D12_SHADER_RESOURCE_VIEW_DESC DX12Image::GetSRVDescription() const
 {
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc =
 	{

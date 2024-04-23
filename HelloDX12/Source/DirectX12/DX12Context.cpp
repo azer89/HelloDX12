@@ -66,7 +66,7 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 		.Width = swapchainWidth_,
 		.Height = swapchainHeight_,
 		.Format = swapchainFormat_,
-		.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_UNORDERED_ACCESS,
+		.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
 		.BufferCount = AppConfig::FrameCount,
 		.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD
 	};

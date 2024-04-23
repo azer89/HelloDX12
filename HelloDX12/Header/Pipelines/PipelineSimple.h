@@ -32,7 +32,7 @@ public:
 	void Destroy() override;
 
 private:
-	void CreateSRV(DX12Context& ctx);
+	void CreateDescriptorHeap(DX12Context& ctx);
 	void CreateConstantBuffer(DX12Context& ctx);
 	void CreateRootSignature(DX12Context& ctx);
 	void CreateShaders(DX12Context& ctx);

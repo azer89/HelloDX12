@@ -22,6 +22,24 @@ public:
 	[[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetSwapchainRTVHandle(uint32_t frameIndex) const { return swapchainRTVHandles_[frameIndex]; }
 	[[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetDSVHandle() const { return dsvHandle_; }
 
+	[[nodiscard]] ID3D12Resource* GetOffscreenResource() const { return offcreenImage_.buffer_.resource_; }
+
+	[[nodiscard]] D3D12_SHADER_RESOURCE_VIEW_DESC GetOffscreenSRVDescription() const
+	{
+		return offcreenImage_.GetSRVDescription();
+	}
+
+	[[nodiscard]] D3D12_UNORDERED_ACCESS_VIEW_DESC GetSwapchainUAVDescription(DX12Context& ctx) const
+	{
+		D3D12_UNORDERED_ACCESS_VIEW_DESC uavDstDesc =
+		{
+			.Format = ctx.GetSwapchainFormat(),
+			.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D,
+		};
+		uavDstDesc.Texture2D.MipSlice = 0;
+		return uavDstDesc;
+	}
+
 private:
 	// Render target
 	void CreateSwapchainRTV(DX12Context& ctx);

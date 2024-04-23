@@ -15,7 +15,7 @@ PipelineSimple::PipelineSimple(
 	resourcesShared_(resourcesShared),
 	resourcesLights_(resourcesLights)
 {
-	CreateSRV(ctx);
+	CreateDescriptorHeap(ctx);
 	CreateRootSignature(ctx);
 	CreateConstantBuffer(ctx);
 	CreateShaders(ctx);
@@ -35,21 +35,21 @@ void PipelineSimple::Destroy()
 	}
 }
 
-void PipelineSimple::CreateSRV(DX12Context& ctx)
+void PipelineSimple::CreateDescriptorHeap(DX12Context& ctx)
 {
-	constexpr uint32_t srvCount = 2;
+	constexpr uint32_t descriptorCount = 2;
 
-	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc =
+	D3D12_DESCRIPTOR_HEAP_DESC heapDesc =
 	{
 		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-		.NumDescriptors = srvCount,
+		.NumDescriptors = descriptorCount,
 		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE
 	};
-	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&srvHeap_)))
+	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&descriptorHeap_)))
 
 	uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	CD3DX12_CPU_DESCRIPTOR_HANDLE handle1(srvHeap_->GetCPUDescriptorHandleForHeapStart(), 0, incrementSize); // Texture
-	CD3DX12_CPU_DESCRIPTOR_HANDLE handle2(srvHeap_->GetCPUDescriptorHandleForHeapStart(), 1, incrementSize); // Lights
+	CD3DX12_CPU_DESCRIPTOR_HANDLE handle1(descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), 0, incrementSize); // Texture
+	CD3DX12_CPU_DESCRIPTOR_HANDLE handle2(descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), 1, incrementSize); // Lights
 
 	// Texture
 	auto imgSRVDesc = scene_->model_.meshes_[0].image_->GetSRVDescription();
@@ -104,7 +104,6 @@ void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 	
-
 	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
 	rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 1, &sampler, rootSignatureFlags);
 
@@ -169,10 +168,11 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	commandList->SetGraphicsRootSignature(rootSignature_);
 
 	// Descriptors
+	// TODO handles can be precomputed
 	const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(srvHeap_->GetGPUDescriptorHandleForHeapStart(), 0, incrementSize);
-	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle2(srvHeap_->GetGPUDescriptorHandleForHeapStart(), 1, incrementSize);
-	ID3D12DescriptorHeap* ppHeaps[] = { srvHeap_};
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 0, incrementSize);
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle2(descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 1, incrementSize);
+	ID3D12DescriptorHeap* ppHeaps[] = { descriptorHeap_};
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 	commandList->SetGraphicsRootConstantBufferView(0, constBuffCamera_[ctx.GetFrameIndex()].gpuAddress_);
 	commandList->SetGraphicsRootConstantBufferView(1, scene_->modelConstBuffs_[ctx.GetFrameIndex()].gpuAddress_);
