@@ -17,8 +17,10 @@ public:
 	void PopulateCommandList(DX12Context& ctx) override;
 
 private:
-	void CreatePipeline(DX12Context& ctx);
-	void GenerateShader(DX12Context& ctx);
+	void CreateDescriptorHeap(DX12Context& ctx);
+	void CreateRootSignature(DX12Context& ctx);
+	void CreateGraphicsPipeline(DX12Context& ctx);
+	void CreateShaders(DX12Context& ctx);
 
 private:
 	ResourcesShared* resourcesShared_;
