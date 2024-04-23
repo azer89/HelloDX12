@@ -126,6 +126,9 @@
     <ClInclude Include="Header\RootConstParam.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Header\Pipelines\PipelineTonemap.h">
+      <Filter>Header\Pipelines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -192,6 +195,9 @@
       <Filter>Source\Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="Source\Pipelines\PipelineMipmap.cpp">
+      <Filter>Source\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Pipelines\PipelineTonemap.cpp">
       <Filter>Source\Pipelines</Filter>
     </ClCompile>
   </ItemGroup>

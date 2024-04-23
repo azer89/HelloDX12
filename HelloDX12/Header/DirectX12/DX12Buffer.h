@@ -10,7 +10,16 @@ public:
 	void CreateConstantBuffer(DX12Context& ctx, uint64_t bufferSize);
 	void CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t bufferSize, uint32_t stride);
 	void CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t bufferSize, DXGI_FORMAT format);
+
 	void CreateImage(
+		DX12Context& ctx,
+		uint32_t width,
+		uint32_t height,
+		uint16_t mipmapCount,
+		uint32_t bytesPerPixel,
+		DXGI_FORMAT imageFormat,
+		D3D12_RESOURCE_FLAGS flags);
+	void CreateImageFromData(
 		DX12Context& ctx,
 		void* imageData,
 		uint32_t width,
@@ -19,7 +28,7 @@ public:
 		uint32_t bytesPerPixel,
 		DXGI_FORMAT imageFormat,
 		D3D12_RESOURCE_FLAGS flags);
-
+	
 	void UploadData(void* data);
 
 	void Destroy();

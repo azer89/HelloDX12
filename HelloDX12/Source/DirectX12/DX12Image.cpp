@@ -36,6 +36,7 @@ void DX12Image::Load(DX12Context& ctx, std::string filename)
 	pixelSize_ = 4; // texChannels is 3 eventhough STBI_rgb_alpha is used
 	format_ = ctx.GetSwapchainFormat();
 	mipmapCount_ = Utility::MipMapCount(width_, height_);
+	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 
 	buffer_.CreateImage(
 		ctx, 
@@ -45,8 +46,13 @@ void DX12Image::Load(DX12Context& ctx, std::string filename)
 		mipmapCount_, 
 		pixelSize_, 
 		format_,
-		D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
+		flags
 	);
+}
+
+void DX12Image::CreateColorAttachment(DX12Context& ctx)
+{
+
 }
 
 D3D12_SHADER_RESOURCE_VIEW_DESC DX12Image::GetSRVDescription()
