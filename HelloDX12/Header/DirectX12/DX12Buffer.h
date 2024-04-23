@@ -28,6 +28,10 @@ public:
 		uint32_t bytesPerPixel,
 		DXGI_FORMAT imageFormat,
 		D3D12_RESOURCE_FLAGS flags);
+	void CreateDepthStencil(
+		DX12Context& ctx,
+		uint32_t width,
+		uint32_t height);
 	
 	void UploadData(void* data);
 
