@@ -22,6 +22,11 @@ PipelineSimple::PipelineSimple(
 	CreateGraphicsPipeline(ctx);
 }
 
+PipelineSimple::~PipelineSimple()
+{
+	Destroy();
+}
+
 void PipelineSimple::Destroy()
 {
 	for (auto& buff : constBuffCamera_)

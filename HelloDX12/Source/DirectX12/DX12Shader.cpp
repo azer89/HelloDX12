@@ -21,6 +21,11 @@ LPCSTR GetTarget(ShaderType shaderType)
 	throw std::runtime_error("Shader type not recognized");
 }
 
+void DX12Shader::Destroy()
+{
+	if (handle_) { handle_->Release(); }
+}
+
 void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderType shaderType)
 {
 #if defined(_DEBUG)

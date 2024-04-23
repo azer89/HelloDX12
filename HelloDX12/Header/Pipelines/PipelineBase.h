@@ -8,23 +8,11 @@ class PipelineBase
 {
 public:
 	explicit PipelineBase(DX12Context& ctx);
-	virtual ~PipelineBase()
-	{
-		Destroy();
-	}
+	virtual ~PipelineBase();
 
+	virtual void Destroy();
 	virtual void Update(DX12Context& ctx) = 0;
 	virtual void PopulateCommandList(DX12Context& ctx) = 0;
-
-	virtual void Destroy()
-	{
-		vertexShader_.Destroy();
-		fragmentShader_.Destroy();
-		computeShader_.Destroy();
-		if (srvHeap_) { srvHeap_->Release(); }
-		if (rootSignature_) { rootSignature_->Release(); }
-		if (pipelineState_) { pipelineState_->Release(); }
-	}
 
 protected:
 	ID3D12PipelineState* pipelineState_ = nullptr;

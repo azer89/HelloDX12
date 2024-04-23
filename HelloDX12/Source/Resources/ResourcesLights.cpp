@@ -1,6 +1,11 @@
 #include "ResourcesLights.h"
 #include "DX12Exception.h"
 
+ResourcesLights::~ResourcesLights()
+{
+	Destroy();
+}
+
 void ResourcesLights::Destroy()
 {
 	buffer_.Destroy();

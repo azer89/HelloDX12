@@ -18,13 +18,8 @@ public:
 	DX12Shader() = default;
 	~DX12Shader() = default;
 
-	void Destroy()
-	{
-		if (handle_) { handle_->Release(); }
-	}
-
+	void Destroy();
 	ID3DBlob* GetHandle() const { return handle_; }
-
 	void Create(DX12Context& ctx, const std::string& filename, ShaderType shaderType);
 
 private:

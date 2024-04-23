@@ -1,6 +1,22 @@
 #include "ResourcesShared.h"
 #include "DX12Exception.h"
 
+ResourcesShared::~ResourcesShared()
+{
+	Destroy();
+}
+
+void ResourcesShared::Destroy()
+{
+	if (rtvHeap_) { rtvHeap_->Release(); }
+	if (depthStencil_) { depthStencil_->Release(); }
+	if (dsvHeap_) { dsvHeap_->Release(); }
+	for (auto& rt : renderTargets_)
+	{
+		if (rt) { rt->Release(); }
+	}
+}
+
 void ResourcesShared::Init(DX12Context& ctx)
 {
 	CreateRTV(ctx);

@@ -14,7 +14,6 @@ public:
 	~Scene() = default;
 
 	void Destroy();
-
 	void Init(DX12Context& ctx);
 
 private:

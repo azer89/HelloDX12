@@ -10,24 +10,10 @@ class ResourcesShared final : public ResourcesBase
 {
 public:
 	ResourcesShared() = default;
-	~ResourcesShared()
-	{
-		Destroy();
-	}
+	~ResourcesShared();
 
-	void Destroy() override
-	{
-		if (rtvHeap_) { rtvHeap_->Release(); }
-		if (depthStencil_) { depthStencil_->Release(); }
-		if (dsvHeap_) { dsvHeap_->Release(); }
-		for (auto& rt : renderTargets_) 
-		{
-			if (rt) { rt->Release(); }
-		}
-	}
-
+	void Destroy() override;
 	void Init(DX12Context& ctx);
-
 	ID3D12Resource* GetRenderTarget(uint32_t frameIndex) const;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE GetRTVHandle(uint32_t frameIndex) const;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE GetDSVHandle() const;

@@ -9,18 +9,10 @@ class DX12Image
 public:
 	DX12Image();
 	~DX12Image() = default;
-
-	void Destroy()
-	{
-		buffer_.Destroy();
-	}
-
+	void Destroy();
 	void Load(DX12Context& ctx, std::string filename);
-
 	ID3D12Resource* GetResource() const { return buffer_.resource_; }
-
 	D3D12_SHADER_RESOURCE_VIEW_DESC GetSRVDescription();
-
 	D3D12_STATIC_SAMPLER_DESC GetSampler();
 
 private:
