@@ -403,10 +403,6 @@ FodyWeavers.xsd
 # imgui
 */imgui.ini
 
-# CMake files
-CMakeFiles/
-*.cmake
-
 CMakeCache.txt
 
 # Agility SDK
