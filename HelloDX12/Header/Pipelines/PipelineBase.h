@@ -18,18 +18,9 @@ public:
 
 	virtual void Destroy()
 	{
-		if (srvHeap_)
-		{
-			srvHeap_->Release();
-		}
-		if (rootSignature_)
-		{
-			rootSignature_->Release();
-		}
-		if (pipelineState_)
-		{
-			pipelineState_->Release();
-		}
+		if (srvHeap_) { srvHeap_->Release(); }
+		if (rootSignature_) { rootSignature_->Release(); }
+		if (pipelineState_) { pipelineState_->Release(); }
 	}
 
 protected:

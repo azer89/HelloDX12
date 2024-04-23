@@ -75,15 +75,7 @@ void AppSimple::OnDestroy()
 {
 	context_.WaitForGPU();
 	scene_->Destroy();
-
-	for (auto& pip : pipelines_)
-	{
-		pip.reset();
-	}
-	for (auto& res : resources_)
-	{
-		res.reset();
-	}
-
+	for (auto& pip : pipelines_) { pip.reset(); }
+	for (auto& res : resources_) { res.reset(); }
 	context_.Destroy();
 }
