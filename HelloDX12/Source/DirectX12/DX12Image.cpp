@@ -12,6 +12,11 @@ DX12Image::DX12Image()
 {
 }
 
+void DX12Image::Destroy()
+{
+	buffer_.Destroy();
+}
+
 void DX12Image::Load(DX12Context& ctx, std::string filename)
 {
 	stbi_set_flip_vertically_on_load(false);

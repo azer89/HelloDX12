@@ -18,12 +18,7 @@ public:
 		std::vector<VertexData>&& vertices,
 		std::vector<uint32_t>&& indices);
 
-	void Destroy()
-	{
-		vertexBuffer_.Destroy();
-		indexBuffer_.Destroy();
-		image_->Destroy();
-	}
+	void Destroy();
 
 	void CreateCube(DX12Context& ctx);
 

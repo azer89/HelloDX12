@@ -1,6 +1,11 @@
 #include "ResourcesLights.h"
 #include "DX12Exception.h"
 
+ResourcesLights::~ResourcesLights()
+{
+	Destroy();
+}
+
 void ResourcesLights::Destroy()
 {
 	buffer_.Destroy();
@@ -23,7 +28,7 @@ D3D12_SHADER_RESOURCE_VIEW_DESC ResourcesLights::GetSRVDescription() const
 		.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
 	};
 	srvDesc.Buffer.FirstElement = 0;
-	srvDesc.Buffer.NumElements = lights_.size();
+	srvDesc.Buffer.NumElements = static_cast<UINT>(lights_.size());
 	srvDesc.Buffer.StructureByteStride = sizeof(LightData);
 	srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 

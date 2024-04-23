@@ -4,18 +4,16 @@
 #include "DX12Context.h"
 #include "ResourcesBase.h"
 
+#include <array>
+
 class ResourcesShared final : public ResourcesBase
 {
 public:
 	ResourcesShared() = default;
-	~ResourcesShared() = default;
+	~ResourcesShared();
 
-	void Destroy() override
-	{
-	}
-
+	void Destroy() override;
 	void Init(DX12Context& ctx);
-
 	ID3D12Resource* GetRenderTarget(uint32_t frameIndex) const;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE GetRTVHandle(uint32_t frameIndex) const;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE GetDSVHandle() const;
@@ -30,12 +28,12 @@ private:
 public:
 	// Render target
 	uint32_t rtvIncrementSize_ = 0;
-	ComPtr<ID3D12DescriptorHeap> rtvHeap_ = nullptr;
-	ComPtr<ID3D12Resource> renderTargets_[AppConfig::FrameCount] = {};
+	ID3D12DescriptorHeap* rtvHeap_ = nullptr;
+	std::array<ID3D12Resource*, AppConfig::FrameCount> renderTargets_ = { nullptr };
 
 	// Depth stencil
-	ComPtr<ID3D12Resource> depthStencil_ = nullptr;
-	ComPtr<ID3D12DescriptorHeap> dsvHeap_ = nullptr;
+	ID3D12Resource* depthStencil_ = nullptr;
+	ID3D12DescriptorHeap* dsvHeap_ = nullptr;
 };
 
 #endif

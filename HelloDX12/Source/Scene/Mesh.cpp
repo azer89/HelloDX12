@@ -23,6 +23,13 @@ Mesh::Mesh(
 	pip.GenerateMipmap(ctx, image_.get());
 }
 
+void Mesh::Destroy()
+{
+	vertexBuffer_.Destroy();
+	indexBuffer_.Destroy();
+	image_->Destroy();
+}
+
 void Mesh::CreateCube(DX12Context& ctx)
 {
 	ShapeGenerator::Cube(vertices_, indices_);

@@ -8,19 +8,16 @@ class PipelineBase
 {
 public:
 	explicit PipelineBase(DX12Context& ctx);
-	virtual ~PipelineBase() = default;
+	virtual ~PipelineBase();
 
+	virtual void Destroy();
 	virtual void Update(DX12Context& ctx) = 0;
 	virtual void PopulateCommandList(DX12Context& ctx) = 0;
 
-	virtual void Destroy()
-	{
-	}
-
 protected:
-	ComPtr<ID3D12PipelineState> pipelineState_ = nullptr;
-	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
-	ComPtr<ID3D12DescriptorHeap> srvHeap_ = nullptr;
+	ID3D12PipelineState* pipelineState_ = nullptr;
+	ID3D12RootSignature* rootSignature_ = nullptr;
+	ID3D12DescriptorHeap* srvHeap_ = nullptr; // TODO
 
 	DX12Shader vertexShader_ = {};
 	DX12Shader fragmentShader_ = {};

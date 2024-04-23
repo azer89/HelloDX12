@@ -20,18 +20,18 @@ class ResourcesLights final : public ResourcesBase
 {
 public:
 	ResourcesLights() = default;
-	~ResourcesLights() = default;
+	~ResourcesLights();
 
 	void Destroy() override;
 
 	void AddLights(DX12Context& ctx, const std::vector<LightData>& lights);
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC GetSRVDescription() const;
+	ID3D12Resource* GetResource() const { return buffer_.resource_; }
 
 public:
 	std::vector<LightData> lights_ = {};
 	DX12Buffer buffer_ = {};
-	ComPtr<ID3D12DescriptorHeap> srvHeap_ = nullptr;
 };
 
 #endif

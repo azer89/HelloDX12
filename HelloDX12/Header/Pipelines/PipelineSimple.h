@@ -24,7 +24,7 @@ public:
 		Camera* camera, 
 		ResourcesShared* resourcesShared,
 		ResourcesLights* resourcesLights);
-	~PipelineSimple() = default;
+	~PipelineSimple();
 
 	void Update(DX12Context& ctx) override;
 	void PopulateCommandList(DX12Context& ctx) override;

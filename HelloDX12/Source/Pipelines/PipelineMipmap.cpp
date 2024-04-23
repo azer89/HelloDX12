@@ -53,7 +53,7 @@ void PipelineMipmap::CreatePipeline(DX12Context& ctx)
 	// Create pipeline state object for the compute shader using the root signature.
 	D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc =
 	{
-		.pRootSignature = rootSignature_.Get(),
+		.pRootSignature = rootSignature_,
 		.CS = CD3DX12_SHADER_BYTECODE(computeShader_.GetHandle())
 	};
 	ctx.GetDevice()->CreateComputePipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_));
@@ -103,8 +103,8 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	ctx.ResetCommandList();
 	auto commandList = ctx.GetCommandList();
 
-	commandList->SetComputeRootSignature(rootSignature_.Get());
-	commandList->SetPipelineState(pipelineState_.Get());
+	commandList->SetComputeRootSignature(rootSignature_);
+	commandList->SetPipelineState(pipelineState_);
 	commandList->SetDescriptorHeaps(1, &descriptorHeap);
 
 	// Barrier

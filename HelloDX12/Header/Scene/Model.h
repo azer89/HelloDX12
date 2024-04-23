@@ -17,7 +17,6 @@ public:
 	~Model() = default;
 
 	void Destroy();
-
 	void Load(DX12Context& ctx, const std::string& path);
 
 private:
