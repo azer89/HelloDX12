@@ -38,7 +38,7 @@ void DX12Image::Load(DX12Context& ctx, std::string filename)
 	mipmapCount_ = Utility::MipMapCount(width_, height_);
 	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 
-	buffer_.CreateImage(
+	buffer_.CreateImageFromData(
 		ctx, 
 		pixels, 
 		width_, 
