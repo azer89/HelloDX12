@@ -35,7 +35,7 @@ private:
 
 public:
 	uint64_t bufferSize_ = 0;
-	ComPtr<ID3D12Resource> resource_ = nullptr;
+	ID3D12Resource* resource_ = nullptr;
 	D3D12MA::Allocation* dmaAllocation_ = nullptr;
 	
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_ = {};

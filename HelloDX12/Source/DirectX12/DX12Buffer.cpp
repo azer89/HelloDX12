@@ -8,6 +8,7 @@ void DX12Buffer::Destroy()
 {
 	if (dmaAllocation_ != nullptr)
 	{
+		resource_->Release();
 		dmaAllocation_->Release();
 		resource_ = nullptr;
 		dmaAllocation_ = nullptr;
@@ -158,7 +159,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t buffe
 	// Copy data
 	uint64_t r = UpdateSubresources(
 		ctx.GetCommandList(),
-		resource_.Get(), 
+		resource_, 
 		bufferUploadHeap, 
 		0, 
 		0, 
@@ -171,7 +172,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t buffe
 	{
 		.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION
 	};
-	barrier.Transition.pResource = resource_.Get();
+	barrier.Transition.pResource = resource_;
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
 	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
@@ -246,7 +247,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t buffer
 	// Copy data
 	uint64_t r = UpdateSubresources(
 		ctx.GetCommandList(),
-		resource_.Get(),
+		resource_,
 		bufferUploadHeap,
 		0,
 		0,
@@ -259,7 +260,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t buffer
 	{
 		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION
 	};
-	barrier.Transition.pResource = resource_.Get();
+	barrier.Transition.pResource = resource_;
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_INDEX_BUFFER;
 	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
@@ -347,7 +348,7 @@ void DX12Buffer::CreateImage(
 
 	UpdateSubresources(
 		ctx.GetCommandList(), 
-		resource_.Get(), 
+		resource_, 
 		bufferUploadHeap, 
 		0, 
 		0, 
@@ -358,7 +359,7 @@ void DX12Buffer::CreateImage(
 	{
 		.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION
 	};
-	barrier.Transition.pResource = resource_.Get();
+	barrier.Transition.pResource = resource_;
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;

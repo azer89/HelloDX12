@@ -48,13 +48,13 @@ void PipelineSimple::CreateSRV(DX12Context& ctx)
 
 	// Texture
 	auto imgSRVDesc = scene_->model_.meshes_[0].image_->GetSRVDescription();
-	auto imageResource = scene_->model_.meshes_[0].image_->buffer_.resource_.Get();
+	auto imageResource = scene_->model_.meshes_[0].image_->GetResource();
 	ctx.GetDevice()->CreateShaderResourceView(imageResource, &imgSRVDesc, handle1);
 
 	// Lights
 	auto lightSRVDesc = resourcesLights_->GetSRVDescription();
 	ctx.GetDevice()->CreateShaderResourceView(
-		resourcesLights_->buffer_.resource_.Get(),
+		resourcesLights_->GetResource(),
 		&lightSRVDesc,
 		handle2);
 }
