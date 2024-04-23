@@ -28,7 +28,7 @@ private:
 	void CreateUploadHeap(DX12Context& ctx,
 		uint64_t bufferSize,
 		uint16_t mipLevel,
-		ComPtr<ID3D12Resource>& bufferUploadHeap,
+		ID3D12Resource** bufferUploadHeap,
 		D3D12MA::Allocation** bufferUploadHeapAllocation);
 
 	static uint32_t GetConstantBufferByteSize(uint64_t byteSize);
