@@ -10,6 +10,10 @@ namespace AppConfig
 
 	// Number of frame in flight
 	constexpr uint32_t FrameCount = 2;
+
+	constexpr uint32_t MSAACount = 4;
+
+	constexpr float ClearColor[4] = { 0.0f, 0.1f, 0.4f, 1.0f };
 	
 	const std::string ScreenTitle = "Hello DX12";
 

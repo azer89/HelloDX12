@@ -19,11 +19,17 @@ void ResourcesShared::Destroy()
 	}
 	depthImage_.Destroy();
 
-	if (offscreenRTVHeap_) 
+	if (multiSampledRTVHeap_) 
 	{ 
-		offscreenRTVHeap_->Release(); 
+		multiSampledRTVHeap_->Release(); 
 	}
-	offcreenImage_.Destroy();
+	multiSampledImage_.Destroy();
+
+	if (singleSampledRTVHeap_) 
+	{ 
+		singleSampledRTVHeap_->Release(); 
+	}
+	singleSampledImage_.Destroy();
 
 	for (auto& rt : swapchainRenderTargets_)
 	{
@@ -35,7 +41,8 @@ void ResourcesShared::Init(DX12Context& ctx)
 {
 	rtvIncrementSize_ = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	CreateSwapchainRTV(ctx);
-	CreateOffscreenRTV(ctx);
+	CreateSingleSampledRTV(ctx);
+	CreateMultiSampledRTV(ctx);
 	CreateDSV(ctx);
 }
 
@@ -68,10 +75,27 @@ void ResourcesShared::CreateSwapchainRTV(DX12Context& ctx)
 	}
 }
 
-void ResourcesShared::CreateOffscreenRTV(DX12Context& ctx)
+void ResourcesShared::CreateMultiSampledRTV(DX12Context& ctx)
 {
 	// Create Image
-	offcreenImage_.CreateColorAttachment(ctx);
+	uint32_t msaaCount = AppConfig::MSAACount;
+	multiSampledImage_.CreateColorAttachment(ctx, msaaCount);
+
+	{
+		// Start recording 
+		ctx.ResetCommandList();
+		auto commandList = ctx.GetCommandList();
+
+		// Barrier
+		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+			multiSampledImage_.GetResource(),
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, 
+			D3D12_RESOURCE_STATE_RENDER_TARGET);
+		
+		commandList->ResourceBarrier(1, &barrier);
+
+		ctx.SubmitCommandListAndWaitForGPU();
+	}
 
 	// Create RTV
 	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
@@ -80,22 +104,49 @@ void ResourcesShared::CreateOffscreenRTV(DX12Context& ctx)
 		.NumDescriptors = 1,
 		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
 	};
-	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&offscreenRTVHeap_)))
+	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&multiSampledRTVHeap_)))
 
 	// Create a RTV for each frame
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(offscreenRTVHeap_->GetCPUDescriptorHandleForHeapStart());
-	ctx.GetDevice()->CreateRenderTargetView(offcreenImage_.buffer_.resource_, nullptr, rtvHandle);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(multiSampledRTVHeap_->GetCPUDescriptorHandleForHeapStart());
+	ctx.GetDevice()->CreateRenderTargetView(multiSampledImage_.buffer_.resource_, nullptr, rtvHandle);
 
 	// Create handle
-	offscreenRTVHandle_ = CD3DX12_CPU_DESCRIPTOR_HANDLE(
-		offscreenRTVHeap_->GetCPUDescriptorHandleForHeapStart(),
+	multiSampledRTVHandle_ = CD3DX12_CPU_DESCRIPTOR_HANDLE(
+		multiSampledRTVHeap_->GetCPUDescriptorHandleForHeapStart(),
+		0,
+		rtvIncrementSize_);
+}
+
+void ResourcesShared::CreateSingleSampledRTV(DX12Context& ctx)
+{
+	// Create Image
+	uint32_t msaaCount = 1;
+	singleSampledImage_.CreateColorAttachment(ctx, msaaCount);
+
+	// Create RTV
+	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
+	{
+		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
+		.NumDescriptors = 1,
+		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
+	};
+	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&singleSampledRTVHeap_)))
+
+	// Create a RTV for each frame
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(singleSampledRTVHeap_->GetCPUDescriptorHandleForHeapStart());
+	ctx.GetDevice()->CreateRenderTargetView(singleSampledImage_.buffer_.resource_, nullptr, rtvHandle);
+
+	// Create handle
+	singleSampledRTVHandle_ = CD3DX12_CPU_DESCRIPTOR_HANDLE(
+		singleSampledRTVHeap_->GetCPUDescriptorHandleForHeapStart(),
 		0,
 		rtvIncrementSize_);
 }
 
 void ResourcesShared::CreateDSV(DX12Context& ctx)
 {
-	depthImage_.CreateDepthAttachment(ctx);
+	uint32_t msaaCount = AppConfig::MSAACount;
+	depthImage_.CreateDepthAttachment(ctx, msaaCount);
 
 	// Describe and create a depth stencil view (DSV) descriptor heap.
 	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc =
@@ -109,7 +160,7 @@ void ResourcesShared::CreateDSV(DX12Context& ctx)
 	D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc =
 	{
 		.Format = DXGI_FORMAT_D32_FLOAT,
-		.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D,
+		.ViewDimension = msaaCount == 1 ? D3D12_DSV_DIMENSION_TEXTURE2D : D3D12_DSV_DIMENSION_TEXTURE2DMS,
 		.Flags = D3D12_DSV_FLAG_NONE
 	};
 

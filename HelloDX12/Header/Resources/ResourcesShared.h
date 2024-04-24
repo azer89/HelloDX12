@@ -13,37 +13,27 @@ public:
 	ResourcesShared() = default;
 	~ResourcesShared();
 
-	void Destroy() override;
 	void Init(DX12Context& ctx);
+	void Destroy() override;
+	
+	[[nodiscard]] ID3D12Resource* GetMultiSampledRenderTarget() const { return multiSampledImage_.GetResource(); }
+	[[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetMultiSampledRTVHandle() const { return multiSampledRTVHandle_; }
+	[[nodiscard]] D3D12_SHADER_RESOURCE_VIEW_DESC GetMultiSampledSRVDescription() const { return multiSampledImage_.GetSRVDescription(); }
 
-	[[nodiscard]] ID3D12Resource* GetOffscreenRenderTarget() const { return offcreenImage_.GetResource(); }
-	[[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetOffscreenRTVHandle() const { return offscreenRTVHandle_; }
+	[[nodiscard]] ID3D12Resource* GetSingleSampledRenderTarget() const { return singleSampledImage_.GetResource(); }
+	[[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetSingleSampledRTVHandle() const { return singleSampledRTVHandle_; }
+	[[nodiscard]] D3D12_SHADER_RESOURCE_VIEW_DESC GetSingleSampledSRVDescription() const { return singleSampledImage_.GetSRVDescription(); }
+	
 	[[nodiscard]] ID3D12Resource* GetSwapchainRenderTarget(uint32_t frameIndex) const { return swapchainRenderTargets_[frameIndex]; }
 	[[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetSwapchainRTVHandle(uint32_t frameIndex) const { return swapchainRTVHandles_[frameIndex]; }
+
 	[[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetDSVHandle() const { return dsvHandle_; }
-
-	[[nodiscard]] ID3D12Resource* GetOffscreenResource() const { return offcreenImage_.buffer_.resource_; }
-
-	[[nodiscard]] D3D12_SHADER_RESOURCE_VIEW_DESC GetOffscreenSRVDescription() const
-	{
-		return offcreenImage_.GetSRVDescription();
-	}
-
-	[[nodiscard]] D3D12_UNORDERED_ACCESS_VIEW_DESC GetSwapchainUAVDescription(DX12Context& ctx) const
-	{
-		D3D12_UNORDERED_ACCESS_VIEW_DESC uavDstDesc =
-		{
-			.Format = ctx.GetSwapchainFormat(),
-			.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D,
-		};
-		uavDstDesc.Texture2D.MipSlice = 0;
-		return uavDstDesc;
-	}
 
 private:
 	// Render target
 	void CreateSwapchainRTV(DX12Context& ctx);
-	void CreateOffscreenRTV(DX12Context& ctx);
+	void CreateSingleSampledRTV(DX12Context& ctx);
+	void CreateMultiSampledRTV(DX12Context& ctx);
 
 	// Depth stencil
 	void CreateDSV(DX12Context& ctx);
@@ -56,10 +46,15 @@ private:
 	std::array<CD3DX12_CPU_DESCRIPTOR_HANDLE, AppConfig::FrameCount> swapchainRTVHandles_ = {};
 	std::array<ID3D12Resource*, AppConfig::FrameCount> swapchainRenderTargets_ = { nullptr };
 
-	// Offcreen RTV
-	DX12Image offcreenImage_;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE offscreenRTVHandle_ = {};
-	ID3D12DescriptorHeap* offscreenRTVHeap_ = nullptr;
+	// Offscreen Multisampled RTV (MSAA)
+	DX12Image multiSampledImage_;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE multiSampledRTVHandle_ = {};
+	ID3D12DescriptorHeap* multiSampledRTVHeap_ = nullptr;
+
+	// Resolve target
+	DX12Image singleSampledImage_;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE singleSampledRTVHandle_ = {};
+	ID3D12DescriptorHeap* singleSampledRTVHeap_ = nullptr;
 
 	// Depth stencil
 	DX12Image depthImage_;

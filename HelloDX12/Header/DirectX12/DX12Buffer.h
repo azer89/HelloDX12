@@ -34,12 +34,14 @@ public:
 		uint32_t height,
 		uint16_t mipmapCount,
 		uint32_t bytesPerPixel,
+		uint32_t msaaCount,
 		DXGI_FORMAT imageFormat,
 		D3D12_RESOURCE_FLAGS flags);
 	void CreateDepthAttachment(
 		DX12Context& ctx,
 		uint32_t width,
 		uint32_t height,
+		uint32_t msaaCount,
 		DXGI_FORMAT imageFormat);
 	
 	void UploadData(void* data);

@@ -111,6 +111,16 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 
 		ThrowIfFailed(D3D12MA::CreateAllocator(&desc, &dmaAllocator_))
 	}
+
+	// MSAA
+	{
+		D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msLevels;
+		msLevels.Format = swapchainFormat_;
+		msLevels.SampleCount = AppConfig::MSAACount;
+		msLevels.Flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
+		device_->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &msLevels, sizeof(msLevels));
+		std::cout << "MSAA = " << msLevels.SampleCount << '\n';
+	}
 }
 
 // Debug callback

@@ -146,7 +146,7 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 		.DSVFormat = DXGI_FORMAT_D32_FLOAT,
 	};
 	psoDesc.RTVFormats[0] = ctx.GetSwapchainFormat();
-	psoDesc.SampleDesc.Count = 1;
+	psoDesc.SampleDesc.Count = AppConfig::MSAACount;
 	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 	ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)))
 }
@@ -183,7 +183,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	commandList->SetGraphicsRootDescriptorTable(3, handle2);
 
 	//const auto rtvHandle = resourcesShared_->GetSwapchainRTVHandle(ctx.GetFrameIndex());
-	const auto rtvHandle = resourcesShared_->GetOffscreenRTVHandle();
+	const auto rtvHandle = resourcesShared_->GetMultiSampledRTVHandle();
 	const auto dsvHandle = resourcesShared_->GetDSVHandle();
 	constexpr uint32_t renderTargetCount = 1;
 	commandList->OMSetRenderTargets(renderTargetCount, &rtvHandle, FALSE, &dsvHandle);
