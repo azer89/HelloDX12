@@ -107,14 +107,17 @@ void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
 	rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 1, &sampler, rootSignatureFlags);
 
-	ComPtr<ID3DBlob> signature;
-	ComPtr<ID3DBlob> error;
+	ID3DBlob* signature = nullptr;
+	ID3DBlob* error = nullptr;
 	ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featureData.HighestVersion, &signature, &error))
 	ThrowIfFailed(ctx.GetDevice()->CreateRootSignature(
 		0, 
 		signature->GetBufferPointer(), 
 		signature->GetBufferSize(), 
 		IID_PPV_ARGS(&rootSignature_)))
+
+	signature->Release();
+	if (error) { error->Release(); }
 }
 
 void PipelineSimple::CreateShaders(DX12Context& ctx)

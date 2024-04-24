@@ -345,7 +345,7 @@ void DX12Buffer::CreateColorAttachment(
 	D3D12_CLEAR_VALUE clearValue =
 	{
 		.Format = imageFormat,
-		.Color = {0.f, 0.f, 0.f, 1.f}
+		.Color = { 0.0f, 0.2f, 0.4f, 1.0f }
 	};
 
 	D3D12MA::ALLOCATION_DESC textureAllocDesc =

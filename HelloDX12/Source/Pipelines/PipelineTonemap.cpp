@@ -62,12 +62,15 @@ void PipelineTonemap::CreateRootSignature(DX12Context& ctx)
 	};
 
 	// Create the root signature for the mipmap compute shader from the parameters and sampler above
-	ComPtr<ID3DBlob> signature;
-	ComPtr<ID3DBlob> error;
+	ID3DBlob* signature = nullptr;
+	ID3DBlob* error = nullptr;
 	CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
 	rootSignatureDesc.Init(_countof(rootParameters), rootParameters, 1, &samplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 	D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
 	ctx.GetDevice()->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
+
+	signature->Release();
+	if (error) { error->Release(); }
 }
 
 void PipelineTonemap::CreateGraphicsPipeline(DX12Context& ctx)

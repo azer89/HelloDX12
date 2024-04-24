@@ -26,7 +26,7 @@ void PipelineClear::PopulateCommandList(DX12Context& ctx)
 			D3D12_RESOURCE_STATE_RENDER_TARGET);
 	commandList->ResourceBarrier(1, &resourceBarrier2);
 
-	constexpr float clearColor[] = { 0.f, 0.f, 0.f, 1.0f };
+	constexpr float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
 
 	const auto swapchainRtvHandle = resourcesShared_->GetSwapchainRTVHandle(ctx.GetFrameIndex());
 	commandList->ClearRenderTargetView(swapchainRtvHandle, clearColor, 0, nullptr);
