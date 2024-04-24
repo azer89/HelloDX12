@@ -25,9 +25,27 @@ PSInput VSMain(VSInput input)
     return result;
 }
 
+float3 Reinhard(float3 color)
+{
+    const float pureWhite = 1.0;
+
+    float luminance = dot(color, float3(0.2126, 0.7152, 0.0722));
+    float mappedLuminance =
+		(luminance * (1.0 + luminance / (pureWhite * pureWhite))) / (1.0 + luminance);
+
+	// Scale color by ratio of average luminances
+    return (mappedLuminance / luminance) * color;
+}
+
 float4 PSMain(PSInput input) : SV_TARGET
 {
     float4 color4 = srcImage.Sample(srcSampler, input.uv);
     
-    return float4(color4.xyz, 1.0f);
+    float3 tonemapped = Reinhard(color4.xyz);
+    
+     // Gamma correction
+    float gamma = 1.0 / 2.2;
+    tonemapped = pow(tonemapped, gamma);
+    
+    return float4(tonemapped.xyz, 1.0f);
 }

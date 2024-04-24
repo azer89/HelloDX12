@@ -70,9 +70,5 @@ float4 PSMain(PSInput input) : SV_TARGET
         lighting += diffuse + specular;
     }
     
-    // Gamma correction
-    float gamma = 1.0 / 2.2;
-    lighting = pow(lighting, gamma);
-    
     return float4(lighting, 1.0f);
 }

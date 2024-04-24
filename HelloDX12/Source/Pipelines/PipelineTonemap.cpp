@@ -61,7 +61,7 @@ void PipelineTonemap::CreateRootSignature(DX12Context& ctx)
 		.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL
 	};
 
-	// Create the root signature for the mipmap compute shader from the parameters and sampler above
+	// Root signature
 	ID3DBlob* signature = nullptr;
 	ID3DBlob* error = nullptr;
 	CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
@@ -85,7 +85,7 @@ void PipelineTonemap::CreateGraphicsPipeline(DX12Context& ctx)
 		.SampleMask = UINT_MAX,
 		.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT),
 		.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT),
-		//.InputLayout = { inputElementDescs.data(), static_cast<uint32_t>(inputElementDescs.size()) },
+		//.InputLayout =
 		.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 		.NumRenderTargets = 1,
 		.DSVFormat = DXGI_FORMAT_D32_FLOAT,
