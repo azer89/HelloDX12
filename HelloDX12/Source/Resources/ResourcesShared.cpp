@@ -71,7 +71,8 @@ void ResourcesShared::CreateSwapchainRTV(DX12Context& ctx)
 void ResourcesShared::CreateOffscreenRTV(DX12Context& ctx)
 {
 	// Create Image
-	offcreenImage_.CreateColorAttachment(ctx);
+	uint32_t msaaCount = 1;
+	offcreenImage_.CreateColorAttachment(ctx, msaaCount);
 
 	// Create RTV
 	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
@@ -95,7 +96,8 @@ void ResourcesShared::CreateOffscreenRTV(DX12Context& ctx)
 
 void ResourcesShared::CreateDSV(DX12Context& ctx)
 {
-	depthImage_.CreateDepthAttachment(ctx);
+	uint32_t msaaCount = 1;
+	depthImage_.CreateDepthAttachment(ctx, msaaCount);
 
 	// Describe and create a depth stencil view (DSV) descriptor heap.
 	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc =

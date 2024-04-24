@@ -129,6 +129,9 @@
     <ClInclude Include="Header\Pipelines\PipelineTonemap.h">
       <Filter>Header\Pipelines</Filter>
     </ClInclude>
+    <ClInclude Include="Header\Pipelines\PipelineResolve.h">
+      <Filter>Header\Pipelines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -198,6 +201,9 @@
       <Filter>Source\Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="Source\Pipelines\PipelineTonemap.cpp">
+      <Filter>Source\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Pipelines\PipelineResolve.cpp">
       <Filter>Source\Pipelines</Filter>
     </ClCompile>
   </ItemGroup>

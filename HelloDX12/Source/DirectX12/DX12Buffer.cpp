@@ -324,6 +324,7 @@ void DX12Buffer::CreateColorAttachment(
 	uint32_t height,
 	uint16_t mipmapCount,
 	uint32_t bytesPerPixel,
+	uint32_t msaaCount,
 	DXGI_FORMAT imageFormat,
 	D3D12_RESOURCE_FLAGS flags)
 {
@@ -339,7 +340,7 @@ void DX12Buffer::CreateColorAttachment(
 		.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN,
 		.Flags = flags
 	};
-	textureDesc.SampleDesc.Count = 1;
+	textureDesc.SampleDesc.Count = msaaCount;
 	textureDesc.SampleDesc.Quality = 0;
 
 	D3D12_CLEAR_VALUE clearValue =
@@ -367,6 +368,7 @@ void DX12Buffer::CreateDepthAttachment(
 	DX12Context& ctx,
 	uint32_t width,
 	uint32_t height,
+	uint32_t msaaCount,
 	DXGI_FORMAT imageFormat) // DXGI_FORMAT_D32_FLOAT
 {
 	D3D12_CLEAR_VALUE clearValue =
@@ -392,7 +394,7 @@ void DX12Buffer::CreateDepthAttachment(
 		.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN,
 		.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL
 	};
-	depthStencilResourceDesc.SampleDesc.Count = 1;
+	depthStencilResourceDesc.SampleDesc.Count = msaaCount;
 	depthStencilResourceDesc.SampleDesc.Quality = 0;
 	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&depthStencilAllocDesc,

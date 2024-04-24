@@ -50,7 +50,7 @@ void DX12Image::Load(DX12Context& ctx, std::string filename)
 	);
 }
 
-void DX12Image::CreateColorAttachment(DX12Context& ctx)
+void DX12Image::CreateColorAttachment(DX12Context& ctx, uint32_t msaaCount)
 {
 	width_ = ctx.GetSwapchainWidth();
 	height_ = ctx.GetSwapchainHeight();
@@ -67,19 +67,20 @@ void DX12Image::CreateColorAttachment(DX12Context& ctx)
 		height_,
 		mipmapCount_,
 		pixelSize_,
+		msaaCount,
 		format_,
 		flags
 	);
 }
 
-void DX12Image::CreateDepthAttachment(DX12Context& ctx)
+void DX12Image::CreateDepthAttachment(DX12Context& ctx, uint32_t msaaCount)
 {
 	width_ = ctx.GetSwapchainWidth();
 	height_ = ctx.GetSwapchainHeight();
 	pixelSize_ = 1; // TODO This may be incorrect
 	mipmapCount_ = 1;
 	format_ = DXGI_FORMAT_D32_FLOAT;
-	buffer_.CreateDepthAttachment(ctx, width_, height_, format_);
+	buffer_.CreateDepthAttachment(ctx, width_, height_, msaaCount, format_);
 }
 
 D3D12_SHADER_RESOURCE_VIEW_DESC DX12Image::GetSRVDescription() const
