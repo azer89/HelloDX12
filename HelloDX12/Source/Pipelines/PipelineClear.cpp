@@ -26,15 +26,15 @@ void PipelineClear::PopulateCommandList(DX12Context& ctx)
 			D3D12_RESOURCE_STATE_RENDER_TARGET);
 	commandList->ResourceBarrier(1, &resourceBarrier2);*/
 
-	constexpr float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
+	//constexpr float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
 
 	// Clear swapchain
 	const auto swapchainRtvHandle = resourcesShared_->GetSwapchainRTVHandle(ctx.GetFrameIndex());
-	commandList->ClearRenderTargetView(swapchainRtvHandle, clearColor, 0, nullptr);
+	commandList->ClearRenderTargetView(swapchainRtvHandle, AppConfig::ClearColor , 0, nullptr);
 
 	// Clear offscreen attachment
 	const auto offscreenRtvHandle = resourcesShared_->GetMultiSampledRTVHandle();
-	commandList->ClearRenderTargetView(offscreenRtvHandle, clearColor, 0, nullptr);
+	commandList->ClearRenderTargetView(offscreenRtvHandle, AppConfig::ClearColor, 0, nullptr);
 
 	const auto dsvHandle = resourcesShared_->GetDSVHandle();
 	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);

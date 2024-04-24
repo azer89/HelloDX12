@@ -346,7 +346,12 @@ void DX12Buffer::CreateColorAttachment(
 	D3D12_CLEAR_VALUE clearValue =
 	{
 		.Format = imageFormat,
-		.Color = { 0.0f, 0.2f, 0.4f, 1.0f } // TODO Set as a constant
+		// TODO
+		.Color = { 
+			AppConfig::ClearColor[0], 
+			AppConfig::ClearColor[1], 
+			AppConfig::ClearColor[2], 
+			AppConfig::ClearColor[3]}
 	};
 
 	D3D12MA::ALLOCATION_DESC textureAllocDesc =
