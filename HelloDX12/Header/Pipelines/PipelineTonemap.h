@@ -11,7 +11,9 @@ public:
 	PipelineTonemap(
 		DX12Context& ctx,
 		ResourcesShared* resourcesShared);
-	~PipelineTonemap() = default;
+	~PipelineTonemap()
+	{
+	}
 
 	void Update(DX12Context& ctx) override {}
 	void PopulateCommandList(DX12Context& ctx) override;
