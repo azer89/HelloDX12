@@ -28,6 +28,7 @@
     <ClInclude Include="Header\Pipelines\PipelineMipmap.h" />
     <ClInclude Include="Header\Pipelines\PipelinePresent.h" />
     <ClInclude Include="Header\Pipelines\PipelineSimple.h" />
+    <ClInclude Include="Header\Pipelines\PipelineTonemap.h" />
     <ClInclude Include="Header\Resources\ResourcesBase.h" />
     <ClInclude Include="Header\Resources\ResourcesLights.h" />
     <ClInclude Include="Header\Resources\ResourcesShared.h" />
@@ -55,6 +56,7 @@
     <ClCompile Include="Source\Pipelines\PipelineMipmap.cpp" />
     <ClCompile Include="Source\Pipelines\PipelinePresent.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineSimple.cpp" />
+    <ClCompile Include="Source\Pipelines\PipelineTonemap.cpp" />
     <ClCompile Include="Source\Resources\ResourcesLights.cpp" />
     <ClCompile Include="Source\Resources\ResourcesShared.cpp" />
     <ClCompile Include="Source\Scene\Mesh.cpp" />
@@ -83,6 +85,11 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Shader\Mipmap.hlsl">
+      <FileType>Document</FileType>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Shader\Tonemap.hlsl">
       <FileType>Document</FileType>
     </Text>
   </ItemGroup>

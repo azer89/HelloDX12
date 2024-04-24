@@ -10,7 +10,7 @@ namespace AppConfig
 
 	// Number of frame in flight
 	constexpr uint32_t FrameCount = 2;
-
+	
 	const std::string ScreenTitle = "Hello DX12";
 
 	// Need to change these absolute paths

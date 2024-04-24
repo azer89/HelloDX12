@@ -17,7 +17,7 @@ public:
 protected:
 	ID3D12PipelineState* pipelineState_ = nullptr;
 	ID3D12RootSignature* rootSignature_ = nullptr;
-	ID3D12DescriptorHeap* srvHeap_ = nullptr; // TODO
+	ID3D12DescriptorHeap* descriptorHeap_ = nullptr; // TODO
 
 	DX12Shader vertexShader_ = {};
 	DX12Shader fragmentShader_ = {};

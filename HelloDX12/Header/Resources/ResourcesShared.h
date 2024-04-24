@@ -2,6 +2,7 @@
 #define HELLO_DX12_RESOURCES_SHARED
 
 #include "DX12Context.h"
+#include "DX12Image.h"
 #include "ResourcesBase.h"
 
 #include <array>
@@ -14,25 +15,55 @@ public:
 
 	void Destroy() override;
 	void Init(DX12Context& ctx);
-	ID3D12Resource* GetRenderTarget(uint32_t frameIndex) const;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE GetRTVHandle(uint32_t frameIndex) const;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE GetDSVHandle() const;
+
+	[[nodiscard]] ID3D12Resource* GetOffscreenRenderTarget() const { return offcreenImage_.GetResource(); }
+	[[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetOffscreenRTVHandle() const { return offscreenRTVHandle_; }
+	[[nodiscard]] ID3D12Resource* GetSwapchainRenderTarget(uint32_t frameIndex) const { return swapchainRenderTargets_[frameIndex]; }
+	[[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetSwapchainRTVHandle(uint32_t frameIndex) const { return swapchainRTVHandles_[frameIndex]; }
+	[[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetDSVHandle() const { return dsvHandle_; }
+
+	[[nodiscard]] ID3D12Resource* GetOffscreenResource() const { return offcreenImage_.buffer_.resource_; }
+
+	[[nodiscard]] D3D12_SHADER_RESOURCE_VIEW_DESC GetOffscreenSRVDescription() const
+	{
+		return offcreenImage_.GetSRVDescription();
+	}
+
+	[[nodiscard]] D3D12_UNORDERED_ACCESS_VIEW_DESC GetSwapchainUAVDescription(DX12Context& ctx) const
+	{
+		D3D12_UNORDERED_ACCESS_VIEW_DESC uavDstDesc =
+		{
+			.Format = ctx.GetSwapchainFormat(),
+			.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D,
+		};
+		uavDstDesc.Texture2D.MipSlice = 0;
+		return uavDstDesc;
+	}
 
 private:
 	// Render target
-	void CreateRTV(DX12Context& ctx);
+	void CreateSwapchainRTV(DX12Context& ctx);
+	void CreateOffscreenRTV(DX12Context& ctx);
 
 	// Depth stencil
 	void CreateDSV(DX12Context& ctx);
 
-public:
-	// Render target
+private:
 	uint32_t rtvIncrementSize_ = 0;
-	ID3D12DescriptorHeap* rtvHeap_ = nullptr;
-	std::array<ID3D12Resource*, AppConfig::FrameCount> renderTargets_ = { nullptr };
+
+	// Swapchain RTV
+	ID3D12DescriptorHeap* swapchainRTVHeap_ = nullptr;
+	std::array<CD3DX12_CPU_DESCRIPTOR_HANDLE, AppConfig::FrameCount> swapchainRTVHandles_ = {};
+	std::array<ID3D12Resource*, AppConfig::FrameCount> swapchainRenderTargets_ = { nullptr };
+
+	// Offcreen RTV
+	DX12Image offcreenImage_;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE offscreenRTVHandle_ = {};
+	ID3D12DescriptorHeap* offscreenRTVHeap_ = nullptr;
 
 	// Depth stencil
-	ID3D12Resource* depthStencil_ = nullptr;
+	DX12Image depthImage_;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle_;
 	ID3D12DescriptorHeap* dsvHeap_ = nullptr;
 };
 

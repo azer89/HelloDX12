@@ -36,8 +36,9 @@ void DX12Image::Load(DX12Context& ctx, std::string filename)
 	pixelSize_ = 4; // texChannels is 3 eventhough STBI_rgb_alpha is used
 	format_ = ctx.GetSwapchainFormat();
 	mipmapCount_ = Utility::MipMapCount(width_, height_);
+	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 
-	buffer_.CreateImage(
+	buffer_.CreateImageFromData(
 		ctx, 
 		pixels, 
 		width_, 
@@ -45,11 +46,43 @@ void DX12Image::Load(DX12Context& ctx, std::string filename)
 		mipmapCount_, 
 		pixelSize_, 
 		format_,
-		D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
+		flags
 	);
 }
 
-D3D12_SHADER_RESOURCE_VIEW_DESC DX12Image::GetSRVDescription()
+void DX12Image::CreateColorAttachment(DX12Context& ctx)
+{
+	width_ = ctx.GetSwapchainWidth();
+	height_ = ctx.GetSwapchainHeight();
+	pixelSize_ = 4;
+	format_ = ctx.GetSwapchainFormat();
+	mipmapCount_ = 1;
+	D3D12_RESOURCE_FLAGS flags = 
+		D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET | 
+		D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+
+	buffer_.CreateColorAttachment(
+		ctx,
+		width_,
+		height_,
+		mipmapCount_,
+		pixelSize_,
+		format_,
+		flags
+	);
+}
+
+void DX12Image::CreateDepthAttachment(DX12Context& ctx)
+{
+	width_ = ctx.GetSwapchainWidth();
+	height_ = ctx.GetSwapchainHeight();
+	pixelSize_ = 1; // TODO This may be incorrect
+	mipmapCount_ = 1;
+	format_ = DXGI_FORMAT_D32_FLOAT;
+	buffer_.CreateDepthAttachment(ctx, width_, height_, format_);
+}
+
+D3D12_SHADER_RESOURCE_VIEW_DESC DX12Image::GetSRVDescription() const
 {
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc =
 	{
