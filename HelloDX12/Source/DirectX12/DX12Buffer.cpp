@@ -341,7 +341,7 @@ void DX12Buffer::CreateColorAttachment(
 		.Flags = flags
 	};
 	textureDesc.SampleDesc.Count = msaaCount;
-	textureDesc.SampleDesc.Quality = 0;
+	textureDesc.SampleDesc.Quality = 0; // Quality level
 
 	D3D12_CLEAR_VALUE clearValue =
 	{
