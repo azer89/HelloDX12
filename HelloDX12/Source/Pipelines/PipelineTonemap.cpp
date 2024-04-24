@@ -112,6 +112,13 @@ void PipelineTonemap::PopulateCommandList(DX12Context& ctx)
 
 	ID3D12GraphicsCommandList* commandList = ctx.GetCommandList();
 
+	const auto resourceBarrier =
+		CD3DX12_RESOURCE_BARRIER::Transition(
+			resourcesShared_->GetOffscreenRenderTarget(),
+			D3D12_RESOURCE_STATE_RENDER_TARGET,
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	commandList->ResourceBarrier(1, &resourceBarrier);
+
 	commandList->SetPipelineState(pipelineState_);
 	commandList->RSSetViewports(1, &viewport_);
 	commandList->RSSetScissorRects(1, &scissor_);

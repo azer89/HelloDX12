@@ -1,6 +1,9 @@
 #include "AppSimple.h"
 #include "PipelineClear.h"
 #include "PipelinePresent.h"
+#include "PipelineTonemap.h"
+
+#include <iostream>
 
 AppSimple::AppSimple() : AppBase()
 {
@@ -41,6 +44,7 @@ void AppSimple::OnInit()
 		camera_.get(), 
 		resourcesShared_,
 		resourcesLights_);
+	AddPipeline<PipelineTonemap>(context_, resourcesShared_);
 	AddPipeline<PipelinePresent>(context_, resourcesShared_);
 }
 
