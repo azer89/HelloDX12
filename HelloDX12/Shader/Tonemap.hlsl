@@ -20,7 +20,7 @@ PSInput VSMain(VSInput input)
     float x = float((input.vertexIndex & 1) << 2);
     float y = float((input.vertexIndex & 2) << 1);
     result.uv = float2(x * 0.5, y * 0.5);
-    result.fragPosition = float4(x - 1.0, y - 1.0, 0, 1);
+    result.fragPosition = float4(x - 1.0, 1.0 - y, 0, 1);
     
     return result;
 }

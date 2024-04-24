@@ -28,7 +28,15 @@ public:
 		uint32_t bytesPerPixel,
 		DXGI_FORMAT imageFormat,
 		D3D12_RESOURCE_FLAGS flags);
-	void CreateDepthStencil(
+	void CreateColorAttachment(
+		DX12Context& ctx,
+		uint32_t width,
+		uint32_t height,
+		uint16_t mipmapCount,
+		uint32_t bytesPerPixel,
+		DXGI_FORMAT imageFormat,
+		D3D12_RESOURCE_FLAGS flags);
+	void CreateDepthAttachment(
 		DX12Context& ctx,
 		uint32_t width,
 		uint32_t height,

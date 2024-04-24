@@ -61,7 +61,7 @@ void DX12Image::CreateColorAttachment(DX12Context& ctx)
 		D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET | 
 		D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 
-	buffer_.CreateImage(
+	buffer_.CreateColorAttachment(
 		ctx,
 		width_,
 		height_,
@@ -79,7 +79,7 @@ void DX12Image::CreateDepthAttachment(DX12Context& ctx)
 	pixelSize_ = 1; // TODO This may be incorrect
 	mipmapCount_ = 1;
 	format_ = DXGI_FORMAT_D32_FLOAT;
-	buffer_.CreateDepthStencil(ctx, width_, height_, format_);
+	buffer_.CreateDepthAttachment(ctx, width_, height_, format_);
 }
 
 D3D12_SHADER_RESOURCE_VIEW_DESC DX12Image::GetSRVDescription() const

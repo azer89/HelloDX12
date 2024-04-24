@@ -318,6 +318,94 @@ void DX12Buffer::CreateImage(
 	dmaAllocation_->SetName(L"Texture_Allocation_DMA");
 }
 
+void DX12Buffer::CreateColorAttachment(
+	DX12Context& ctx,
+	uint32_t width,
+	uint32_t height,
+	uint16_t mipmapCount,
+	uint32_t bytesPerPixel,
+	DXGI_FORMAT imageFormat,
+	D3D12_RESOURCE_FLAGS flags)
+{
+	D3D12_RESOURCE_DESC textureDesc =
+	{
+		.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
+		.Alignment = 0,
+		.Width = width,
+		.Height = height,
+		.DepthOrArraySize = 1,
+		.MipLevels = mipmapCount,
+		.Format = imageFormat,
+		.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN,
+		.Flags = flags
+	};
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.SampleDesc.Quality = 0;
+
+	D3D12_CLEAR_VALUE clearValue =
+	{
+		.Format = imageFormat,
+		.Color = {0.f, 0.f, 0.f, 1.f}
+	};
+
+	D3D12MA::ALLOCATION_DESC textureAllocDesc =
+	{
+		.HeapType = D3D12_HEAP_TYPE_DEFAULT
+	};
+	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
+		&textureAllocDesc,
+		&textureDesc,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		&clearValue, // pOptimizedClearValue
+		&dmaAllocation_,
+		IID_PPV_ARGS(&resource_)))
+		resource_->SetName(L"Color_Attachment");
+	dmaAllocation_->SetName(L"Color_Attachment_Allocation_DMA");
+}
+
+void DX12Buffer::CreateDepthAttachment(
+	DX12Context& ctx,
+	uint32_t width,
+	uint32_t height,
+	DXGI_FORMAT imageFormat) // DXGI_FORMAT_D32_FLOAT
+{
+	D3D12_CLEAR_VALUE clearValue =
+	{
+		.Format = imageFormat
+	};
+	clearValue.DepthStencil.Depth = 1.0f;
+	clearValue.DepthStencil.Stencil = 0;
+
+	D3D12MA::ALLOCATION_DESC depthStencilAllocDesc =
+	{
+		.HeapType = D3D12_HEAP_TYPE_DEFAULT
+	};
+	D3D12_RESOURCE_DESC depthStencilResourceDesc =
+	{
+		.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
+		.Alignment = 0,
+		.Width = width,
+		.Height = height,
+		.DepthOrArraySize = 1,
+		.MipLevels = 1,
+		.Format = imageFormat,
+		.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN,
+		.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL
+	};
+	depthStencilResourceDesc.SampleDesc.Count = 1;
+	depthStencilResourceDesc.SampleDesc.Quality = 0;
+	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
+		&depthStencilAllocDesc,
+		&depthStencilResourceDesc,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		&clearValue,
+		&dmaAllocation_,
+		IID_PPV_ARGS(&resource_)
+	))
+		ThrowIfFailed(resource_->SetName(L"Depth_Stencil_Resource"))
+		dmaAllocation_->SetName(L"Depth_Stencil_Allocation_DMA");
+}
+
 void DX12Buffer::CreateImageFromData(
 	DX12Context& ctx,
 	void* imageData,
@@ -445,49 +533,6 @@ void DX12Buffer::CreateUploadHeap(DX12Context& ctx,
 		nullptr,
 		bufferUploadHeapAllocation,
 		IID_PPV_ARGS(bufferUploadHeap)))
-}
-
-void DX12Buffer::CreateDepthStencil(
-	DX12Context& ctx,
-	uint32_t width,
-	uint32_t height,
-	DXGI_FORMAT imageFormat) // DXGI_FORMAT_D32_FLOAT
-{
-	D3D12_CLEAR_VALUE depthOptimizedClearValue = 
-	{
-		.Format = imageFormat
-	};
-	depthOptimizedClearValue.DepthStencil.Depth = 1.0f;
-	depthOptimizedClearValue.DepthStencil.Stencil = 0;
-
-	D3D12MA::ALLOCATION_DESC depthStencilAllocDesc = 
-	{
-		.HeapType = D3D12_HEAP_TYPE_DEFAULT
-	};
-	D3D12_RESOURCE_DESC depthStencilResourceDesc = 
-	{
-		.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
-		.Alignment = 0,
-		.Width = width,
-		.Height = height,
-		.DepthOrArraySize = 1,
-		.MipLevels = 1,
-		.Format = imageFormat,
-		.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN,
-		.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL
-	};
-	depthStencilResourceDesc.SampleDesc.Count = 1;
-	depthStencilResourceDesc.SampleDesc.Quality = 0;
-	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
-		&depthStencilAllocDesc,
-		&depthStencilResourceDesc,
-		D3D12_RESOURCE_STATE_DEPTH_WRITE,
-		&depthOptimizedClearValue,
-		&dmaAllocation_,
-		IID_PPV_ARGS(&resource_)
-	))
-	ThrowIfFailed(resource_->SetName(L"Depth_Stencil_Resource"))
-	dmaAllocation_->SetName(L"Depth_Stencil_Allocation_DMA");
 }
 
 uint32_t DX12Buffer::GetConstantBufferByteSize(uint64_t byteSize)

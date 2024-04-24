@@ -73,7 +73,7 @@ void ResourcesShared::CreateOffscreenRTV(DX12Context& ctx)
 	// Create Image
 	offcreenImage_.CreateColorAttachment(ctx);
 
-	{
+	/*{
 		// Start recording 
 		ctx.ResetCommandList();
 		auto commandList = ctx.GetCommandList();
@@ -86,7 +86,7 @@ void ResourcesShared::CreateOffscreenRTV(DX12Context& ctx)
 		commandList->ResourceBarrier(1, &resourceBarrier1);
 
 		ctx.SubmitCommandListAndWaitForGPU();
-	}
+	}*/
 
 	// Create RTV
 	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
