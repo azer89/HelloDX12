@@ -57,9 +57,12 @@ void DX12Image::CreateColorAttachment(DX12Context& ctx, uint32_t msaaCount)
 	pixelSize_ = 4;
 	format_ = ctx.GetSwapchainFormat();
 	mipmapCount_ = 1;
-	D3D12_RESOURCE_FLAGS flags = 
-		D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET | 
-		D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+	if (msaaCount == 1)
+	{
+		flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+	}
 
 	buffer_.CreateColorAttachment(
 		ctx,

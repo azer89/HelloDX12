@@ -31,8 +31,8 @@ void PipelineTonemap::CreateDescriptorHeap(DX12Context& ctx)
 	CD3DX12_CPU_DESCRIPTOR_HANDLE handle1(descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), 0, incrementSize); 
 
 	// Source image SRV
-	auto srcSRVDesc = resourcesShared_->GetMultiSampledSRVDescription();
-	auto srcResource = resourcesShared_->GetMultiSampledRenderTarget();
+	auto srcSRVDesc = resourcesShared_->GetSingleSampledSRVDescription();
+	auto srcResource = resourcesShared_->GetSingleSampledRenderTarget();
 	ctx.GetDevice()->CreateShaderResourceView(srcResource, &srcSRVDesc, handle1);
 }
 
@@ -84,12 +84,14 @@ void PipelineTonemap::CreateGraphicsPipeline(DX12Context& ctx)
 		.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 		.SampleMask = UINT_MAX,
 		.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT),
-		.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT),
+		//.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT),
 		//.InputLayout =
 		.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 		.NumRenderTargets = 1,
-		.DSVFormat = DXGI_FORMAT_D32_FLOAT,
+		//.DSVFormat = DXGI_FORMAT_UNKNOWN,
 	};
+	psoDesc.DepthStencilState.DepthEnable = FALSE;
+	psoDesc.DepthStencilState.StencilEnable = FALSE;
 	psoDesc.RTVFormats[0] = ctx.GetSwapchainFormat();
 	psoDesc.SampleDesc.Count = 1;
 	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
@@ -106,12 +108,12 @@ void PipelineTonemap::PopulateCommandList(DX12Context& ctx)
 {
 	ID3D12GraphicsCommandList* commandList = ctx.GetCommandList();
 
-	const auto resourceBarrier =
+	/*const auto resourceBarrier =
 		CD3DX12_RESOURCE_BARRIER::Transition(
-			resourcesShared_->GetMultiSampledRenderTarget(),
+			resourcesShared_->GetSingleSampledRenderTarget(),
 			D3D12_RESOURCE_STATE_RENDER_TARGET,
 			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-	commandList->ResourceBarrier(1, &resourceBarrier);
+	commandList->ResourceBarrier(1, &resourceBarrier);*/
 
 	commandList->SetPipelineState(pipelineState_);
 	commandList->RSSetViewports(1, &viewport_);
@@ -127,9 +129,9 @@ void PipelineTonemap::PopulateCommandList(DX12Context& ctx)
 	commandList->SetGraphicsRootDescriptorTable(0, handle1);
 
 	const auto rtvHandle = resourcesShared_->GetSwapchainRTVHandle(ctx.GetFrameIndex());
-	const auto dsvHandle = resourcesShared_->GetDSVHandle();
+	//const auto dsvHandle = resourcesShared_->GetDSVHandle();
 	constexpr uint32_t renderTargetCount = 1;
-	commandList->OMSetRenderTargets(renderTargetCount, &rtvHandle, FALSE, &dsvHandle);
+	commandList->OMSetRenderTargets(renderTargetCount, &rtvHandle, FALSE, nullptr);
 
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	commandList->DrawIndexedInstanced(3, 1, 0, 0, 0);

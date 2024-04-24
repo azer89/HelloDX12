@@ -404,8 +404,8 @@ void DX12Buffer::CreateDepthAttachment(
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)
 	))
-		ThrowIfFailed(resource_->SetName(L"Depth_Stencil_Resource"))
-		dmaAllocation_->SetName(L"Depth_Stencil_Allocation_DMA");
+	ThrowIfFailed(resource_->SetName(L"Depth_Stencil_Resource"))
+	dmaAllocation_->SetName(L"Depth_Stencil_Allocation_DMA");
 }
 
 void DX12Buffer::CreateImageFromData(

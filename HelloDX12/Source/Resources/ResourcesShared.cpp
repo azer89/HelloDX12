@@ -78,8 +78,24 @@ void ResourcesShared::CreateSwapchainRTV(DX12Context& ctx)
 void ResourcesShared::CreateMultiSampledRTV(DX12Context& ctx)
 {
 	// Create Image
-	uint32_t msaaCount = 1;
+	uint32_t msaaCount = AppConfig::MSAACount;
 	multiSampledImage_.CreateColorAttachment(ctx, msaaCount);
+
+	{
+		// Start recording 
+		ctx.ResetCommandList();
+		auto commandList = ctx.GetCommandList();
+
+		// Barrier
+		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+			multiSampledImage_.GetResource(),
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, 
+			D3D12_RESOURCE_STATE_RENDER_TARGET);
+		
+		commandList->ResourceBarrier(1, &barrier);
+
+		ctx.SubmitCommandListAndWaitForGPU();
+	}
 
 	// Create RTV
 	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
@@ -129,7 +145,7 @@ void ResourcesShared::CreateSingleSampledRTV(DX12Context& ctx)
 
 void ResourcesShared::CreateDSV(DX12Context& ctx)
 {
-	uint32_t msaaCount = 1;
+	uint32_t msaaCount = AppConfig::MSAACount;
 	depthImage_.CreateDepthAttachment(ctx, msaaCount);
 
 	// Describe and create a depth stencil view (DSV) descriptor heap.
@@ -144,7 +160,7 @@ void ResourcesShared::CreateDSV(DX12Context& ctx)
 	D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc =
 	{
 		.Format = DXGI_FORMAT_D32_FLOAT,
-		.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D,
+		.ViewDimension = msaaCount == 1 ? D3D12_DSV_DIMENSION_TEXTURE2D : D3D12_DSV_DIMENSION_TEXTURE2DMS,
 		.Flags = D3D12_DSV_FLAG_NONE
 	};
 

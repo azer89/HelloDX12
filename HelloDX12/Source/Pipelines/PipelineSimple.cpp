@@ -146,7 +146,7 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 		.DSVFormat = DXGI_FORMAT_D32_FLOAT,
 	};
 	psoDesc.RTVFormats[0] = ctx.GetSwapchainFormat();
-	psoDesc.SampleDesc.Count = 1;
+	psoDesc.SampleDesc.Count = AppConfig::MSAACount;
 	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 	ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)))
 }
