@@ -28,9 +28,11 @@ void PipelineClear::PopulateCommandList(DX12Context& ctx)
 
 	constexpr float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
 
+	// Clear swapchain
 	const auto swapchainRtvHandle = resourcesShared_->GetSwapchainRTVHandle(ctx.GetFrameIndex());
 	commandList->ClearRenderTargetView(swapchainRtvHandle, clearColor, 0, nullptr);
 
+	// Clear offscreen attachment
 	const auto offscreenRtvHandle = resourcesShared_->GetOffscreenRTVHandle();
 	commandList->ClearRenderTargetView(offscreenRtvHandle, clearColor, 0, nullptr);
 
