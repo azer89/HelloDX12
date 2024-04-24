@@ -21,7 +21,7 @@ void PipelineClear::PopulateCommandList(DX12Context& ctx)
 
 	const auto resourceBarrier2 =
 		CD3DX12_RESOURCE_BARRIER::Transition(
-			resourcesShared_->GetOffscreenRenderTarget(),
+			resourcesShared_->GetMultiSampledRenderTarget(),
 			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 			D3D12_RESOURCE_STATE_RENDER_TARGET);
 	commandList->ResourceBarrier(1, &resourceBarrier2);
@@ -33,7 +33,7 @@ void PipelineClear::PopulateCommandList(DX12Context& ctx)
 	commandList->ClearRenderTargetView(swapchainRtvHandle, clearColor, 0, nullptr);
 
 	// Clear offscreen attachment
-	const auto offscreenRtvHandle = resourcesShared_->GetOffscreenRTVHandle();
+	const auto offscreenRtvHandle = resourcesShared_->GetMultiSampledRTVHandle();
 	commandList->ClearRenderTargetView(offscreenRtvHandle, clearColor, 0, nullptr);
 
 	const auto dsvHandle = resourcesShared_->GetDSVHandle();

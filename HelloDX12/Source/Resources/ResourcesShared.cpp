@@ -19,11 +19,17 @@ void ResourcesShared::Destroy()
 	}
 	depthImage_.Destroy();
 
-	if (offscreenRTVHeap_) 
+	if (multiSampledRTVHeap_) 
 	{ 
-		offscreenRTVHeap_->Release(); 
+		multiSampledRTVHeap_->Release(); 
 	}
-	offcreenImage_.Destroy();
+	multiSampledImage_.Destroy();
+
+	if (singleSampledRTVHeap_) 
+	{ 
+		singleSampledRTVHeap_->Release(); 
+	}
+	singleSampledImage_.Destroy();
 
 	for (auto& rt : swapchainRenderTargets_)
 	{
@@ -35,7 +41,8 @@ void ResourcesShared::Init(DX12Context& ctx)
 {
 	rtvIncrementSize_ = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	CreateSwapchainRTV(ctx);
-	CreateOffscreenRTV(ctx);
+	CreateSingleSampledRTV(ctx);
+	CreateMultiSampledRTV(ctx);
 	CreateDSV(ctx);
 }
 
@@ -68,11 +75,11 @@ void ResourcesShared::CreateSwapchainRTV(DX12Context& ctx)
 	}
 }
 
-void ResourcesShared::CreateOffscreenRTV(DX12Context& ctx)
+void ResourcesShared::CreateMultiSampledRTV(DX12Context& ctx)
 {
 	// Create Image
 	uint32_t msaaCount = 1;
-	offcreenImage_.CreateColorAttachment(ctx, msaaCount);
+	multiSampledImage_.CreateColorAttachment(ctx, msaaCount);
 
 	// Create RTV
 	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
@@ -81,15 +88,41 @@ void ResourcesShared::CreateOffscreenRTV(DX12Context& ctx)
 		.NumDescriptors = 1,
 		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
 	};
-	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&offscreenRTVHeap_)))
+	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&multiSampledRTVHeap_)))
 
 	// Create a RTV for each frame
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(offscreenRTVHeap_->GetCPUDescriptorHandleForHeapStart());
-	ctx.GetDevice()->CreateRenderTargetView(offcreenImage_.buffer_.resource_, nullptr, rtvHandle);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(multiSampledRTVHeap_->GetCPUDescriptorHandleForHeapStart());
+	ctx.GetDevice()->CreateRenderTargetView(multiSampledImage_.buffer_.resource_, nullptr, rtvHandle);
 
 	// Create handle
-	offscreenRTVHandle_ = CD3DX12_CPU_DESCRIPTOR_HANDLE(
-		offscreenRTVHeap_->GetCPUDescriptorHandleForHeapStart(),
+	multiSampledRTVHandle_ = CD3DX12_CPU_DESCRIPTOR_HANDLE(
+		multiSampledRTVHeap_->GetCPUDescriptorHandleForHeapStart(),
+		0,
+		rtvIncrementSize_);
+}
+
+void ResourcesShared::CreateSingleSampledRTV(DX12Context& ctx)
+{
+	// Create Image
+	uint32_t msaaCount = 1;
+	singleSampledImage_.CreateColorAttachment(ctx, msaaCount);
+
+	// Create RTV
+	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
+	{
+		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
+		.NumDescriptors = 1,
+		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
+	};
+	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&singleSampledRTVHeap_)))
+
+	// Create a RTV for each frame
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(singleSampledRTVHeap_->GetCPUDescriptorHandleForHeapStart());
+	ctx.GetDevice()->CreateRenderTargetView(singleSampledImage_.buffer_.resource_, nullptr, rtvHandle);
+
+	// Create handle
+	singleSampledRTVHandle_ = CD3DX12_CPU_DESCRIPTOR_HANDLE(
+		singleSampledRTVHeap_->GetCPUDescriptorHandleForHeapStart(),
 		0,
 		rtvIncrementSize_);
 }

@@ -31,8 +31,8 @@ void PipelineTonemap::CreateDescriptorHeap(DX12Context& ctx)
 	CD3DX12_CPU_DESCRIPTOR_HANDLE handle1(descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), 0, incrementSize); 
 
 	// Source image SRV
-	auto srcSRVDesc = resourcesShared_->GetOffscreenSRVDescription();
-	auto srcResource = resourcesShared_->GetOffscreenResource();
+	auto srcSRVDesc = resourcesShared_->GetMultiSampledSRVDescription();
+	auto srcResource = resourcesShared_->GetMultiSampledRenderTarget();
 	ctx.GetDevice()->CreateShaderResourceView(srcResource, &srcSRVDesc, handle1);
 }
 
@@ -108,7 +108,7 @@ void PipelineTonemap::PopulateCommandList(DX12Context& ctx)
 
 	const auto resourceBarrier =
 		CD3DX12_RESOURCE_BARRIER::Transition(
-			resourcesShared_->GetOffscreenRenderTarget(),
+			resourcesShared_->GetMultiSampledRenderTarget(),
 			D3D12_RESOURCE_STATE_RENDER_TARGET,
 			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	commandList->ResourceBarrier(1, &resourceBarrier);
