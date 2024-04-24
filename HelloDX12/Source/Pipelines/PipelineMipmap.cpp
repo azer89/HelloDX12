@@ -17,8 +17,8 @@ void PipelineMipmap::GenerateShader(DX12Context& ctx)
 
 void PipelineMipmap::CreatePipeline(DX12Context& ctx)
 {
-	CD3DX12_DESCRIPTOR_RANGE1 srvCbvRanges[2] = {};
-	CD3DX12_ROOT_PARAMETER1 rootParameters[3] = {};
+	CD3DX12_DESCRIPTOR_RANGE srvCbvRanges[2] = {};
+	CD3DX12_ROOT_PARAMETER rootParameters[3] = {};
 	srvCbvRanges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0);
 	srvCbvRanges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0, 0);
 	rootParameters[0].InitAsConstants(2, 0);
@@ -47,35 +47,27 @@ void PipelineMipmap::CreatePipeline(DX12Context& ctx)
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 	// Root signature
-	ID3DBlob* signature;
-	ID3DBlob* error;
-	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-	rootSignatureDesc.Init_1_1(
+	ID3DBlob* signature = nullptr;
+	ID3DBlob* error = nullptr;
+	CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
+	rootSignatureDesc.Init(
 		_countof(rootParameters),
 		rootParameters,
 		1,
 		&samplerDesc,
 		rootSignatureFlags);
-
-	D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
-	featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
-	if (FAILED(ctx.GetDevice()->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &featureData, sizeof(featureData))))
-	{
-		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
-	}
-	
-	ThrowIfFailed(D3DX12SerializeVersionedRootSignature(
+	ThrowIfFailed(D3D12SerializeRootSignature(
 		&rootSignatureDesc,
-		featureData.HighestVersion,
+		D3D_ROOT_SIGNATURE_VERSION_1,
 		&signature,
 		&error))
-	ThrowIfFailed(ctx.GetDevice()->CreateRootSignature(
-		0,
-		signature->GetBufferPointer(),
-		signature->GetBufferSize(),
-		IID_PPV_ARGS(&rootSignature_)))
-	
-	signature->Release();
+		ThrowIfFailed(ctx.GetDevice()->CreateRootSignature(
+			0,
+			signature->GetBufferPointer(),
+			signature->GetBufferSize(),
+			IID_PPV_ARGS(&rootSignature_)))
+
+		signature->Release();
 	if (error)
 	{
 		error->Release();
@@ -115,7 +107,7 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	};
 	ID3D12DescriptorHeap* descriptorHeap;
 	ctx.GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&descriptorHeap));
-	
+
 	UINT descriptorSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	// CPU handle for the first descriptor on the descriptor heap, used to fill the heap
@@ -133,10 +125,10 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	commandList->SetDescriptorHeaps(1, &descriptorHeap);
 
 	// Barrier
-	auto barrier1 = 
+	auto barrier1 =
 		CD3DX12_RESOURCE_BARRIER::Transition(
 			image->GetResource(),
-			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, 
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 			D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 	commandList->ResourceBarrier(1, &barrier1);
 
@@ -181,7 +173,7 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	// Barrier
 	auto barrier3 = CD3DX12_RESOURCE_BARRIER::Transition(
 		image->GetResource(),
-		D3D12_RESOURCE_STATE_UNORDERED_ACCESS, 
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	commandList->ResourceBarrier(1, &barrier3);
 
