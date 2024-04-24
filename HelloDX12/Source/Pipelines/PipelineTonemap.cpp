@@ -1,6 +1,6 @@
 #include "PipelineTonemap.h"
 #include "DX12Exception.h"
-#include <VertexData.h>
+#include "VertexData.h"
 
 PipelineTonemap::PipelineTonemap(
 	DX12Context& ctx,
@@ -75,7 +75,6 @@ void PipelineTonemap::CreateRootSignature(DX12Context& ctx)
 
 void PipelineTonemap::CreateGraphicsPipeline(DX12Context& ctx)
 {
-	// Describe and create the graphics pipeline state object (PSO).
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc =
 	{
 		.pRootSignature = rootSignature_,

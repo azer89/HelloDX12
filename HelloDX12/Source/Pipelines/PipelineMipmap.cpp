@@ -1,4 +1,5 @@
 #include "PipelineMipmap.h"
+#include "DX12Exception.h"
 #include "RootConstParam.h"
 
 PipelineMipmap::PipelineMipmap(
@@ -16,8 +17,8 @@ void PipelineMipmap::GenerateShader(DX12Context& ctx)
 
 void PipelineMipmap::CreatePipeline(DX12Context& ctx)
 {
-	CD3DX12_DESCRIPTOR_RANGE srvCbvRanges[2] = {};
-	CD3DX12_ROOT_PARAMETER rootParameters[3] = {};
+	CD3DX12_DESCRIPTOR_RANGE1 srvCbvRanges[2] = {};
+	CD3DX12_ROOT_PARAMETER1 rootParameters[3] = {};
 	srvCbvRanges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0);
 	srvCbvRanges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0, 0);
 	rootParameters[0].InitAsConstants(2, 0);
@@ -42,27 +43,51 @@ void PipelineMipmap::CreatePipeline(DX12Context& ctx)
 		.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL
 	};
 
-	// Create the root signature for the mipmap compute shader from the parameters and sampler above
+	constexpr D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
+		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+	// Root signature
 	ID3DBlob* signature;
 	ID3DBlob* error;
-	CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-	rootSignatureDesc.Init(_countof(rootParameters), rootParameters, 1, &samplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-	D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
-	ctx.GetDevice()->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
+	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
+	rootSignatureDesc.Init_1_1(
+		_countof(rootParameters),
+		rootParameters,
+		1,
+		&samplerDesc,
+		rootSignatureFlags);
 
-	// Create pipeline state object for the compute shader using the root signature.
+	D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
+	featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
+	if (FAILED(ctx.GetDevice()->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &featureData, sizeof(featureData))))
+	{
+		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
+	}
+	
+	ThrowIfFailed(D3DX12SerializeVersionedRootSignature(
+		&rootSignatureDesc,
+		featureData.HighestVersion,
+		&signature,
+		&error))
+	ThrowIfFailed(ctx.GetDevice()->CreateRootSignature(
+		0,
+		signature->GetBufferPointer(),
+		signature->GetBufferSize(),
+		IID_PPV_ARGS(&rootSignature_)))
+	
+	signature->Release();
+	if (error)
+	{
+		error->Release();
+	}
+
+	// PSO
 	D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc =
 	{
 		.pRootSignature = rootSignature_,
 		.CS = CD3DX12_SHADER_BYTECODE(computeShader_.GetHandle())
 	};
 	ctx.GetDevice()->CreateComputePipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_));
-
-	signature->Release();
-	if (error)
-	{
-		error->Release();
-	}
 }
 
 void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)

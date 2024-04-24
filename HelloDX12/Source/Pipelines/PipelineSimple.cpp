@@ -74,16 +74,6 @@ void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
 
 void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 {
-	D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
-
-	// This is the highest version the sample supports. If CheckFeatureSupport succeeds, 
-	// the HighestVersion returned will not be greater than this.
-	featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
-	if (FAILED(ctx.GetDevice()->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &featureData, sizeof(featureData))))
-	{
-		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
-	}
-
 	CD3DX12_DESCRIPTOR_RANGE1 ranges[2];
 	ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
 	ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
@@ -103,10 +93,23 @@ void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
-	
-	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-	rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 1, &sampler, rootSignatureFlags);
 
+	// Root signature
+	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
+	rootSignatureDesc.Init_1_1(
+		_countof(rootParameters),
+		rootParameters,
+		1,
+		&sampler,
+		rootSignatureFlags);
+	
+	D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
+	featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
+	if (FAILED(ctx.GetDevice()->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &featureData, sizeof(featureData))))
+	{
+		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
+	}
+	
 	ID3DBlob* signature = nullptr;
 	ID3DBlob* error = nullptr;
 	ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featureData.HighestVersion, &signature, &error))

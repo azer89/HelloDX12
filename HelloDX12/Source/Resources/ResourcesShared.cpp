@@ -48,7 +48,8 @@ void ResourcesShared::Init(DX12Context& ctx)
 
 void ResourcesShared::CreateSwapchainRTV(DX12Context& ctx)
 {
-	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
+	// RTV
+	const D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
 	{
 		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
 		.NumDescriptors = AppConfig::FrameCount,
@@ -56,7 +57,7 @@ void ResourcesShared::CreateSwapchainRTV(DX12Context& ctx)
 	};
 	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&swapchainRTVHeap_)))
 
-	// Create a RTV for each frame
+	// Handle
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(swapchainRTVHeap_->GetCPUDescriptorHandleForHeapStart());
 	for (uint32_t i = 0; i < AppConfig::FrameCount; i++)
 	{
@@ -65,7 +66,6 @@ void ResourcesShared::CreateSwapchainRTV(DX12Context& ctx)
 		rtvHandle.Offset(1, rtvIncrementSize_);
 	}
 
-	// Create handles
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
 		swapchainRTVHandles_[i] = CD3DX12_CPU_DESCRIPTOR_HANDLE(
@@ -78,20 +78,18 @@ void ResourcesShared::CreateSwapchainRTV(DX12Context& ctx)
 void ResourcesShared::CreateMultiSampledRTV(DX12Context& ctx)
 {
 	// Create Image
-	uint32_t msaaCount = AppConfig::MSAACount;
+	constexpr uint32_t msaaCount = AppConfig::MSAACount;
 	multiSampledImage_.CreateColorAttachment(ctx, msaaCount);
 
+	// Barrier
 	{
-		// Start recording 
 		ctx.ResetCommandList();
-		auto commandList = ctx.GetCommandList();
+		const auto commandList = ctx.GetCommandList();
 
-		// Barrier
-		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		const auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
 			multiSampledImage_.GetResource(),
 			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, 
 			D3D12_RESOURCE_STATE_RENDER_TARGET);
-		
 		commandList->ResourceBarrier(1, &barrier);
 
 		ctx.SubmitCommandListAndWaitForGPU();
@@ -106,11 +104,10 @@ void ResourcesShared::CreateMultiSampledRTV(DX12Context& ctx)
 	};
 	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&multiSampledRTVHeap_)))
 
-	// Create a RTV for each frame
+	// Handle
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(multiSampledRTVHeap_->GetCPUDescriptorHandleForHeapStart());
 	ctx.GetDevice()->CreateRenderTargetView(multiSampledImage_.buffer_.resource_, nullptr, rtvHandle);
-
-	// Create handle
+	
 	multiSampledRTVHandle_ = CD3DX12_CPU_DESCRIPTOR_HANDLE(
 		multiSampledRTVHeap_->GetCPUDescriptorHandleForHeapStart(),
 		0,
@@ -120,11 +117,11 @@ void ResourcesShared::CreateMultiSampledRTV(DX12Context& ctx)
 void ResourcesShared::CreateSingleSampledRTV(DX12Context& ctx)
 {
 	// Create Image
-	uint32_t msaaCount = 1;
+	constexpr uint32_t msaaCount = 1;
 	singleSampledImage_.CreateColorAttachment(ctx, msaaCount);
 
-	// Create RTV
-	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
+	// RTV
+	const D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
 	{
 		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
 		.NumDescriptors = 1,
@@ -132,11 +129,10 @@ void ResourcesShared::CreateSingleSampledRTV(DX12Context& ctx)
 	};
 	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&singleSampledRTVHeap_)))
 
-	// Create a RTV for each frame
+	// Handle
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(singleSampledRTVHeap_->GetCPUDescriptorHandleForHeapStart());
 	ctx.GetDevice()->CreateRenderTargetView(singleSampledImage_.buffer_.resource_, nullptr, rtvHandle);
 
-	// Create handle
 	singleSampledRTVHandle_ = CD3DX12_CPU_DESCRIPTOR_HANDLE(
 		singleSampledRTVHeap_->GetCPUDescriptorHandleForHeapStart(),
 		0,
@@ -145,11 +141,11 @@ void ResourcesShared::CreateSingleSampledRTV(DX12Context& ctx)
 
 void ResourcesShared::CreateDSV(DX12Context& ctx)
 {
-	uint32_t msaaCount = AppConfig::MSAACount;
+	constexpr uint32_t msaaCount = AppConfig::MSAACount;
 	depthImage_.CreateDepthAttachment(ctx, msaaCount);
 
-	// Describe and create a depth stencil view (DSV) descriptor heap.
-	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc =
+	// Heap
+	const D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc =
 	{
 		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV,
 		.NumDescriptors = 1,
@@ -157,7 +153,8 @@ void ResourcesShared::CreateDSV(DX12Context& ctx)
 	};
 	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&dsvHeap_)))
 
-	D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc =
+	// DSV
+	const D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc =
 	{
 		.Format = DXGI_FORMAT_D32_FLOAT,
 		.ViewDimension = msaaCount == 1 ? D3D12_DSV_DIMENSION_TEXTURE2D : D3D12_DSV_DIMENSION_TEXTURE2DMS,
@@ -169,6 +166,5 @@ void ResourcesShared::CreateDSV(DX12Context& ctx)
 		&depthStencilDesc,
 		dsvHeap_->GetCPUDescriptorHandleForHeapStart());
 
-	// Create handle
 	dsvHandle_ = CD3DX12_CPU_DESCRIPTOR_HANDLE(dsvHeap_->GetCPUDescriptorHandleForHeapStart());
 }
