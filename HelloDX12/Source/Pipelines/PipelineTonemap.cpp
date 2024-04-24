@@ -123,5 +123,6 @@ void PipelineTonemap::PopulateCommandList(DX12Context& ctx)
 	commandList->OMSetRenderTargets(renderTargetCount, &rtvHandle, FALSE, nullptr); // No depth attachment
 
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	commandList->DrawIndexedInstanced(3, 1, 0, 0, 0);
+	constexpr uint32_t triangleCount = 3;
+	commandList->DrawIndexedInstanced(triangleCount, 1, 0, 0, 0);
 }
