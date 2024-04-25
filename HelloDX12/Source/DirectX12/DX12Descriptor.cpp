@@ -42,7 +42,7 @@ void DX12Descriptor::CreateRootDescriptor(DX12Context& ctx,
 			signature->GetBufferSize(),
 			IID_PPV_ARGS(&rootSignature_)))
 
-		signature->Release();
+	signature->Release();
 	if (error)
 	{
 		error->Release();
