@@ -17,13 +17,14 @@ void PipelineMipmap::GenerateShader(DX12Context& ctx)
 
 void PipelineMipmap::CreatePipeline(DX12Context& ctx)
 {
-	CD3DX12_DESCRIPTOR_RANGE srvCbvRanges[2] = {};
-	CD3DX12_ROOT_PARAMETER rootParameters[3] = {};
-	srvCbvRanges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0);
-	srvCbvRanges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0, 0);
+	CD3DX12_DESCRIPTOR_RANGE1 srvCbvRanges[2] = {};
+	CD3DX12_ROOT_PARAMETER1 rootParameters[3] = {};
+	// Resource needs to be volatile
+	srvCbvRanges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE);
+	srvCbvRanges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE);
 	rootParameters[0].InitAsConstants(2, 0);
-	rootParameters[1].InitAsDescriptorTable(1, &srvCbvRanges[0]);
-	rootParameters[2].InitAsDescriptorTable(1, &srvCbvRanges[1]);
+	rootParameters[1].InitAsDescriptorTable(1, &srvCbvRanges[0], D3D12_SHADER_VISIBILITY_ALL);
+	rootParameters[2].InitAsDescriptorTable(1, &srvCbvRanges[1], D3D12_SHADER_VISIBILITY_ALL);
 
 	// Static sampler used to get the linearly interpolated color for the mipmaps
 	D3D12_STATIC_SAMPLER_DESC samplerDesc =
@@ -47,36 +48,12 @@ void PipelineMipmap::CreatePipeline(DX12Context& ctx)
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 	// Root signature
-	ID3DBlob* signature = nullptr;
-	ID3DBlob* error = nullptr;
-	CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-	rootSignatureDesc.Init(
-		_countof(rootParameters),
-		rootParameters,
-		1,
-		&samplerDesc,
-		rootSignatureFlags);
-	ThrowIfFailed(D3D12SerializeRootSignature(
-		&rootSignatureDesc,
-		D3D_ROOT_SIGNATURE_VERSION_1,
-		&signature,
-		&error))
-		ThrowIfFailed(ctx.GetDevice()->CreateRootSignature(
-			0,
-			signature->GetBufferPointer(),
-			signature->GetBufferSize(),
-			IID_PPV_ARGS(&rootSignature_)))
-
-		signature->Release();
-	if (error)
-	{
-		error->Release();
-	}
+	descriptor_.CreateRootDescriptor(ctx, samplerDesc, rootParameters, rootSignatureFlags);
 
 	// PSO
 	D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc =
 	{
-		.pRootSignature = rootSignature_,
+		.pRootSignature = descriptor_.GetRootSignature(),
 		.CS = CD3DX12_SHADER_BYTECODE(computeShader_.GetHandle())
 	};
 	ctx.GetDevice()->CreateComputePipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_));
@@ -120,10 +97,6 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	ctx.ResetCommandList();
 	auto commandList = ctx.GetCommandList();
 
-	commandList->SetComputeRootSignature(rootSignature_);
-	commandList->SetPipelineState(pipelineState_);
-	commandList->SetDescriptorHeaps(1, &descriptorHeap);
-
 	// Barrier
 	auto barrier1 =
 		CD3DX12_RESOURCE_BARRIER::Transition(
@@ -131,6 +104,10 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 			D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 	commandList->ResourceBarrier(1, &barrier1);
+
+	commandList->SetComputeRootSignature(descriptor_.GetRootSignature());
+	commandList->SetPipelineState(pipelineState_);
+	commandList->SetDescriptorHeaps(1, &descriptorHeap);
 
 	//Loop through the mipmaps copying from the bigger mipmap to the smaller one with downsampling in a compute shader
 	for (uint32_t currMipLevel = 0; currMipLevel < image->mipmapCount_ - 1; ++currMipLevel)
