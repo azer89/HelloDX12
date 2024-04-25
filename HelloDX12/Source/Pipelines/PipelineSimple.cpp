@@ -74,16 +74,6 @@ void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
 
 void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 {
-	D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
-
-	// This is the highest version the sample supports. If CheckFeatureSupport succeeds, 
-	// the HighestVersion returned will not be greater than this.
-	featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
-	if (FAILED(ctx.GetDevice()->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &featureData, sizeof(featureData))))
-	{
-		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
-	}
-
 	CD3DX12_DESCRIPTOR_RANGE1 ranges[2];
 	ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
 	ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
@@ -103,21 +93,9 @@ void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
-	
-	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-	rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 1, &sampler, rootSignatureFlags);
 
-	ID3DBlob* signature = nullptr;
-	ID3DBlob* error = nullptr;
-	ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featureData.HighestVersion, &signature, &error))
-	ThrowIfFailed(ctx.GetDevice()->CreateRootSignature(
-		0, 
-		signature->GetBufferPointer(), 
-		signature->GetBufferSize(), 
-		IID_PPV_ARGS(&rootSignature_)))
-
-	signature->Release();
-	if (error) { error->Release(); }
+	// Root signature
+	descriptor_.CreateRootDescriptor(ctx, sampler, rootParameters, rootSignatureFlags);
 }
 
 void PipelineSimple::CreateShaders(DX12Context& ctx)
@@ -133,7 +111,7 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 	// Describe and create the graphics pipeline state object (PSO).
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc =
 	{
-		.pRootSignature = rootSignature_,
+		.pRootSignature = descriptor_.GetRootSignature(),
 		.VS = CD3DX12_SHADER_BYTECODE(vertexShader_.GetHandle()),
 		.PS = CD3DX12_SHADER_BYTECODE(fragmentShader_.GetHandle()),
 		.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT),
@@ -168,7 +146,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	commandList->SetPipelineState(pipelineState_);
 	commandList->RSSetViewports(1, &viewport_);
 	commandList->RSSetScissorRects(1, &scissor_);
-	commandList->SetGraphicsRootSignature(rootSignature_);
+	commandList->SetGraphicsRootSignature(descriptor_.GetRootSignature());
 
 	// Descriptors
 	// TODO handles can be precomputed

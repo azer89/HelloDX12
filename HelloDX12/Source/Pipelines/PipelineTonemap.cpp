@@ -1,6 +1,6 @@
 #include "PipelineTonemap.h"
 #include "DX12Exception.h"
-#include <VertexData.h>
+#include "VertexData.h"
 
 PipelineTonemap::PipelineTonemap(
 	DX12Context& ctx,
@@ -38,11 +38,11 @@ void PipelineTonemap::CreateDescriptorHeap(DX12Context& ctx)
 
 void PipelineTonemap::CreateRootSignature(DX12Context& ctx)
 {
-	CD3DX12_DESCRIPTOR_RANGE srvCbvRanges[1] = {};
-	srvCbvRanges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0);
+	CD3DX12_DESCRIPTOR_RANGE1 srvCbvRanges[1] = {};
+	srvCbvRanges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DESCRIPTORS_VOLATILE);
 
-	CD3DX12_ROOT_PARAMETER rootParameters[1] = {};
-	rootParameters[0].InitAsDescriptorTable(1, &srvCbvRanges[0]);
+	CD3DX12_ROOT_PARAMETER1 rootParameters[1] = {};
+	rootParameters[0].InitAsDescriptorTable(1, &srvCbvRanges[0], D3D12_SHADER_VISIBILITY_PIXEL);
 
 	D3D12_STATIC_SAMPLER_DESC samplerDesc =
 	{
@@ -62,23 +62,18 @@ void PipelineTonemap::CreateRootSignature(DX12Context& ctx)
 	};
 
 	// Root signature
-	ID3DBlob* signature = nullptr;
-	ID3DBlob* error = nullptr;
-	CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-	rootSignatureDesc.Init(_countof(rootParameters), rootParameters, 1, &samplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-	D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
-	ctx.GetDevice()->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
-
-	signature->Release();
-	if (error) { error->Release(); }
+	descriptor_.CreateRootDescriptor(
+		ctx, 
+		samplerDesc, 
+		rootParameters, 
+		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 }
 
 void PipelineTonemap::CreateGraphicsPipeline(DX12Context& ctx)
 {
-	// Describe and create the graphics pipeline state object (PSO).
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc =
 	{
-		.pRootSignature = rootSignature_,
+		.pRootSignature = descriptor_.GetRootSignature(),
 		.VS = CD3DX12_SHADER_BYTECODE(vertexShader_.GetHandle()),
 		.PS = CD3DX12_SHADER_BYTECODE(fragmentShader_.GetHandle()),
 		.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT),
@@ -108,7 +103,7 @@ void PipelineTonemap::PopulateCommandList(DX12Context& ctx)
 	commandList->SetPipelineState(pipelineState_);
 	commandList->RSSetViewports(1, &viewport_);
 	commandList->RSSetScissorRects(1, &scissor_);
-	commandList->SetGraphicsRootSignature(rootSignature_);
+	commandList->SetGraphicsRootSignature(descriptor_.GetRootSignature());
 
 	// Descriptors
 	const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
