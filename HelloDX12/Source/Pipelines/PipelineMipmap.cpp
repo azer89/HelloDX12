@@ -2,6 +2,8 @@
 #include "DX12Exception.h"
 #include "RootConstParam.h"
 
+#include <vector>
+
 PipelineMipmap::PipelineMipmap(
 	DX12Context& ctx) :
 	PipelineBase(ctx)
@@ -17,14 +19,15 @@ void PipelineMipmap::GenerateShader(DX12Context& ctx)
 
 void PipelineMipmap::CreatePipeline(DX12Context& ctx)
 {
-	CD3DX12_DESCRIPTOR_RANGE1 srvCbvRanges[2] = {};
-	CD3DX12_ROOT_PARAMETER1 rootParameters[3] = {};
+	std::vector<CD3DX12_DESCRIPTOR_RANGE1> ranges = {};
 	// Resource needs to be volatile
-	srvCbvRanges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE);
-	srvCbvRanges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE);
-	rootParameters[0].InitAsConstants(2, 0);
-	rootParameters[1].InitAsDescriptorTable(1, &srvCbvRanges[0], D3D12_SHADER_VISIBILITY_ALL);
-	rootParameters[2].InitAsDescriptorTable(1, &srvCbvRanges[1], D3D12_SHADER_VISIBILITY_ALL);
+	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE);
+	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE);
+	
+	std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters= {};
+	rootParameters.emplace_back().InitAsConstants(2, 0);
+	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data(), D3D12_SHADER_VISIBILITY_ALL);
+	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + 1, D3D12_SHADER_VISIBILITY_ALL);
 
 	// Static sampler used to get the linearly interpolated color for the mipmaps
 	D3D12_STATIC_SAMPLER_DESC samplerDesc =
@@ -51,7 +54,7 @@ void PipelineMipmap::CreatePipeline(DX12Context& ctx)
 	descriptor_.CreateRootDescriptor(ctx, samplerDesc, rootParameters, rootSignatureFlags);
 
 	// PSO
-	D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc =
+	const D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc =
 	{
 		.pRootSignature = descriptor_.GetRootSignature(),
 		.CS = CD3DX12_SHADER_BYTECODE(computeShader_.GetHandle())
