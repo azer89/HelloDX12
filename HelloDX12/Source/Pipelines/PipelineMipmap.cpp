@@ -67,9 +67,11 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	// Prepare the shader resource view description for the source texture
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvSrcDesc =
 	{
+		.Format = image->format_,
 		.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D,
 		.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
 	};
+	srvSrcDesc.Texture2D.MipLevels = 1;
 
 	// Prepare the unordered access view description for the destination texture
 	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDstDesc =
@@ -120,8 +122,6 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 		uint32_t dstHeight = max(image->height_ >> (currMipLevel + 1), 1);
 
 		// SRV for source texture
-		srvSrcDesc.Format = image->format_;
-		srvSrcDesc.Texture2D.MipLevels = 1;
 		srvSrcDesc.Texture2D.MostDetailedMip = currMipLevel;
 		ctx.GetDevice()->CreateShaderResourceView(image->GetResource(), &srvSrcDesc, currentCPUHandle);
 		currentCPUHandle.Offset(1, descriptorSize);
@@ -132,18 +132,31 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 		ctx.GetDevice()->CreateUnorderedAccessView(image->GetResource(), nullptr, &uavDstDesc, currentCPUHandle);
 		currentCPUHandle.Offset(1, descriptorSize);
 
+		uint32_t rootParamIndex = 0;
+		
 		// Root constants
-		commandList->SetComputeRoot32BitConstant(0, RootConstParam(1.0f / static_cast<float>(dstWidth)).uint_, 0);
-		commandList->SetComputeRoot32BitConstant(0, RootConstParam(1.0f / static_cast<float>(dstHeight)).uint_, 1);
+		commandList->SetComputeRoot32BitConstant(
+			rootParamIndex,
+			RootConstParam(1.0f / static_cast<float>(dstWidth)).uint_,
+			0);
+		commandList->SetComputeRoot32BitConstant(
+			rootParamIndex,
+			RootConstParam(1.0f / static_cast<float>(dstHeight)).uint_,
+			1);
+
+		++rootParamIndex;
 
 		// Pass the source and destination texture views to the shader via descriptor tables
-		commandList->SetComputeRootDescriptorTable(1, currentGPUHandle);
+		commandList->SetComputeRootDescriptorTable(rootParamIndex++, currentGPUHandle);
 		currentGPUHandle.Offset(1, descriptorSize);
-		commandList->SetComputeRootDescriptorTable(2, currentGPUHandle);
+		commandList->SetComputeRootDescriptorTable(rootParamIndex++, currentGPUHandle);
 		currentGPUHandle.Offset(1, descriptorSize);
 
 		// Dispatch the compute shader with one thread per 8x8 pixels
-		commandList->Dispatch(max(dstWidth / 8, 1u), max(dstHeight / 8, 1u), 1);
+		commandList->Dispatch(
+			max(dstWidth / 8, 1u),
+			max(dstHeight / 8, 1u),
+			1);
 
 		// Barrier
 		auto barrier2 = CD3DX12_RESOURCE_BARRIER::UAV(image->GetResource());
