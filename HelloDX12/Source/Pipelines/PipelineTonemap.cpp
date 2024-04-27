@@ -38,13 +38,13 @@ void PipelineTonemap::CreateDescriptorHeap(DX12Context& ctx)
 
 void PipelineTonemap::CreateRootSignature(DX12Context& ctx)
 {
-	CD3DX12_DESCRIPTOR_RANGE1 srvCbvRanges[1] = {};
-	srvCbvRanges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DESCRIPTORS_VOLATILE);
+	std::vector<CD3DX12_DESCRIPTOR_RANGE1> ranges = {};
+	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DESCRIPTORS_VOLATILE);
 
-	CD3DX12_ROOT_PARAMETER1 rootParameters[1] = {};
-	rootParameters[0].InitAsDescriptorTable(1, &srvCbvRanges[0], D3D12_SHADER_VISIBILITY_PIXEL);
+	std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters = {};
+	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data(), D3D12_SHADER_VISIBILITY_PIXEL);
 
-	D3D12_STATIC_SAMPLER_DESC samplerDesc =
+	constexpr D3D12_STATIC_SAMPLER_DESC samplerDesc =
 	{
 		.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR,
 		.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
