@@ -7,17 +7,18 @@
 
 #include "glm/glm.hpp"
 
-#include <vector>
+#include <string>
 
 class ResourcesIBL final : public ResourcesBase
 {
 public:
-	ResourcesIBL() = default;
+	ResourcesIBL(DX12Context& ctx, const std::string& hdrFile);
 	~ResourcesIBL();
 
 	void Destroy() override;
 
 public:
+	DX12Image hdrImage_ = {};
 };
 
 #endif

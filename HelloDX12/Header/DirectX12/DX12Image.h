@@ -10,7 +10,8 @@ public:
 	DX12Image();
 	~DX12Image() = default;
 	void Destroy();
-	void Load(DX12Context& ctx, std::string filename);
+	void Load(DX12Context& ctx, const std::string& filename);
+	void LoadHDR(DX12Context& ctx, const std::string& filename);
 	void CreateColorAttachment(DX12Context& ctx, uint32_t msaaCount);
 	void CreateDepthAttachment(DX12Context& ctx, uint32_t msaaCount);
 	ID3D12Resource* GetResource() const { return buffer_.resource_; }

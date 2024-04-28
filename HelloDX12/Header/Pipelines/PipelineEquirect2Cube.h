@@ -9,11 +9,16 @@ class PipelineEquirect2Cube final : public PipelineBase
 {
 public:
 	PipelineEquirect2Cube(
-		DX12Context& ctx);
+		DX12Context& ctx,
+		ResourcesIBL* resourcesIBL);
 	~PipelineEquirect2Cube() = default;
 
-	void Update(DX12Context& ctx) override {}
+	void Update(DX12Context& ctx) override;
 	void PopulateCommandList(DX12Context& ctx) override;
+
+private:
+	void GenerateShader(DX12Context& ctx);
+	void CreatePipeline(DX12Context& ctx);
 
 private:
 	ResourcesIBL* resourcesIBL_;

@@ -9,11 +9,16 @@ class PipelineSkybox final : public PipelineBase
 {
 public:
 	PipelineSkybox(
-		DX12Context& ctx);
+		DX12Context& ctx,
+		ResourcesIBL* resourcesIBL);
 	~PipelineSkybox() = default;
 
-	void Update(DX12Context& ctx) override {}
+	void Update(DX12Context& ctx) override;
 	void PopulateCommandList(DX12Context& ctx) override;
+
+private:
+	void GenerateShader(DX12Context& ctx);
+	void CreatePipeline(DX12Context& ctx);
 
 private:
 	ResourcesIBL* resourcesIBL_;

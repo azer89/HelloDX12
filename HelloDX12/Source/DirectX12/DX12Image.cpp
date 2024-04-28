@@ -17,7 +17,7 @@ void DX12Image::Destroy()
 	buffer_.Destroy();
 }
 
-void DX12Image::Load(DX12Context& ctx, std::string filename)
+void DX12Image::Load(DX12Context& ctx, const std::string& filename)
 {
 	stbi_set_flip_vertically_on_load(false);
 
@@ -45,6 +45,40 @@ void DX12Image::Load(DX12Context& ctx, std::string filename)
 		height_, 
 		mipmapCount_, 
 		pixelSize_, 
+		format_,
+		flags
+	);
+}
+
+void DX12Image::LoadHDR(DX12Context& ctx, const std::string& filename)
+{
+	stbi_set_flip_vertically_on_load(false);
+
+	int texWidth, texHeight, texChannels;
+	stbi_uc* pixels = stbi_load(filename.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+
+	if (!pixels)
+	{
+		std::stringstream ss;
+		ss << "Failed to load image " << filename;
+		throw std::runtime_error(ss.str());
+	}
+
+	width_ = texWidth;
+	height_ = texHeight;
+	pixelSize_ = 4 * sizeof(float); // TODO Is this correct?
+	format_ = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	mipmapCount_ = 1;
+
+	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE;
+
+	buffer_.CreateImageFromData(
+		ctx,
+		pixels,
+		width_,
+		height_,
+		mipmapCount_,
+		pixelSize_,
 		format_,
 		flags
 	);
