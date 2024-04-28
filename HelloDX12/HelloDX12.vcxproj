@@ -26,12 +26,15 @@
     <ClInclude Include="Header\DirectX12\DX12Shader.h" />
     <ClInclude Include="Header\Pipelines\PipelineBase.h" />
     <ClInclude Include="Header\Pipelines\PipelineClear.h" />
+    <ClInclude Include="Header\Pipelines\PipelineEquirect2Cube.h" />
     <ClInclude Include="Header\Pipelines\PipelineMipmap.h" />
     <ClInclude Include="Header\Pipelines\PipelinePresent.h" />
     <ClInclude Include="Header\Pipelines\PipelineResolve.h" />
     <ClInclude Include="Header\Pipelines\PipelineSimple.h" />
+    <ClInclude Include="Header\Pipelines\PipelineSkybox.h" />
     <ClInclude Include="Header\Pipelines\PipelineTonemap.h" />
     <ClInclude Include="Header\Resources\ResourcesBase.h" />
+    <ClInclude Include="Header\Resources\ResourcesIBL.h" />
     <ClInclude Include="Header\Resources\ResourcesLights.h" />
     <ClInclude Include="Header\Resources\ResourcesShared.h" />
     <ClInclude Include="Header\RootConstParam.h" />
@@ -56,11 +59,14 @@
     <ClCompile Include="Source\DirectX12\DX12Shader.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineBase.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineClear.cpp" />
+    <ClCompile Include="Source\Pipelines\PipelineEquirect2Cube.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineMipmap.cpp" />
     <ClCompile Include="Source\Pipelines\PipelinePresent.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineResolve.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineSimple.cpp" />
+    <ClCompile Include="Source\Pipelines\PipelineSkybox.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineTonemap.cpp" />
+    <ClCompile Include="Source\Resources\ResourcesIBL.cpp" />
     <ClCompile Include="Source\Resources\ResourcesLights.cpp" />
     <ClCompile Include="Source\Resources\ResourcesShared.cpp" />
     <ClCompile Include="Source\Scene\Mesh.cpp" />
@@ -72,11 +78,11 @@
     <ClCompile Include="Source\Win32Application.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Shader\BlinnPhong.hlsl">
+    <None Include="Shader\BlinnPhong.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ShaderType>
       <FileType>Document</FileType>
-    </Text>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Shader\LightData.hlsli">
@@ -88,14 +94,22 @@
     <None Include="Shader\ModelData.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Shader\Mipmap.hlsl">
+    <None Include="Shader\Mipmap.hlsl">
       <FileType>Document</FileType>
-    </Text>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Shader\Tonemap.hlsl">
+    <None Include="Shader\Tonemap.hlsl">
       <FileType>Document</FileType>
-    </Text>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\Equirect2Cube.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Shader\Skybox.hlsl">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{16B13BB4-D82D-4AC1-8B40-C6BCCC99954B}</ProjectGuid>

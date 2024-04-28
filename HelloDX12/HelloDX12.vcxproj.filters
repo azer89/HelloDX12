@@ -135,6 +135,15 @@
     <ClInclude Include="Header\DirectX12\DX12Descriptor.h">
       <Filter>Header\DirectX12</Filter>
     </ClInclude>
+    <ClInclude Include="Header\Pipelines\PipelineEquirect2Cube.h">
+      <Filter>Header\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Pipelines\PipelineSkybox.h">
+      <Filter>Header\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Resources\ResourcesIBL.h">
+      <Filter>Header\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -212,18 +221,18 @@
     <ClCompile Include="Source\DirectX12\DX12Descriptor.cpp">
       <Filter>Source\DirectX12</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Pipelines\PipelineEquirect2Cube.cpp">
+      <Filter>Source\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Pipelines\PipelineSkybox.cpp">
+      <Filter>Source\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Resources\ResourcesIBL.cpp">
+      <Filter>Source\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Shader\BlinnPhong.hlsl">
-      <Filter>Shader</Filter>
-    </Text>
     <Text Include="Shader\LightData.hlsli">
-      <Filter>Shader</Filter>
-    </Text>
-    <Text Include="Shader\Mipmap.hlsl">
-      <Filter>Shader</Filter>
-    </Text>
-    <Text Include="Shader\Tonemap.hlsl">
       <Filter>Shader</Filter>
     </Text>
   </ItemGroup>
@@ -232,6 +241,21 @@
       <Filter>Shader</Filter>
     </None>
     <None Include="Shader\ModelData.hlsli">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\BlinnPhong.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\Equirect2Cube.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\Mipmap.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\Skybox.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\Tonemap.hlsl">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>
