@@ -24,10 +24,12 @@ void PipelineMipmap::CreatePipeline(DX12Context& ctx)
 	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE);
 	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE);
 	
+	uint32_t paramOffset = 0;
+	constexpr uint32_t rootConstantCount = 2;
 	std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters= {};
-	rootParameters.emplace_back().InitAsConstants(2, 0);
-	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data(), D3D12_SHADER_VISIBILITY_ALL);
-	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + 1, D3D12_SHADER_VISIBILITY_ALL);
+	rootParameters.emplace_back().InitAsConstants(rootConstantCount, 0);
+	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + paramOffset++, D3D12_SHADER_VISIBILITY_ALL);
+	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + paramOffset++, D3D12_SHADER_VISIBILITY_ALL);
 
 	// Static sampler used to get the linearly interpolated color for the mipmaps
 	D3D12_STATIC_SAMPLER_DESC samplerDesc =
@@ -85,7 +87,7 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc =
 	{
 		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-		.NumDescriptors = 2 * requiredHeapSize,
+		.NumDescriptors = 2 * requiredHeapSize, // Heap size
 		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
 	};
 	ID3D12DescriptorHeap* descriptorHeap;
@@ -126,12 +128,12 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 		// SRV for source texture
 		srvSrcDesc.Texture2D.MostDetailedMip = currMipLevel;
 		ctx.GetDevice()->CreateShaderResourceView(image->GetResource(), &srvSrcDesc, cpuHandle);
-		cpuHandle.Offset(1, descriptorSize);
+		cpuHandle.Offset(1, descriptorSize); // Add offset
 
 		// UAV for destination texture
 		uavDstDesc.Texture2D.MipSlice = currMipLevel + 1;
 		ctx.GetDevice()->CreateUnorderedAccessView(image->GetResource(), nullptr, &uavDstDesc, cpuHandle);
-		cpuHandle.Offset(1, descriptorSize);
+		cpuHandle.Offset(1, descriptorSize); // Add offset
 
 		uint32_t rootParamIndex = 0;
 		
@@ -149,9 +151,9 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 
 		// Pass the source and destination texture views to the shader via descriptor tables
 		commandList->SetComputeRootDescriptorTable(rootParamIndex++, gpuHandle);
-		gpuHandle.Offset(1, descriptorSize);
+		gpuHandle.Offset(1, descriptorSize); // Add offset
 		commandList->SetComputeRootDescriptorTable(rootParamIndex++, gpuHandle);
-		gpuHandle.Offset(1, descriptorSize);
+		gpuHandle.Offset(1, descriptorSize); // Add offset
 
 		// Dispatch the compute shader with one thread per 8x8 pixels
 		commandList->Dispatch(
