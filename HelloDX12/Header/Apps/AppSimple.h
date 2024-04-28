@@ -6,6 +6,7 @@
 #include "PipelineSimple.h"
 #include "ResourcesShared.h"
 #include "ResourcesLights.h"
+#include "ResourcesIBL.h"
 #include "Scene.h"
 
 #include <memory>
@@ -26,6 +27,7 @@ private:
 	PipelineSimple* pipSimple_ = nullptr;
 	ResourcesShared* resourcesShared_ = nullptr;
 	ResourcesLights* resourcesLights_ = nullptr;
+	ResourcesIBL* resourcesIBL = nullptr;
 };
 
 #endif

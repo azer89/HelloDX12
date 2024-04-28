@@ -23,6 +23,9 @@ void AppSimple::OnInit()
 	scene_ = std::make_unique<Scene>();
 	scene_->Init(context_);
 
+	// IBL
+	resourcesIBL = AddResources<ResourcesIBL>(context_, AppConfig::TextureFolder + "piazza_bologni_1k.hdr");
+
 	// Render target and depth
 	resourcesShared_ = AddResources<ResourcesShared>();
 	resourcesShared_->Init(context_);

@@ -48,6 +48,7 @@ void DX12Image::Load(DX12Context& ctx, const std::string& filename)
 		format_,
 		flags
 	);
+	stbi_image_free(pixels);
 }
 
 void DX12Image::LoadHDR(DX12Context& ctx, const std::string& filename)
@@ -55,7 +56,7 @@ void DX12Image::LoadHDR(DX12Context& ctx, const std::string& filename)
 	stbi_set_flip_vertically_on_load(false);
 
 	int texWidth, texHeight, texChannels;
-	stbi_uc* pixels = stbi_load(filename.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+	float* pixels = stbi_loadf(filename.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 
 	if (!pixels)
 	{
@@ -82,6 +83,7 @@ void DX12Image::LoadHDR(DX12Context& ctx, const std::string& filename)
 		format_,
 		flags
 	);
+	stbi_image_free(pixels);
 }
 
 void DX12Image::CreateColorAttachment(DX12Context& ctx, uint32_t msaaCount)
