@@ -2,10 +2,12 @@
 
 PipelineEquirect2Cube::PipelineEquirect2Cube(
 	DX12Context& ctx,
-	ResourcesIBL* resourcesIBL) :
+	DX12Image* hdrImage) :
 	PipelineBase(ctx),
-	resourcesIBL_(resourcesIBL)
+	hdrImage_(hdrImage)
 {
+	GenerateShader(ctx);
+	CreatePipeline(ctx);
 }
 
 void PipelineEquirect2Cube::Update(DX12Context& ctx)
@@ -18,6 +20,7 @@ void PipelineEquirect2Cube::PopulateCommandList(DX12Context& ctx)
 
 void PipelineEquirect2Cube::GenerateShader(DX12Context& ctx)
 {
+	computeShader_.Create(ctx, AppConfig::ShaderFolder + "Equirect2Cube.hlsl", ShaderType::Compute);
 }
 
 void PipelineEquirect2Cube::CreatePipeline(DX12Context& ctx)

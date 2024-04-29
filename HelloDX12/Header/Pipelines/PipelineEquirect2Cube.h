@@ -3,14 +3,14 @@
 
 #include "DX12Context.h"
 #include "PipelineBase.h"
-#include "ResourcesIBL.h"
+#include "DX12Image.h"
 
 class PipelineEquirect2Cube final : public PipelineBase
 {
 public:
 	PipelineEquirect2Cube(
 		DX12Context& ctx,
-		ResourcesIBL* resourcesIBL);
+		DX12Image* hdrImage);
 	~PipelineEquirect2Cube() = default;
 
 	void Update(DX12Context& ctx) override;
@@ -21,7 +21,7 @@ private:
 	void CreatePipeline(DX12Context& ctx);
 
 private:
-	ResourcesIBL* resourcesIBL_;
+	DX12Image* hdrImage_;
 };
 
 #endif
