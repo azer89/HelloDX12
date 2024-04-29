@@ -6,7 +6,10 @@ PipelineEquirect2Cube::PipelineEquirect2Cube(
 {
 }
 
-void PipelineEquirect2Cube::GenerateCubemapFromHDR(DX12Context& ctx, DX12Image* hdrImage, DX12Image* cubemapImage)
+void PipelineEquirect2Cube::GenerateCubemapFromHDR(DX12Context& ctx, 
+	DX12Image* hdrImage, 
+	DX12Image* cubemapImage,
+	const D3D12_UNORDERED_ACCESS_VIEW_DESC& cubemapUAVDesc)
 {
 	GenerateShader(ctx);
 	CreatePipeline(ctx);

@@ -139,7 +139,7 @@ void DX12Image::CreateDepthAttachment(DX12Context& ctx, uint32_t msaaCount)
 {
 	width_ = ctx.GetSwapchainWidth();
 	height_ = ctx.GetSwapchainHeight();
-	pixelSize_ = 1; // TODO This may be incorrect
+	pixelSize_ = sizeof(float);
 	mipmapCount_ = 1;
 	layerCount_ = 1;
 	format_ = DXGI_FORMAT_D32_FLOAT;

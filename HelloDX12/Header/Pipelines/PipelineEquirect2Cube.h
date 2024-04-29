@@ -12,7 +12,11 @@ public:
 		DX12Context& ctx);
 	~PipelineEquirect2Cube() = default;
 
-	void GenerateCubemapFromHDR(DX12Context& ctx, DX12Image* hdrImage, DX12Image* cubemapImage);
+	void GenerateCubemapFromHDR(
+		DX12Context& ctx, 
+		DX12Image* hdrImage, 
+		DX12Image* cubemapImage,
+		const D3D12_UNORDERED_ACCESS_VIEW_DESC& cubemapUAVDesc);
 
 	void Update(DX12Context& ctx) override {};
 	void PopulateCommandList(DX12Context& ctx) override {};
