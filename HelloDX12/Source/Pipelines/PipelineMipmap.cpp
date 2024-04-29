@@ -82,7 +82,8 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 		.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D
 	};
 
-	// Create the descriptor heap with layout: source texture - destination texture
+	// Descriptor heap
+	// TODO Use DX12Descriptor::CreateDescriptorHeap(...)
 	uint32_t requiredHeapSize = image->mipmapCount_ - 1;
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc =
 	{
@@ -93,15 +94,15 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	ID3D12DescriptorHeap* descriptorHeap;
 	ctx.GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&descriptorHeap));
 
-	UINT descriptorSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	UINT incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	// CPU handles for generating SRV and UAV
 	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandleStart = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
-	CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(cpuHandleStart, 0, descriptorSize);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(cpuHandleStart, 0, incrementSize);
 
 	// GPU handle for descriptor tables
 	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandleStart = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
-	CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(gpuHandleStart, 0, descriptorSize);
+	CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(gpuHandleStart, 0, incrementSize);
 
 	// Start recording 
 	ctx.ResetCommandList();
@@ -128,12 +129,12 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 		// SRV for source texture
 		srvSrcDesc.Texture2D.MostDetailedMip = currMipLevel;
 		ctx.GetDevice()->CreateShaderResourceView(image->GetResource(), &srvSrcDesc, cpuHandle);
-		cpuHandle.Offset(1, descriptorSize); // Add offset
+		cpuHandle.Offset(1, incrementSize); // Add offset
 
 		// UAV for destination texture
 		uavDstDesc.Texture2D.MipSlice = currMipLevel + 1;
 		ctx.GetDevice()->CreateUnorderedAccessView(image->GetResource(), nullptr, &uavDstDesc, cpuHandle);
-		cpuHandle.Offset(1, descriptorSize); // Add offset
+		cpuHandle.Offset(1, incrementSize); // Add offset
 
 		uint32_t rootParamIndex = 0;
 		
@@ -151,9 +152,9 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 
 		// Pass the source and destination texture views to the shader via descriptor tables
 		commandList->SetComputeRootDescriptorTable(rootParamIndex++, gpuHandle);
-		gpuHandle.Offset(1, descriptorSize); // Add offset
+		gpuHandle.Offset(1, incrementSize); // Add offset
 		commandList->SetComputeRootDescriptorTable(rootParamIndex++, gpuHandle);
-		gpuHandle.Offset(1, descriptorSize); // Add offset
+		gpuHandle.Offset(1, incrementSize); // Add offset
 
 		// Dispatch the compute shader with one thread per 8x8 pixels
 		commandList->Dispatch(

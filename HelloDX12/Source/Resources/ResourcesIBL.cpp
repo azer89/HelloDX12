@@ -10,7 +10,7 @@ ResourcesIBL::ResourcesIBL(DX12Context& ctx, const std::string& hdrFile)
 	CreateEnviromentCubemap(ctx);
 
 	PipelineEquirect2Cube pipE2C(ctx);
-	pipE2C.GenerateCubemapFromHDR(ctx, &hdrImage_, &environmentCubemap_);
+	pipE2C.GenerateCubemapFromHDR(ctx, &hdrImage_, &environmentCubemap_, envCubemapUAVDesc_);
 }
 
 ResourcesIBL::~ResourcesIBL()

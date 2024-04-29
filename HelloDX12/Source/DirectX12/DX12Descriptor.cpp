@@ -6,6 +6,11 @@ void DX12Descriptor::Destroy()
 	{
 		rootSignature_->Release();
 	}
+
+	if (descriptorHeap_)
+	{
+		descriptorHeap_->Release();
+	}
 }
 
 void DX12Descriptor::CreateRootDescriptor(DX12Context& ctx,
@@ -47,4 +52,16 @@ void DX12Descriptor::CreateRootDescriptor(DX12Context& ctx,
 	{
 		error->Release();
 	}
+}
+
+void DX12Descriptor::CreateDescriptorHeap(DX12Context& ctx, uint32_t descriptorCount)
+{
+	D3D12_DESCRIPTOR_HEAP_DESC heapDesc =
+	{
+		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+		.NumDescriptors = descriptorCount,
+		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
+	};
+	ID3D12DescriptorHeap* descriptorHeap;
+	ctx.GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&descriptorHeap_));
 }
