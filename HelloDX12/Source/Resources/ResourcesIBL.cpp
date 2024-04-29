@@ -5,7 +5,9 @@ ResourcesIBL::ResourcesIBL(DX12Context& ctx, const std::string& hdrFile)
 {
 	hdrImage_.LoadHDR(ctx, hdrFile);
 
-	PipelineEquirect2Cube pipE2C(ctx, );
+	environmentCubemap_.CreateCubemap(ctx, 1024, 1024);
+	PipelineEquirect2Cube pipE2C(ctx);
+	pipE2C.GenerateCubemapFromHDR(ctx, &hdrImage_, &environmentCubemap_);
 }
 
 ResourcesIBL::~ResourcesIBL()
@@ -16,4 +18,5 @@ ResourcesIBL::~ResourcesIBL()
 void ResourcesIBL::Destroy()
 {
 	hdrImage_.Destroy();
+	environmentCubemap_.Destroy();
 }

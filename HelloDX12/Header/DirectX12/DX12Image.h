@@ -12,6 +12,7 @@ public:
 	void Destroy();
 	void Load(DX12Context& ctx, const std::string& filename);
 	void LoadHDR(DX12Context& ctx, const std::string& filename);
+	void CreateCubemap(DX12Context& ctx, uint32_t width, uint32_t height);
 	void CreateColorAttachment(DX12Context& ctx, uint32_t msaaCount);
 	void CreateDepthAttachment(DX12Context& ctx, uint32_t msaaCount);
 	ID3D12Resource* GetResource() const { return buffer_.resource_; }
@@ -26,6 +27,7 @@ public:
 	uint32_t height_ = 0;
 	uint32_t pixelSize_ = 0;
 	uint32_t mipmapCount_ = 0;
+	uint32_t layerCount_ = 0;
 	DXGI_FORMAT format_ = DXGI_FORMAT_UNKNOWN;
 
 	DX12Buffer buffer_ = {};

@@ -20,6 +20,8 @@ public:
 public:
 	DX12Image hdrImage_ = {};
 	DX12Image environmentCubemap_ = {};
+
+
 };
 
 #endif

@@ -36,6 +36,7 @@ void DX12Image::Load(DX12Context& ctx, const std::string& filename)
 	pixelSize_ = 4; // texChannels is 3 eventhough STBI_rgb_alpha is used
 	format_ = ctx.GetSwapchainFormat();
 	mipmapCount_ = Utility::MipMapCount(width_, height_);
+	layerCount_ = 1;
 	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 
 	buffer_.CreateImageFromData(
@@ -70,6 +71,7 @@ void DX12Image::LoadHDR(DX12Context& ctx, const std::string& filename)
 	pixelSize_ = 4 * sizeof(float); // TODO Is this correct?
 	format_ = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	mipmapCount_ = 1;
+	layerCount_ = 1;
 
 	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE;
 
@@ -86,6 +88,26 @@ void DX12Image::LoadHDR(DX12Context& ctx, const std::string& filename)
 	stbi_image_free(pixels);
 }
 
+void DX12Image::CreateCubemap(DX12Context& ctx, uint32_t width, uint32_t height)
+{
+	width_ = width;
+	height_ = height;
+	pixelSize_ = 4 * sizeof(float);
+	format_ = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	mipmapCount_ = 1;
+	layerCount_ = 6;
+	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+
+	buffer_.CreateImage(
+		ctx,
+		width_,
+		height_,
+		mipmapCount_,
+		layerCount_,
+		format_,
+		flags);
+}
+
 void DX12Image::CreateColorAttachment(DX12Context& ctx, uint32_t msaaCount)
 {
 	width_ = ctx.GetSwapchainWidth();
@@ -93,6 +115,7 @@ void DX12Image::CreateColorAttachment(DX12Context& ctx, uint32_t msaaCount)
 	pixelSize_ = 4;
 	format_ = ctx.GetSwapchainFormat();
 	mipmapCount_ = 1;
+	layerCount_ = 1;
 	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 
 	if (msaaCount == 1)
@@ -118,6 +141,7 @@ void DX12Image::CreateDepthAttachment(DX12Context& ctx, uint32_t msaaCount)
 	height_ = ctx.GetSwapchainHeight();
 	pixelSize_ = 1; // TODO This may be incorrect
 	mipmapCount_ = 1;
+	layerCount_ = 1;
 	format_ = DXGI_FORMAT_D32_FLOAT;
 	buffer_.CreateDepthAttachment(ctx, width_, height_, msaaCount, format_);
 }
