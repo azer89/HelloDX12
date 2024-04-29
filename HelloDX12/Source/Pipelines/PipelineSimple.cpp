@@ -111,7 +111,7 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 	// Describe and create the graphics pipeline state object (PSO).
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc =
 	{
-		.pRootSignature = descriptor_.GetRootSignature(),
+		.pRootSignature = descriptor_.rootSignature_,
 		.VS = CD3DX12_SHADER_BYTECODE(vertexShader_.GetHandle()),
 		.PS = CD3DX12_SHADER_BYTECODE(fragmentShader_.GetHandle()),
 		.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT),
@@ -146,7 +146,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	commandList->SetPipelineState(pipelineState_);
 	commandList->RSSetViewports(1, &viewport_);
 	commandList->RSSetScissorRects(1, &scissor_);
-	commandList->SetGraphicsRootSignature(descriptor_.GetRootSignature());
+	commandList->SetGraphicsRootSignature(descriptor_.rootSignature_);
 
 	// Descriptors
 	// TODO handles can be precomputed

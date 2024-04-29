@@ -18,14 +18,15 @@ public:
 
 	void CreateDescriptorHeap(DX12Context& ctx, uint32_t descriptorCount);
 
-	[[nodiscard]] ID3D12RootSignature* GetRootSignature() const { return rootSignature_; };
+	//[[nodiscard]] ID3D12RootSignature* GetRootSignature() const { return rootSignature_; };
 	
 	// Descriptor heap
-	[[nodiscard]] ID3D12DescriptorHeap* GetDescriptorHeap() const { return descriptorHeap_; };
+	//[[nodiscard]] ID3D12DescriptorHeap* GetDescriptorHeap() const { return descriptorHeap_; };
+	//[[nodiscard]] ID3D12DescriptorHeap* const* GetDescriptorHeapDoublePtr() const { return &descriptorHeap_; }; // TODO Ugly
 	[[nodiscard]] D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandleStart() const { return descriptorHeap_->GetCPUDescriptorHandleForHeapStart(); }
 	[[nodiscard]] D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandleStart() const { return descriptorHeap_->GetGPUDescriptorHandleForHeapStart(); }
 
-private:
+public:
 	ID3D12RootSignature* rootSignature_ = nullptr;
 	ID3D12DescriptorHeap* descriptorHeap_ = nullptr;
 };

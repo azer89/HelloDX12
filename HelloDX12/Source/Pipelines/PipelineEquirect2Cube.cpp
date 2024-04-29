@@ -48,7 +48,7 @@ void PipelineEquirect2Cube::CreatePipeline(DX12Context& ctx)
 	// PSO
 	const D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc =
 	{
-		.pRootSignature = descriptor_.GetRootSignature(),
+		.pRootSignature = descriptor_.rootSignature_,
 		.CS = CD3DX12_SHADER_BYTECODE(computeShader_.GetHandle())
 	};
 	ctx.GetDevice()->CreateComputePipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_));
@@ -64,4 +64,32 @@ void PipelineEquirect2Cube::CreateDescriptorHeap(DX12Context& ctx,
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvSrcDesc = hdrImage->GetSRVDescription();
 
 	descriptor_.CreateDescriptorHeap(ctx, descriptorCount);
+
+	UINT incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE handle1(descriptor_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), 0, incrementSize);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE handle2(descriptor_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), 1, incrementSize);
+
+	ctx.GetDevice()->CreateShaderResourceView(hdrImage->GetResource(), &srvSrcDesc, handle1);
+	ctx.GetDevice()->CreateUnorderedAccessView(cubemapImage->GetResource(), nullptr, &cubemapUAVDesc, handle2);
+}
+
+void PipelineEquirect2Cube::Execute(DX12Context& ctx)
+{
+	// Start recording 
+	ctx.ResetCommandList();
+	auto commandList = ctx.GetCommandList();
+
+	commandList->SetComputeRootSignature(descriptor_.rootSignature_);
+	commandList->SetPipelineState(pipelineState_);
+	commandList->SetDescriptorHeaps(1, &(descriptor_.descriptorHeap_));
+
+	const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(descriptor_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 0, incrementSize);
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle2(descriptor_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 1, incrementSize);
+
+	uint32_t rootParamIndex = 0;
+	commandList->SetComputeRootDescriptorTable(rootParamIndex++, handle1);
+	commandList->SetComputeRootDescriptorTable(rootParamIndex++, handle2);
+
+	ctx.SubmitCommandListAndWaitForGPU();
 }
