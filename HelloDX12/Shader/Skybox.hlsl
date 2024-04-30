@@ -53,6 +53,5 @@ PSInput VSMain(uint vertexID : SV_VertexID)
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    float3 envVector = normalize(input.localPosition);
-    return envTexture.SampleLevel(defaultSampler, envVector, 0);
+    return envTexture.SampleLevel(defaultSampler, input.localPosition, 0);
 }

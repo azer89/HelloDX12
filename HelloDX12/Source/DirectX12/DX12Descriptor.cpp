@@ -13,6 +13,7 @@ void DX12Descriptor::Destroy()
 	}
 }
 
+// TODO Rename to CreateRootSignature()
 void DX12Descriptor::CreateRootDescriptor(DX12Context& ctx,
 	const D3D12_STATIC_SAMPLER_DESC& samplerDesc,
 	const std::span<CD3DX12_ROOT_PARAMETER1> rootParameters,
@@ -62,6 +63,5 @@ void DX12Descriptor::CreateDescriptorHeap(DX12Context& ctx, uint32_t descriptorC
 		.NumDescriptors = descriptorCount,
 		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
 	};
-	ID3D12DescriptorHeap* descriptorHeap;
 	ctx.GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&descriptorHeap_));
 }
