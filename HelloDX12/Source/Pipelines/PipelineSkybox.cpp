@@ -73,9 +73,25 @@ void PipelineSkybox::CreateRootSignature(DX12Context& ctx)
 	std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters;
 	rootParameters.emplace_back().InitAsConstantBufferView(0, 0);
 	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + paramOffset++, D3D12_SHADER_VISIBILITY_PIXEL);
-
-	CD3DX12_STATIC_SAMPLER_DESC defaultSamplerDesc{ 0, D3D12_FILTER_ANISOTROPIC };
-	defaultSamplerDesc.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	
+	D3D12_STATIC_SAMPLER_DESC defaultSamplerDesc =
+	{
+		.Filter = D3D12_FILTER_ANISOTROPIC,
+		.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER,
+		.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER,
+		.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER,
+		.MipLODBias = 0,
+		.MaxAnisotropy = 0,
+		.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER,
+		.BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK,
+		.MinLOD = 0.0f,
+		.MaxLOD = D3D12_FLOAT32_MAX,
+		.ShaderRegister = 0,
+		.RegisterSpace = 0,
+		.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL
+	};
+	//{ 0, D3D12_FILTER_ANISOTROPIC };
+	//defaultSamplerDesc.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
 	// Allow input layout and deny unnecessary access to certain pipeline stages.
 	constexpr D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
@@ -104,8 +120,8 @@ void PipelineSkybox::CreateDescriptorHeap(DX12Context& ctx)
 	CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), 0, incrementSize); // Cubemap
 
 	// Cubemap
-	auto imgSRVDesc = resourcesIBL_->hdrImage_.GetSRVDescription();
-	auto imageResource = resourcesIBL_->hdrImage_.GetResource();
+	auto imgSRVDesc = resourcesIBL_->environmentCubemap_.GetSRVDescription();
+	auto imageResource = resourcesIBL_->environmentCubemap_.GetResource();
 	ctx.GetDevice()->CreateShaderResourceView(imageResource, &imgSRVDesc, handle);
 }
 

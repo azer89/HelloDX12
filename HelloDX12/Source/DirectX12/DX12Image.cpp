@@ -148,10 +148,18 @@ void DX12Image::CreateDepthAttachment(DX12Context& ctx, uint32_t msaaCount)
 
 D3D12_SHADER_RESOURCE_VIEW_DESC DX12Image::GetSRVDescription() const
 {
+	D3D12_SRV_DIMENSION srvDim;
+	switch (layerCount_)
+	{
+		case 1:  srvDim = D3D12_SRV_DIMENSION_TEXTURE2D; break;
+		case 6:  srvDim = D3D12_SRV_DIMENSION_TEXTURECUBE; break;
+		default: srvDim = D3D12_SRV_DIMENSION_TEXTURE2DARRAY; break;
+	}
+
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc =
 	{
 		.Format = format_, // Image format
-		.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D,
+		.ViewDimension = srvDim,
 		.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
 	};
 	srvDesc.Texture2D.MipLevels = mipmapCount_;
