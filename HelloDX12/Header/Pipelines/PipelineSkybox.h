@@ -17,8 +17,9 @@ public:
 		ResourcesIBL* resourcesIBL,
 		ResourcesShared* resourcesShared,
 		Camera* camera);
-	~PipelineSkybox() = default;
+	~PipelineSkybox();
 
+	void Destroy() override;
 	void Update(DX12Context& ctx) override;
 	void PopulateCommandList(DX12Context& ctx) override;
 
