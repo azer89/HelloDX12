@@ -15,6 +15,7 @@ PipelineSkybox::PipelineSkybox(
 	GenerateShader(ctx);
 	CreateRootSignature(ctx);
 	CreateDescriptorHeap(ctx);
+	CreateConstantBuffer(ctx);
 	CreatePipeline(ctx);
 }
 
@@ -31,6 +32,29 @@ void PipelineSkybox::Update(DX12Context& ctx)
 void PipelineSkybox::PopulateCommandList(DX12Context& ctx)
 {
 	ID3D12GraphicsCommandList* commandList = ctx.GetCommandList();
+
+	commandList->SetPipelineState(pipelineState_);
+	commandList->RSSetViewports(1, &viewport_);
+	commandList->RSSetScissorRects(1, &scissor_);
+	commandList->SetGraphicsRootSignature(descriptor_.rootSignature_);
+
+	// Descriptors
+	uint32_t rootParamIndex = 0;
+	const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle(descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 0, incrementSize);
+	ID3D12DescriptorHeap* ppHeaps[] = { descriptorHeap_ };
+	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+	commandList->SetGraphicsRootConstantBufferView(rootParamIndex++, constBuffCamera_[ctx.GetFrameIndex()].gpuAddress_);
+	commandList->SetGraphicsRootDescriptorTable(rootParamIndex++, handle);
+
+	const auto rtvHandle = resourcesShared_->GetMultiSampledRTVHandle();
+	const auto dsvHandle = resourcesShared_->GetDSVHandle();
+	constexpr uint32_t renderTargetCount = 1;
+	commandList->OMSetRenderTargets(renderTargetCount, &rtvHandle, FALSE, &dsvHandle);
+
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	constexpr uint32_t triangleCount = 36;
+	commandList->DrawInstanced(triangleCount, 1, 0, 0);
 }
 
 void PipelineSkybox::GenerateShader(DX12Context& ctx)
@@ -66,7 +90,7 @@ void PipelineSkybox::CreateRootSignature(DX12Context& ctx)
 
 void PipelineSkybox::CreateDescriptorHeap(DX12Context& ctx)
 {
-	constexpr uint32_t descriptorCount = 1;
+	constexpr uint32_t descriptorCount = 1; // ???
 
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc =
 	{
@@ -95,14 +119,26 @@ void PipelineSkybox::CreatePipeline(DX12Context& ctx)
 		.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 		.SampleMask = UINT_MAX,
 		.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT),
+		.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT),
+		//.InputLayout = { inputElementDescs.data(), static_cast<uint32_t>(inputElementDescs.size()) },
 		.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 		.NumRenderTargets = 1,
+		.DSVFormat = DXGI_FORMAT_D32_FLOAT,
 	};
 	psoDesc.DepthStencilState.DepthEnable = TRUE;
+	psoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO; // Do not write depth
 	psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL; // Specific to skybox
-	psoDesc.DepthStencilState.StencilEnable = FALSE;
+	//psoDesc.DepthStencilState.StencilEnable = FALSE;
 	psoDesc.RTVFormats[0] = ctx.GetSwapchainFormat();
-	psoDesc.SampleDesc.Count = 1;
+	psoDesc.SampleDesc.Count = AppConfig::MSAACount;
 	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 	ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)))
+}
+
+void PipelineSkybox::CreateConstantBuffer(DX12Context& ctx)
+{
+	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
+	{
+		constBuffCamera_[i].CreateConstantBuffer(ctx, sizeof(CCamera));
+	}
 }

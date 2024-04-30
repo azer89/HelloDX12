@@ -3,6 +3,7 @@
 #include "PipelinePresent.h"
 #include "PipelineTonemap.h"
 #include "PipelineResolve.h"
+#include "PipelineSkybox.h"
 
 #include <iostream>
 
@@ -42,6 +43,7 @@ void AppSimple::OnInit()
 
 	// Pipelines
 	AddPipeline<PipelineClear>(context_, resourcesShared_);
+	AddPipeline<PipelineSkybox>(context_, resourcesIBL, resourcesShared_, camera_.get());
 	pipSimple_ = AddPipeline<PipelineSimple>(
 		context_, 
 		scene_.get(), 

@@ -27,6 +27,7 @@ private:
 	void CreateRootSignature(DX12Context& ctx);
 	void CreateDescriptorHeap(DX12Context& ctx);
 	void CreatePipeline(DX12Context& ctx);
+	void CreateConstantBuffer(DX12Context& ctx);
 
 private:
 	ResourcesIBL* resourcesIBL_;

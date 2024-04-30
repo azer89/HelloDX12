@@ -151,16 +151,17 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	commandList->SetGraphicsRootSignature(descriptor_.rootSignature_);
 
 	// Descriptors
+	uint32_t rootParamIndex = 0;
 	// TODO handles can be precomputed
 	const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 0, incrementSize);
 	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle2(descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 1, incrementSize);
 	ID3D12DescriptorHeap* ppHeaps[] = { descriptorHeap_};
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
-	commandList->SetGraphicsRootConstantBufferView(0, constBuffCamera_[ctx.GetFrameIndex()].gpuAddress_);
-	commandList->SetGraphicsRootConstantBufferView(1, scene_->modelConstBuffs_[ctx.GetFrameIndex()].gpuAddress_);
-	commandList->SetGraphicsRootDescriptorTable(2, handle1);
-	commandList->SetGraphicsRootDescriptorTable(3, handle2);
+	commandList->SetGraphicsRootConstantBufferView(rootParamIndex++, constBuffCamera_[ctx.GetFrameIndex()].gpuAddress_);
+	commandList->SetGraphicsRootConstantBufferView(rootParamIndex++, scene_->modelConstBuffs_[ctx.GetFrameIndex()].gpuAddress_);
+	commandList->SetGraphicsRootDescriptorTable(rootParamIndex++, handle1);
+	commandList->SetGraphicsRootDescriptorTable(rootParamIndex++, handle2);
 
 	//const auto rtvHandle = resourcesShared_->GetSwapchainRTVHandle(ctx.GetFrameIndex());
 	const auto rtvHandle = resourcesShared_->GetMultiSampledRTVHandle();
