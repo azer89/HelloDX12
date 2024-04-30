@@ -35,7 +35,7 @@ void PipelineSkybox::Destroy()
 void PipelineSkybox::Update(DX12Context& ctx)
 {
 	CCamera cb = {
-		.viewMatrix = glm::transpose(camera_->GetViewMatrix()),
+		.viewMatrix = glm::transpose(glm::mat4(glm::mat3(camera_->GetViewMatrix()))),
 		.projectionMatrix = glm::transpose(camera_->GetProjectionMatrix()),
 		.cameraPosition = camera_->Position()
 	};

@@ -43,7 +43,7 @@ PSInput VSMain(uint vertexID : SV_VertexID)
     
     // TODO Set depth compare in PSO
     float4 posTransform = mul(pos4, camData.viewMatrix);
-    posTransform = mul(pos4, camData.projectionMatrix);
+    posTransform = mul(posTransform, camData.projectionMatrix);
     posTransform = posTransform.xyww;
     
     outValue.pixelPosition = posTransform;
@@ -54,5 +54,6 @@ PSInput VSMain(uint vertexID : SV_VertexID)
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    return envTexture.SampleLevel(defaultSampler, input.localPosition, 0);
+    float3 envVector = normalize(input.localPosition);
+    return envTexture.SampleLevel(defaultSampler, envVector, 0);
 }

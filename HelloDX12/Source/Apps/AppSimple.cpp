@@ -25,7 +25,7 @@ void AppSimple::OnInit()
 	scene_->Init(context_);
 
 	// IBL
-	resourcesIBL = AddResources<ResourcesIBL>(context_, AppConfig::TextureFolder + "piazza_bologni_1k.hdr");
+	resourcesIBL = AddResources<ResourcesIBL>(context_, AppConfig::TextureFolder + "industrial_sunset_02_puresky_1k.hdr");
 
 	// Render target and depth
 	resourcesShared_ = AddResources<ResourcesShared>();
