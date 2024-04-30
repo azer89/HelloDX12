@@ -7,10 +7,11 @@ struct PSInput
 };
 
 cbuffer C0 : register(b0) { CameraData camData; };
+
 TextureCube envTexture : register(t0);
 SamplerState defaultSampler : register(s0);
 
-const float3 CUBE_POS[8] =
+static const float3 CUBE_POS[8] =
 {
     float3(-1.0, -1.0, 1.0),
     float3( 1.0, -1.0, 1.0),
@@ -23,7 +24,7 @@ const float3 CUBE_POS[8] =
     float3(-1.0,  1.0, -1.0)
 };
 
-const int CUBE_INDICES[36] =
+static const int CUBE_INDICES[36] =
 {
     0, 1, 2, 2, 3, 0, // Front
     1, 5, 6, 6, 2, 1, // Right

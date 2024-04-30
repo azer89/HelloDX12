@@ -15,11 +15,11 @@ PipelineSimple::PipelineSimple(
 	resourcesShared_(resourcesShared),
 	resourcesLights_(resourcesLights)
 {
-	CreateDescriptorHeap(ctx);
 	CreateRootSignature(ctx);
 	CreateConstantBuffer(ctx);
 	CreateShaders(ctx);
 	CreateGraphicsPipeline(ctx);
+	CreateDescriptorHeap(ctx);
 }
 
 PipelineSimple::~PipelineSimple()
