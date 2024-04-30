@@ -107,7 +107,7 @@ void PipelineEquirect2Cube::Execute(
 	commandList->SetComputeRootDescriptorTable(rootParamIndex++, handle1);
 	commandList->SetComputeRootDescriptorTable(rootParamIndex++, handle2);
 
-	commandList->Dispatch(hdrImage->width_ / 32, hdrImage->height_ / 32, 6);
+	commandList->Dispatch(cubemapImage->width_ / 32, cubemapImage->height_ / 32, 6);
 
 	// Barrier
 	auto barrier3 = CD3DX12_RESOURCE_BARRIER::Transition(cubemapImage->buffer_.resource_,
