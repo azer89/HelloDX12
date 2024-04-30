@@ -30,7 +30,9 @@ private:
 		DX12Image* cubemapImage,
 		const D3D12_UNORDERED_ACCESS_VIEW_DESC& cubemapUAVDesc);
 	void CreatePipeline(DX12Context& ctx);
-	void Execute(DX12Context& ctx);
+	void Execute(DX12Context& ctx,
+		DX12Image* hdrImage,
+		DX12Image* cubemapImage);
 };
 
 #endif

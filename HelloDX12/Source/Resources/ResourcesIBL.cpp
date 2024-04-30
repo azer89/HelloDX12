@@ -6,6 +6,7 @@ constexpr uint32_t CUBE_SIZE = 1024;
 ResourcesIBL::ResourcesIBL(DX12Context& ctx, const std::string& hdrFile)
 {
 	hdrImage_.LoadHDR(ctx, hdrFile);
+	hdrImage_.buffer_.resource_->SetName(L"HDR_Image");
 
 	CreateEnviromentCubemap(ctx);
 
@@ -27,6 +28,7 @@ void ResourcesIBL::Destroy()
 void ResourcesIBL::CreateEnviromentCubemap(DX12Context& ctx)
 {
 	environmentCubemap_.CreateCubemap(ctx, CUBE_SIZE, CUBE_SIZE);
+	environmentCubemap_.buffer_.resource_->SetName(L"Environment_Cubemap");
 	envCubemapUAVDesc_ =
 	{
 		envCubemapUAVDesc_.Format = environmentCubemap_.format_
