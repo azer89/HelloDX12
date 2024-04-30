@@ -38,7 +38,7 @@ PSInput VSMain(uint vertexID : SV_VertexID)
 {
     PSInput outValue;
     
-    /*int idx = CUBE_INDICES[vertexID];
+    int idx = CUBE_INDICES[vertexID];
     float4 pos4 = float4(CUBE_POS[idx], 1.0);
     
     // TODO Set depth compare in PSO
@@ -47,10 +47,7 @@ PSInput VSMain(uint vertexID : SV_VertexID)
     posTransform = posTransform.xyww;
     
     outValue.pixelPosition = posTransform;
-    outValue.localPosition = pos4.xyz;*/
-    
-    outValue.pixelPosition = float4(0.0, 0.0, 0.0, 1.0);
-    outValue.localPosition = float3(0.0, 0.0, 0.0);
+    outValue.localPosition = pos4.xyz;
     
     return outValue;
 }
