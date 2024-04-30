@@ -121,7 +121,7 @@ void PipelineSkybox::CreateRootSignature(DX12Context& ctx)
 
 void PipelineSkybox::CreateDescriptorHeap(DX12Context& ctx)
 {
-	constexpr uint32_t descriptorCount = 1; // ???
+	constexpr uint32_t descriptorCount = 1;
 
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc =
 	{
@@ -151,7 +151,7 @@ void PipelineSkybox::CreatePipeline(DX12Context& ctx)
 		.SampleMask = UINT_MAX,
 		.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT),
 		.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT),
-		//.InputLayout = { inputElementDescs.data(), static_cast<uint32_t>(inputElementDescs.size()) },
+		//.InputLayout =,
 		.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 		.NumRenderTargets = 1,
 		.DSVFormat = DXGI_FORMAT_D32_FLOAT,
@@ -159,7 +159,6 @@ void PipelineSkybox::CreatePipeline(DX12Context& ctx)
 	psoDesc.DepthStencilState.DepthEnable = TRUE;
 	psoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO; // Do not write depth
 	psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL; // Specific to skybox
-	//psoDesc.DepthStencilState.StencilEnable = FALSE;
 	psoDesc.RTVFormats[0] = ctx.GetSwapchainFormat();
 	psoDesc.SampleDesc.Count = AppConfig::MSAACount;
 	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
