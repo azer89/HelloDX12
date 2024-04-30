@@ -11,7 +11,7 @@ cbuffer C0 : register(b0) { CameraData camData; };
 TextureCube envTexture : register(t0);
 SamplerState defaultSampler : register(s0);
 
-/*static const float3 CUBE_POS[8] =
+static const float3 CUBE_POS[8] =
 {
     float3(-1.0, -1.0, 1.0),
     float3( 1.0, -1.0, 1.0),
@@ -32,7 +32,7 @@ static const int CUBE_INDICES[36] =
     4, 0, 3, 3, 7, 4, // Left
     4, 5, 1, 1, 0, 4, // Bottom
     3, 2, 6, 6, 7, 3  // Top
-};*/
+};
 
 PSInput VSMain(uint vertexID : SV_VertexID)
 {
@@ -57,6 +57,5 @@ PSInput VSMain(uint vertexID : SV_VertexID)
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    //return envTexture.SampleLevel(defaultSampler, input.localPosition, 0);
-    return float4(0.0, 0.0, 0.0, 1.0);
+    return envTexture.SampleLevel(defaultSampler, input.localPosition, 0);
 }
