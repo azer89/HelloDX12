@@ -74,10 +74,10 @@ void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
 
 void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 {
-	uint32_t shaderRegister = 0;
+	uint32_t srvRegister = 0;
 	std::vector<CD3DX12_DESCRIPTOR_RANGE1> ranges;
-	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, shaderRegister++, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
-	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, shaderRegister++, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, srvRegister++, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, srvRegister++, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
 
 	uint32_t paramOffset = 0;
 	std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters;

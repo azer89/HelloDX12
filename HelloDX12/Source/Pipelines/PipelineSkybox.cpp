@@ -48,10 +48,11 @@ void PipelineSkybox::GenerateShader(DX12Context& ctx)
 
 void PipelineSkybox::CreateRootSignature(DX12Context& ctx)
 {
-	//uint32_t shaderRegister = 0;
+	uint32_t cvbRegister = 0;
+	uint32_t srvRegister = 0;
 	std::vector<CD3DX12_DESCRIPTOR_RANGE1> ranges;
-	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
-	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, cvbRegister++, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, srvRegister++, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
 
 	uint32_t paramOffset = 0;
 	std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters;
@@ -99,7 +100,7 @@ void PipelineSkybox::CreateDescriptorHeap(DX12Context& ctx)
 		ctx.GetDevice()->CreateConstantBufferView(&cbvDesc, handle);
 	}
 
-	// Cubemap (SRV
+	// Cubemap (SRV)
 	auto imgSRVDesc = resourcesIBL_->environmentCubemap_.GetSRVDescription();
 	auto imageResource = resourcesIBL_->environmentCubemap_.GetResource();
 	CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), descriptorOffset++, incrementSize);
