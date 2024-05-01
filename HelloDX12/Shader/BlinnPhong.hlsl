@@ -20,8 +20,8 @@ struct PSInput
 cbuffer C0 : register(b0) {  CameraData camData; };
 cbuffer C1 : register(b1) {  ModelData modelData; };
 Texture2D albedoTexture : register(t0);
-SamplerState albedoSampler : register(s0);
 StructuredBuffer<LightData> lightDataArray : register(t1);
+SamplerState albedoSampler : register(s0);
 
 PSInput VSMain(VSInput input)
 {

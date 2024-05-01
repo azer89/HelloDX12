@@ -37,7 +37,7 @@ void PipelineSimple::Destroy()
 
 void PipelineSimple::CreateDescriptorHeap(DX12Context& ctx)
 {
-	constexpr uint32_t descriptorCount = 2;
+	constexpr uint32_t descriptorCount = 6;
 
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc =
 	{
@@ -48,20 +48,45 @@ void PipelineSimple::CreateDescriptorHeap(DX12Context& ctx)
 	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&descriptorHeap_)))
 
 	uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	CD3DX12_CPU_DESCRIPTOR_HANDLE handle1(descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), 0, incrementSize); // Texture
-	CD3DX12_CPU_DESCRIPTOR_HANDLE handle2(descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), 1, incrementSize); // Lights
+	uint32_t descriptorOffset = 0;
+	
+	// Camera
+	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
+	{
+		CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), descriptorOffset++, incrementSize);
+		D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc =
+		{
+			.BufferLocation = constBuffCamera_[i].gpuAddress_,
+			.SizeInBytes = static_cast<UINT>(constBuffCamera_[i].constantBufferSize_)
+		};
+		ctx.GetDevice()->CreateConstantBufferView(&cbvDesc, handle);
+	}
+	
+	// Model
+	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
+	{
+		CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), descriptorOffset++, incrementSize);
+		D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc =
+		{
+			.BufferLocation = scene_->modelConstBuffs_[i].gpuAddress_,
+			.SizeInBytes = static_cast<UINT>(scene_->modelConstBuffs_[i].constantBufferSize_)
+		};
+		ctx.GetDevice()->CreateConstantBufferView(&cbvDesc, handle);
+	}
 
 	// Texture
+	CD3DX12_CPU_DESCRIPTOR_HANDLE texHandle(descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), descriptorOffset++, incrementSize);
 	auto imgSRVDesc = scene_->model_.meshes_[0].image_->GetSRVDescription();
 	auto imageResource = scene_->model_.meshes_[0].image_->GetResource();
-	ctx.GetDevice()->CreateShaderResourceView(imageResource, &imgSRVDesc, handle1);
+	ctx.GetDevice()->CreateShaderResourceView(imageResource, &imgSRVDesc, texHandle);
 
 	// Lights
+	CD3DX12_CPU_DESCRIPTOR_HANDLE lightHandle(descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), descriptorOffset++, incrementSize);
 	auto lightSRVDesc = resourcesLights_->GetSRVDescription();
 	ctx.GetDevice()->CreateShaderResourceView(
 		resourcesLights_->GetResource(),
 		&lightSRVDesc,
-		handle2);
+		lightHandle);
 }
 
 void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
@@ -74,15 +99,18 @@ void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
 
 void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 {
+	uint32_t cvbRegister = 0;
 	uint32_t srvRegister = 0;
 	std::vector<CD3DX12_DESCRIPTOR_RANGE1> ranges;
+	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, cvbRegister++, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, cvbRegister++, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
 	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, srvRegister++, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
 	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, srvRegister++, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
 
 	uint32_t paramOffset = 0;
 	std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters;
-	rootParameters.emplace_back().InitAsConstantBufferView(0, 0);
-	rootParameters.emplace_back().InitAsConstantBufferView(1, 0);
+	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + paramOffset++, D3D12_SHADER_VISIBILITY_ALL);
+	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + paramOffset++, D3D12_SHADER_VISIBILITY_VERTEX);
 	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + paramOffset++, D3D12_SHADER_VISIBILITY_PIXEL);
 	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + paramOffset++, D3D12_SHADER_VISIBILITY_PIXEL);
 
@@ -154,16 +182,20 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	uint32_t rootParamIndex = 0;
 	// TODO handles can be precomputed
 	const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 0, incrementSize);
-	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle2(descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 1, incrementSize);
+
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE camHandle(descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), ctx.GetFrameIndex(), incrementSize);
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE modelHandle(descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), ctx.GetFrameIndex() + 2, incrementSize);
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE texHandle(descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 4, incrementSize);
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE lightHandle(descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 5, incrementSize);
+	
 	ID3D12DescriptorHeap* ppHeaps[] = { descriptorHeap_};
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
-	commandList->SetGraphicsRootConstantBufferView(rootParamIndex++, constBuffCamera_[ctx.GetFrameIndex()].gpuAddress_);
-	commandList->SetGraphicsRootConstantBufferView(rootParamIndex++, scene_->modelConstBuffs_[ctx.GetFrameIndex()].gpuAddress_);
-	commandList->SetGraphicsRootDescriptorTable(rootParamIndex++, handle1);
-	commandList->SetGraphicsRootDescriptorTable(rootParamIndex++, handle2);
 
-	//const auto rtvHandle = resourcesShared_->GetSwapchainRTVHandle(ctx.GetFrameIndex());
+	commandList->SetGraphicsRootDescriptorTable(rootParamIndex++, camHandle);
+	commandList->SetGraphicsRootDescriptorTable(rootParamIndex++, modelHandle);
+	commandList->SetGraphicsRootDescriptorTable(rootParamIndex++, texHandle);
+	commandList->SetGraphicsRootDescriptorTable(rootParamIndex++, lightHandle);
+
 	const auto rtvHandle = resourcesShared_->GetMultiSampledRTVHandle();
 	const auto dsvHandle = resourcesShared_->GetDSVHandle();
 	constexpr uint32_t renderTargetCount = 1;
