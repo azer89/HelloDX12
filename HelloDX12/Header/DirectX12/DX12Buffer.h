@@ -16,7 +16,7 @@ public:
 		uint32_t width,
 		uint32_t height,
 		uint16_t mipmapCount,
-		uint32_t bytesPerPixel,
+		uint16_t layerCount,
 		DXGI_FORMAT imageFormat,
 		D3D12_RESOURCE_FLAGS flags);
 	void CreateImageFromData(

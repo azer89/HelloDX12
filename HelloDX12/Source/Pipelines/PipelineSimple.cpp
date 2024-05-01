@@ -15,11 +15,11 @@ PipelineSimple::PipelineSimple(
 	resourcesShared_(resourcesShared),
 	resourcesLights_(resourcesLights)
 {
-	CreateDescriptorHeap(ctx);
 	CreateRootSignature(ctx);
 	CreateConstantBuffer(ctx);
 	CreateShaders(ctx);
 	CreateGraphicsPipeline(ctx);
+	CreateDescriptorHeap(ctx);
 }
 
 PipelineSimple::~PipelineSimple()
@@ -74,15 +74,17 @@ void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
 
 void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 {
+	uint32_t shaderRegister = 0;
 	std::vector<CD3DX12_DESCRIPTOR_RANGE1> ranges;
-	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
-	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, shaderRegister++, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, shaderRegister++, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
 
+	uint32_t paramOffset = 0;
 	std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters;
 	rootParameters.emplace_back().InitAsConstantBufferView(0, 0);
 	rootParameters.emplace_back().InitAsConstantBufferView(1, 0);
-	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data(), D3D12_SHADER_VISIBILITY_PIXEL);
-	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + 1, D3D12_SHADER_VISIBILITY_PIXEL);
+	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + paramOffset++, D3D12_SHADER_VISIBILITY_PIXEL);
+	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + paramOffset++, D3D12_SHADER_VISIBILITY_PIXEL);
 
 	// Image
 	D3D12_STATIC_SAMPLER_DESC sampler = scene_->model_.meshes_[0].image_->GetSampler();
@@ -111,7 +113,7 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 	// Describe and create the graphics pipeline state object (PSO).
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc =
 	{
-		.pRootSignature = descriptor_.GetRootSignature(),
+		.pRootSignature = descriptor_.rootSignature_,
 		.VS = CD3DX12_SHADER_BYTECODE(vertexShader_.GetHandle()),
 		.PS = CD3DX12_SHADER_BYTECODE(fragmentShader_.GetHandle()),
 		.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT),
@@ -146,19 +148,20 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	commandList->SetPipelineState(pipelineState_);
 	commandList->RSSetViewports(1, &viewport_);
 	commandList->RSSetScissorRects(1, &scissor_);
-	commandList->SetGraphicsRootSignature(descriptor_.GetRootSignature());
+	commandList->SetGraphicsRootSignature(descriptor_.rootSignature_);
 
 	// Descriptors
+	uint32_t rootParamIndex = 0;
 	// TODO handles can be precomputed
 	const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 0, incrementSize);
 	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle2(descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 1, incrementSize);
 	ID3D12DescriptorHeap* ppHeaps[] = { descriptorHeap_};
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
-	commandList->SetGraphicsRootConstantBufferView(0, constBuffCamera_[ctx.GetFrameIndex()].gpuAddress_);
-	commandList->SetGraphicsRootConstantBufferView(1, scene_->modelConstBuffs_[ctx.GetFrameIndex()].gpuAddress_);
-	commandList->SetGraphicsRootDescriptorTable(2, handle1);
-	commandList->SetGraphicsRootDescriptorTable(3, handle2);
+	commandList->SetGraphicsRootConstantBufferView(rootParamIndex++, constBuffCamera_[ctx.GetFrameIndex()].gpuAddress_);
+	commandList->SetGraphicsRootConstantBufferView(rootParamIndex++, scene_->modelConstBuffs_[ctx.GetFrameIndex()].gpuAddress_);
+	commandList->SetGraphicsRootDescriptorTable(rootParamIndex++, handle1);
+	commandList->SetGraphicsRootDescriptorTable(rootParamIndex++, handle2);
 
 	//const auto rtvHandle = resourcesShared_->GetSwapchainRTVHandle(ctx.GetFrameIndex());
 	const auto rtvHandle = resourcesShared_->GetMultiSampledRTVHandle();

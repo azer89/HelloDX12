@@ -284,7 +284,7 @@ void DX12Buffer::CreateImage(
 	uint32_t width,
 	uint32_t height,
 	uint16_t mipmapCount,
-	uint32_t bytesPerPixel,
+	uint16_t layerCount,
 	DXGI_FORMAT imageFormat,
 	D3D12_RESOURCE_FLAGS flags)
 {
@@ -294,7 +294,7 @@ void DX12Buffer::CreateImage(
 		.Alignment = 0,
 		.Width = width,
 		.Height = height,
-		.DepthOrArraySize = 1,
+		.DepthOrArraySize = layerCount,
 		.MipLevels = mipmapCount,
 		.Format = imageFormat,
 		.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN,
@@ -310,7 +310,7 @@ void DX12Buffer::CreateImage(
 	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&textureAllocDesc,
 		&textureDesc,
-		D3D12_RESOURCE_STATE_COPY_DEST,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 		nullptr, // pOptimizedClearValue
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)))

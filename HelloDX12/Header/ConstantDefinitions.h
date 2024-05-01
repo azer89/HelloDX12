@@ -3,6 +3,8 @@
 
 #include "glm/glm.hpp"
 
+// TODO Rename file to ConstantBufferStructs.h
+
 struct CCamera
 {
 	glm::mat4 viewMatrix;

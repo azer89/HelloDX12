@@ -17,7 +17,7 @@ void DX12Image::Destroy()
 	buffer_.Destroy();
 }
 
-void DX12Image::Load(DX12Context& ctx, std::string filename)
+void DX12Image::Load(DX12Context& ctx, const std::string& filename)
 {
 	stbi_set_flip_vertically_on_load(false);
 
@@ -36,6 +36,7 @@ void DX12Image::Load(DX12Context& ctx, std::string filename)
 	pixelSize_ = 4; // texChannels is 3 eventhough STBI_rgb_alpha is used
 	format_ = ctx.GetSwapchainFormat();
 	mipmapCount_ = Utility::MipMapCount(width_, height_);
+	layerCount_ = 1;
 	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 
 	buffer_.CreateImageFromData(
@@ -48,6 +49,63 @@ void DX12Image::Load(DX12Context& ctx, std::string filename)
 		format_,
 		flags
 	);
+	stbi_image_free(pixels);
+}
+
+void DX12Image::LoadHDR(DX12Context& ctx, const std::string& filename)
+{
+	stbi_set_flip_vertically_on_load(false);
+
+	int texWidth, texHeight, texChannels;
+	float* pixels = stbi_loadf(filename.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+
+	if (!pixels)
+	{
+		std::stringstream ss;
+		ss << "Failed to load image " << filename;
+		throw std::runtime_error(ss.str());
+	}
+
+	width_ = texWidth;
+	height_ = texHeight;
+	pixelSize_ = 4 * sizeof(float); // TODO Is this correct?
+	format_ = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	mipmapCount_ = 1;
+	layerCount_ = 1;
+
+	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE;
+
+	buffer_.CreateImageFromData(
+		ctx,
+		pixels,
+		width_,
+		height_,
+		mipmapCount_,
+		pixelSize_,
+		format_,
+		flags
+	);
+	stbi_image_free(pixels);
+}
+
+void DX12Image::CreateCubemap(DX12Context& ctx, uint32_t width, uint32_t height)
+{
+	width_ = width;
+	height_ = height;
+	pixelSize_ = 4 * sizeof(float);
+	format_ = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	mipmapCount_ = 1;
+	layerCount_ = 6;
+	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+
+	buffer_.CreateImage(
+		ctx,
+		width_,
+		height_,
+		mipmapCount_,
+		layerCount_,
+		format_,
+		flags);
 }
 
 void DX12Image::CreateColorAttachment(DX12Context& ctx, uint32_t msaaCount)
@@ -57,6 +115,7 @@ void DX12Image::CreateColorAttachment(DX12Context& ctx, uint32_t msaaCount)
 	pixelSize_ = 4;
 	format_ = ctx.GetSwapchainFormat();
 	mipmapCount_ = 1;
+	layerCount_ = 1;
 	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 
 	if (msaaCount == 1)
@@ -80,18 +139,27 @@ void DX12Image::CreateDepthAttachment(DX12Context& ctx, uint32_t msaaCount)
 {
 	width_ = ctx.GetSwapchainWidth();
 	height_ = ctx.GetSwapchainHeight();
-	pixelSize_ = 1; // TODO This may be incorrect
+	pixelSize_ = sizeof(float);
 	mipmapCount_ = 1;
+	layerCount_ = 1;
 	format_ = DXGI_FORMAT_D32_FLOAT;
 	buffer_.CreateDepthAttachment(ctx, width_, height_, msaaCount, format_);
 }
 
 D3D12_SHADER_RESOURCE_VIEW_DESC DX12Image::GetSRVDescription() const
 {
+	D3D12_SRV_DIMENSION srvDim;
+	switch (layerCount_)
+	{
+		case 1:  srvDim = D3D12_SRV_DIMENSION_TEXTURE2D; break;
+		case 6:  srvDim = D3D12_SRV_DIMENSION_TEXTURECUBE; break;
+		default: srvDim = D3D12_SRV_DIMENSION_TEXTURE2DARRAY; break;
+	}
+
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc =
 	{
 		.Format = format_, // Image format
-		.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D,
+		.ViewDimension = srvDim,
 		.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
 	};
 	srvDesc.Texture2D.MipLevels = mipmapCount_;

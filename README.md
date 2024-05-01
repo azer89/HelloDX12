@@ -1,13 +1,14 @@
 
-A rendering demo written using C++ and DirectX 12
+A rendering app written using C++ and DirectX 12.
 
-<img width="600" alt="cube" src="https://github.com/azer89/HelloDX12/assets/790432/14e17501-aa8e-4272-b4b5-3107dbfd913a">
+<img width="600" alt="Zaku" src="https://github.com/azer89/HelloDX12/assets/790432/59e07438-9340-4527-92c6-097df28b6214">
 
 ### Features
 * Blinn-Phong shading
 * Tonemapping
 * MSAA
 * Mipmap generator using compute shader
+* Skybox from equirectangular HDR image
 
 ### Build
 * Either use `HelloDX12/HelloDX12.sln` or run CMake

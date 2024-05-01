@@ -64,7 +64,7 @@ private:
 private:
 	uint32_t swapchainWidth_ = 0;
 	uint32_t swapchainHeight_ = 0;
-	DXGI_FORMAT swapchainFormat_ = DXGI_FORMAT_R8G8B8A8_UNORM;
+	DXGI_FORMAT swapchainFormat_ = DXGI_FORMAT_R8G8B8A8_UNORM; 
 	
 	// Pipeline objects.
 	ComPtr<IDXGISwapChain3> swapchain_ = nullptr;

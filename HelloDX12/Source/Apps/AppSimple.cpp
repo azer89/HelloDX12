@@ -3,6 +3,7 @@
 #include "PipelinePresent.h"
 #include "PipelineTonemap.h"
 #include "PipelineResolve.h"
+#include "PipelineSkybox.h"
 
 #include <iostream>
 
@@ -23,6 +24,9 @@ void AppSimple::OnInit()
 	scene_ = std::make_unique<Scene>();
 	scene_->Init(context_);
 
+	// IBL
+	resourcesIBL = AddResources<ResourcesIBL>(context_, AppConfig::TextureFolder + "industrial_sunset_02_puresky_1k.hdr");
+
 	// Render target and depth
 	resourcesShared_ = AddResources<ResourcesShared>();
 	resourcesShared_->Init(context_);
@@ -39,6 +43,7 @@ void AppSimple::OnInit()
 
 	// Pipelines
 	AddPipeline<PipelineClear>(context_, resourcesShared_);
+	AddPipeline<PipelineSkybox>(context_, resourcesIBL, resourcesShared_, camera_.get());
 	pipSimple_ = AddPipeline<PipelineSimple>(
 		context_, 
 		scene_.get(), 

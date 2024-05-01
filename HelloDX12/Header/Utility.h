@@ -7,7 +7,7 @@ namespace Utility
 {
 	std::wstring WStringConvert(std::string s);
 
-	inline int MipMapCount(int w, int h)
+	inline uint32_t MipMapCount(uint32_t w, uint32_t h)
 	{
 		int levels = 1;
 		while ((w | h) >> levels)
@@ -17,7 +17,7 @@ namespace Utility
 		return levels;
 	}
 
-	inline int MipMapCount(int size)
+	inline uint32_t MipMapCount(uint32_t size)
 	{
 		int levels = 1;
 		while (size >> levels)
