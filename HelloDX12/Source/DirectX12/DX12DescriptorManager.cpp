@@ -1,20 +1,22 @@
-#include "DX12Descriptor.h"
+#include "DX12DescriptorManager.h"
 
-void DX12Descriptor::Destroy()
+void DX12DescriptorManager::Destroy()
 {
 	if (rootSignature_)
 	{
 		rootSignature_->Release();
+		rootSignature_ = nullptr;
 	}
 
 	if (descriptorHeap_)
 	{
 		descriptorHeap_->Release();
+		descriptorHeap_ = nullptr;
 	}
 }
 
 // TODO Rename to CreateRootSignature()
-void DX12Descriptor::CreateRootDescriptor(DX12Context& ctx,
+void DX12DescriptorManager::CreateRootDescriptor(DX12Context& ctx,
 	const D3D12_STATIC_SAMPLER_DESC& samplerDesc,
 	const std::span<CD3DX12_ROOT_PARAMETER1> rootParameters,
 	const D3D12_ROOT_SIGNATURE_FLAGS& rootSignatureFlags)
@@ -55,7 +57,7 @@ void DX12Descriptor::CreateRootDescriptor(DX12Context& ctx,
 	}
 }
 
-void DX12Descriptor::CreateDescriptorHeap(DX12Context& ctx, uint32_t descriptorCount)
+void DX12DescriptorManager::CreateDescriptorHeap(DX12Context& ctx, uint32_t descriptorCount)
 {
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc =
 	{

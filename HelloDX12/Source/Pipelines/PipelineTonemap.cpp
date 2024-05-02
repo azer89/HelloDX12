@@ -9,31 +9,29 @@ PipelineTonemap::PipelineTonemap(
 	resourcesShared_(resourcesShared)
 {
 	CreateDescriptorHeap(ctx);
-	CreateRootSignature(ctx);
 	CreateShaders(ctx);
+	CreateRootSignature(ctx);
 	CreateGraphicsPipeline(ctx);
 }
 
 void PipelineTonemap::CreateDescriptorHeap(DX12Context& ctx)
 {
-	constexpr uint32_t descriptorCount = 1;
-
-	D3D12_DESCRIPTOR_HEAP_DESC heapDesc =
-	{
-		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-		.NumDescriptors = descriptorCount,
-		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE
-	};
-	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&descriptorHeap_)))
+	descriptorManager_.CreateDescriptorHeap(ctx, 1);
 
 	// TODO handles can be precomputed
 	uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	CD3DX12_CPU_DESCRIPTOR_HANDLE handle1(descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), 0, incrementSize); 
+	CD3DX12_CPU_DESCRIPTOR_HANDLE handle1(descriptorManager_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), 0, incrementSize);
 
 	// Source image SRV
 	auto srcSRVDesc = resourcesShared_->GetSingleSampledSRVDescription();
 	auto srcResource = resourcesShared_->GetSingleSampledRenderTarget();
 	ctx.GetDevice()->CreateShaderResourceView(srcResource, &srcSRVDesc, handle1);
+}
+
+void PipelineTonemap::CreateShaders(DX12Context& ctx)
+{
+	vertexShader_.Create(ctx, AppConfig::ShaderFolder + "Tonemap.hlsl", ShaderType::Vertex);
+	fragmentShader_.Create(ctx, AppConfig::ShaderFolder + "Tonemap.hlsl", ShaderType::Fragment);
 }
 
 void PipelineTonemap::CreateRootSignature(DX12Context& ctx)
@@ -62,7 +60,7 @@ void PipelineTonemap::CreateRootSignature(DX12Context& ctx)
 	};
 
 	// Root signature
-	descriptor_.CreateRootDescriptor(
+	descriptorManager_.CreateRootDescriptor(
 		ctx, 
 		samplerDesc, 
 		rootParameters, 
@@ -73,7 +71,7 @@ void PipelineTonemap::CreateGraphicsPipeline(DX12Context& ctx)
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc =
 	{
-		.pRootSignature = descriptor_.rootSignature_,
+		.pRootSignature = descriptorManager_.rootSignature_,
 		.VS = CD3DX12_SHADER_BYTECODE(vertexShader_.GetHandle()),
 		.PS = CD3DX12_SHADER_BYTECODE(fragmentShader_.GetHandle()),
 		.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT),
@@ -90,12 +88,6 @@ void PipelineTonemap::CreateGraphicsPipeline(DX12Context& ctx)
 	ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)))
 }
 
-void PipelineTonemap::CreateShaders(DX12Context& ctx)
-{
-	vertexShader_.Create(ctx, AppConfig::ShaderFolder + "Tonemap.hlsl", ShaderType::Vertex);
-	fragmentShader_.Create(ctx, AppConfig::ShaderFolder + "Tonemap.hlsl", ShaderType::Fragment);
-}
-
 void PipelineTonemap::PopulateCommandList(DX12Context& ctx)
 {
 	ID3D12GraphicsCommandList* commandList = ctx.GetCommandList();
@@ -103,13 +95,13 @@ void PipelineTonemap::PopulateCommandList(DX12Context& ctx)
 	commandList->SetPipelineState(pipelineState_);
 	commandList->RSSetViewports(1, &viewport_);
 	commandList->RSSetScissorRects(1, &scissor_);
-	commandList->SetGraphicsRootSignature(descriptor_.rootSignature_);
+	commandList->SetGraphicsRootSignature(descriptorManager_.rootSignature_);
 
 	// Descriptors
 	const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 0, incrementSize);
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(descriptorManager_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 0, incrementSize);
 
-	ID3D12DescriptorHeap* ppHeaps[] = { descriptorHeap_ };
+	ID3D12DescriptorHeap* ppHeaps[] = { descriptorManager_.descriptorHeap_ };
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 	commandList->SetGraphicsRootDescriptorTable(0, handle1);
 

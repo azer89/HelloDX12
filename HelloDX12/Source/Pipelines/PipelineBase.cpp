@@ -16,7 +16,6 @@ void PipelineBase::Destroy()
 	vertexShader_.Destroy();
 	fragmentShader_.Destroy();
 	computeShader_.Destroy();
-	descriptor_.Destroy();
-	if (descriptorHeap_) { descriptorHeap_->Release(); }
+	descriptorManager_.Destroy();
 	if (pipelineState_) { pipelineState_->Release(); }
 }

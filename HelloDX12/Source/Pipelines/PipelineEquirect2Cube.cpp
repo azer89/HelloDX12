@@ -11,11 +11,30 @@ void PipelineEquirect2Cube::GenerateCubemapFromHDR(DX12Context& ctx,
 	DX12Image* cubemapImage,
 	const D3D12_UNORDERED_ACCESS_VIEW_DESC& cubemapUAVDesc)
 {
+	CreateDescriptorHeap(ctx, hdrImage, cubemapImage, cubemapUAVDesc);
 	GenerateShader(ctx);
 	CreateRootSignature(ctx);
-	CreateDescriptorHeap(ctx, hdrImage, cubemapImage, cubemapUAVDesc);
 	CreatePipeline(ctx);
 	Execute(ctx, hdrImage, cubemapImage);
+}
+
+void PipelineEquirect2Cube::CreateDescriptorHeap(DX12Context& ctx,
+	DX12Image* hdrImage,
+	DX12Image* cubemapImage,
+	const D3D12_UNORDERED_ACCESS_VIEW_DESC& cubemapUAVDesc)
+{
+	uint32_t descriptorCount = 2;
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvSrcDesc = hdrImage->GetSRVDescription();
+
+	descriptorManager_.CreateDescriptorHeap(ctx, descriptorCount);
+
+	UINT incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE handle1(descriptorManager_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), 0, incrementSize);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE handle2(descriptorManager_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), 1, incrementSize);
+
+	ctx.GetDevice()->CreateShaderResourceView(hdrImage->GetResource(), &srvSrcDesc, handle1);
+	ctx.GetDevice()->CreateUnorderedAccessView(cubemapImage->GetResource(), nullptr, &cubemapUAVDesc, handle2);
 }
 
 void PipelineEquirect2Cube::GenerateShader(DX12Context& ctx)
@@ -41,7 +60,7 @@ void PipelineEquirect2Cube::CreateRootSignature(DX12Context& ctx)
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 	// Root signature
-	descriptor_.CreateRootDescriptor(ctx, samplerDesc, rootParameters, rootSignatureFlags);
+	descriptorManager_.CreateRootDescriptor(ctx, samplerDesc, rootParameters, rootSignatureFlags);
 }
 
 void PipelineEquirect2Cube::CreatePipeline(DX12Context& ctx)
@@ -49,29 +68,10 @@ void PipelineEquirect2Cube::CreatePipeline(DX12Context& ctx)
 	// PSO
 	const D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc =
 	{
-		.pRootSignature = descriptor_.rootSignature_,
+		.pRootSignature = descriptorManager_.rootSignature_,
 		.CS = CD3DX12_SHADER_BYTECODE(computeShader_.GetHandle())
 	};
 	ctx.GetDevice()->CreateComputePipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_));
-}
-
-void PipelineEquirect2Cube::CreateDescriptorHeap(DX12Context& ctx,
-	DX12Image* hdrImage,
-	DX12Image* cubemapImage,
-	const D3D12_UNORDERED_ACCESS_VIEW_DESC& cubemapUAVDesc)
-{
-	uint32_t descriptorCount = 2;
-
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvSrcDesc = hdrImage->GetSRVDescription();
-
-	descriptor_.CreateDescriptorHeap(ctx, descriptorCount);
-
-	UINT incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	CD3DX12_CPU_DESCRIPTOR_HANDLE handle1(descriptor_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), 0, incrementSize);
-	CD3DX12_CPU_DESCRIPTOR_HANDLE handle2(descriptor_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), 1, incrementSize);
-
-	ctx.GetDevice()->CreateShaderResourceView(hdrImage->GetResource(), &srvSrcDesc, handle1);
-	ctx.GetDevice()->CreateUnorderedAccessView(cubemapImage->GetResource(), nullptr, &cubemapUAVDesc, handle2);
 }
 
 void PipelineEquirect2Cube::Execute(
@@ -83,9 +83,9 @@ void PipelineEquirect2Cube::Execute(
 	ctx.ResetCommandList();
 	auto commandList = ctx.GetCommandList();
 
-	commandList->SetComputeRootSignature(descriptor_.rootSignature_);
+	commandList->SetComputeRootSignature(descriptorManager_.rootSignature_);
 	commandList->SetPipelineState(pipelineState_);
-	commandList->SetDescriptorHeaps(1, &(descriptor_.descriptorHeap_));
+	commandList->SetDescriptorHeaps(1, &(descriptorManager_.descriptorHeap_));
 
 	// Barrier
 	auto barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(cubemapImage->buffer_.resource_, 
@@ -100,8 +100,8 @@ void PipelineEquirect2Cube::Execute(
 	commandList->ResourceBarrier(1, &barrier2);
 
 	const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(descriptor_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 0, incrementSize);
-	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle2(descriptor_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 1, incrementSize);
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(descriptorManager_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 0, incrementSize);
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle2(descriptorManager_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 1, incrementSize);
 
 	uint32_t rootParamIndex = 0;
 	commandList->SetComputeRootDescriptorTable(rootParamIndex++, handle1);
