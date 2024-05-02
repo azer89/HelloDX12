@@ -60,7 +60,7 @@ void PipelineEquirect2Cube::CreateRootSignature(DX12Context& ctx)
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 	// Root signature
-	descriptorManager_.Create(ctx, samplerDesc, rootParameters, rootSignatureFlags);
+	rootSignature_.Create(ctx, samplerDesc, rootParameters, rootSignatureFlags);
 }
 
 void PipelineEquirect2Cube::CreatePipeline(DX12Context& ctx)
@@ -68,7 +68,7 @@ void PipelineEquirect2Cube::CreatePipeline(DX12Context& ctx)
 	// PSO
 	const D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc =
 	{
-		.pRootSignature = descriptorManager_.rootSignature_,
+		.pRootSignature = rootSignature_.rootSignature_,
 		.CS = CD3DX12_SHADER_BYTECODE(computeShader_.GetHandle())
 	};
 	ctx.GetDevice()->CreateComputePipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_));
@@ -83,7 +83,7 @@ void PipelineEquirect2Cube::Execute(
 	ctx.ResetCommandList();
 	auto commandList = ctx.GetCommandList();
 
-	commandList->SetComputeRootSignature(descriptorManager_.rootSignature_);
+	commandList->SetComputeRootSignature(rootSignature_.rootSignature_);
 	commandList->SetPipelineState(pipelineState_);
 	commandList->SetDescriptorHeaps(1, &(descriptorHeap_.descriptorHeap_));
 

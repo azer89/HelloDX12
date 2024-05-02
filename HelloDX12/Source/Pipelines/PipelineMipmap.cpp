@@ -53,12 +53,12 @@ void PipelineMipmap::CreatePipeline(DX12Context& ctx)
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 	// Root signature
-	descriptorManager_.Create(ctx, samplerDesc, rootParameters, rootSignatureFlags);
+	rootSignature_.Create(ctx, samplerDesc, rootParameters, rootSignatureFlags);
 
 	// PSO
 	const D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc =
 	{
-		.pRootSignature = descriptorManager_.rootSignature_,
+		.pRootSignature = rootSignature_.rootSignature_,
 		.CS = CD3DX12_SHADER_BYTECODE(computeShader_.GetHandle())
 	};
 	ctx.GetDevice()->CreateComputePipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_));
@@ -116,7 +116,7 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 			D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 	commandList->ResourceBarrier(1, &barrier1);
 
-	commandList->SetComputeRootSignature(descriptorManager_.rootSignature_);
+	commandList->SetComputeRootSignature(rootSignature_.rootSignature_);
 	commandList->SetPipelineState(pipelineState_);
 	commandList->SetDescriptorHeaps(1, &descriptorHeap);
 
