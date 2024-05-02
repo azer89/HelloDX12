@@ -9,8 +9,8 @@ PipelineTonemap::PipelineTonemap(
 	resourcesShared_(resourcesShared)
 {
 	CreateDescriptorHeap(ctx);
-	CreateRootSignature(ctx);
 	CreateShaders(ctx);
+	CreateRootSignature(ctx);
 	CreateGraphicsPipeline(ctx);
 }
 
@@ -34,6 +34,12 @@ void PipelineTonemap::CreateDescriptorHeap(DX12Context& ctx)
 	auto srcSRVDesc = resourcesShared_->GetSingleSampledSRVDescription();
 	auto srcResource = resourcesShared_->GetSingleSampledRenderTarget();
 	ctx.GetDevice()->CreateShaderResourceView(srcResource, &srcSRVDesc, handle1);
+}
+
+void PipelineTonemap::CreateShaders(DX12Context& ctx)
+{
+	vertexShader_.Create(ctx, AppConfig::ShaderFolder + "Tonemap.hlsl", ShaderType::Vertex);
+	fragmentShader_.Create(ctx, AppConfig::ShaderFolder + "Tonemap.hlsl", ShaderType::Fragment);
 }
 
 void PipelineTonemap::CreateRootSignature(DX12Context& ctx)
@@ -88,12 +94,6 @@ void PipelineTonemap::CreateGraphicsPipeline(DX12Context& ctx)
 	psoDesc.SampleDesc.Count = 1;
 	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 	ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)))
-}
-
-void PipelineTonemap::CreateShaders(DX12Context& ctx)
-{
-	vertexShader_.Create(ctx, AppConfig::ShaderFolder + "Tonemap.hlsl", ShaderType::Vertex);
-	fragmentShader_.Create(ctx, AppConfig::ShaderFolder + "Tonemap.hlsl", ShaderType::Fragment);
 }
 
 void PipelineTonemap::PopulateCommandList(DX12Context& ctx)

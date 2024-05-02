@@ -15,11 +15,11 @@ PipelineSimple::PipelineSimple(
 	resourcesShared_(resourcesShared),
 	resourcesLights_(resourcesLights)
 {
-	CreateRootSignature(ctx);
 	CreateConstantBuffer(ctx);
-	CreateShaders(ctx);
-	CreateGraphicsPipeline(ctx);
 	CreateDescriptorHeap(ctx);
+	CreateShaders(ctx);
+	CreateRootSignature(ctx);
+	CreateGraphicsPipeline(ctx);
 }
 
 PipelineSimple::~PipelineSimple()
@@ -32,6 +32,14 @@ void PipelineSimple::Destroy()
 	for (auto& buff : constBuffCamera_)
 	{
 		buff.Destroy();
+	}
+}
+
+void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
+{
+	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
+	{
+		constBuffCamera_[i].CreateConstantBuffer(ctx, sizeof(CCamera));
 	}
 }
 
@@ -89,12 +97,10 @@ void PipelineSimple::CreateDescriptorHeap(DX12Context& ctx)
 		lightHandle);
 }
 
-void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
+void PipelineSimple::CreateShaders(DX12Context& ctx)
 {
-	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
-	{
-		constBuffCamera_[i].CreateConstantBuffer(ctx, sizeof(CCamera));
-	}
+	vertexShader_.Create(ctx, AppConfig::ShaderFolder + "BlinnPhong.hlsl", ShaderType::Vertex);
+	fragmentShader_.Create(ctx, AppConfig::ShaderFolder + "BlinnPhong.hlsl", ShaderType::Fragment);
 }
 
 void PipelineSimple::CreateRootSignature(DX12Context& ctx)
@@ -126,12 +132,6 @@ void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 
 	// Root signature
 	descriptor_.CreateRootDescriptor(ctx, sampler, rootParameters, rootSignatureFlags);
-}
-
-void PipelineSimple::CreateShaders(DX12Context& ctx)
-{
-	vertexShader_.Create(ctx, AppConfig::ShaderFolder + "BlinnPhong.hlsl", ShaderType::Vertex);
-	fragmentShader_.Create(ctx, AppConfig::ShaderFolder + "BlinnPhong.hlsl", ShaderType::Fragment);
 }
 
 void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)

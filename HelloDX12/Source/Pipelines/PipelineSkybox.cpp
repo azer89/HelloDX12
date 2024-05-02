@@ -13,9 +13,9 @@ PipelineSkybox::PipelineSkybox(
 	camera_(camera)
 {
 	CreateConstantBuffer(ctx);
+	CreateDescriptorHeap(ctx);
 	GenerateShader(ctx);
 	CreateRootSignature(ctx);
-	CreateDescriptorHeap(ctx);
 	CreatePipeline(ctx);
 }
 
@@ -38,6 +38,40 @@ void PipelineSkybox::CreateConstantBuffer(DX12Context& ctx)
 	{
 		constBuffCamera_[i].CreateConstantBuffer(ctx, sizeof(CCamera));
 	}
+}
+
+void PipelineSkybox::CreateDescriptorHeap(DX12Context& ctx)
+{
+	constexpr uint32_t descriptorCount = 3;
+
+	D3D12_DESCRIPTOR_HEAP_DESC heapDesc =
+	{
+		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+		.NumDescriptors = descriptorCount,
+		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE
+	};
+	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&descriptorHeap_)))
+
+		const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	uint32_t descriptorOffset = 0;
+
+	// Camera (CVB)
+	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
+	{
+		CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), descriptorOffset++, incrementSize);
+		D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc =
+		{
+			.BufferLocation = constBuffCamera_[i].gpuAddress_,
+			.SizeInBytes = static_cast<UINT>(constBuffCamera_[i].constantBufferSize_)
+		};
+		ctx.GetDevice()->CreateConstantBufferView(&cbvDesc, handle);
+	}
+
+	// Cubemap (SRV)
+	auto imgSRVDesc = resourcesIBL_->environmentCubemap_.GetSRVDescription();
+	auto imageResource = resourcesIBL_->environmentCubemap_.GetResource();
+	CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), descriptorOffset++, incrementSize);
+	ctx.GetDevice()->CreateShaderResourceView(imageResource, &imgSRVDesc, handle);
 }
 
 void PipelineSkybox::GenerateShader(DX12Context& ctx)
@@ -71,40 +105,6 @@ void PipelineSkybox::CreateRootSignature(DX12Context& ctx)
 
 	// Root signature
 	descriptor_.CreateRootDescriptor(ctx, sampler, rootParameters, rootSignatureFlags);
-}
-
-void PipelineSkybox::CreateDescriptorHeap(DX12Context& ctx)
-{
-	constexpr uint32_t descriptorCount = 3;
-
-	D3D12_DESCRIPTOR_HEAP_DESC heapDesc =
-	{
-		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-		.NumDescriptors = descriptorCount,
-		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE
-	};
-	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&descriptorHeap_)))
-
-	const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	uint32_t descriptorOffset = 0;
-
-	// Camera (CVB)
-	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
-	{
-		CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), descriptorOffset++, incrementSize);
-		D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc =
-		{
-			.BufferLocation = constBuffCamera_[i].gpuAddress_,
-			.SizeInBytes = static_cast<UINT>(constBuffCamera_[i].constantBufferSize_)
-		};
-		ctx.GetDevice()->CreateConstantBufferView(&cbvDesc, handle);
-	}
-
-	// Cubemap (SRV)
-	auto imgSRVDesc = resourcesIBL_->environmentCubemap_.GetSRVDescription();
-	auto imageResource = resourcesIBL_->environmentCubemap_.GetResource();
-	CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), descriptorOffset++, incrementSize);
-	ctx.GetDevice()->CreateShaderResourceView(imageResource, &imgSRVDesc, handle);
 }
 
 void PipelineSkybox::CreatePipeline(DX12Context& ctx)
