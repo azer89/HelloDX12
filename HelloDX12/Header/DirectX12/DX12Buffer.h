@@ -55,6 +55,15 @@ public:
 
 	void Destroy();
 
+	D3D12_CONSTANT_BUFFER_VIEW_DESC GetCBVDescription()
+	{
+		return
+		{
+			.BufferLocation = gpuAddress_,
+			.SizeInBytes = static_cast<UINT>(constantBufferSize_)
+		};
+	}
+
 private:
 	void CreateUploadHeap(DX12Context& ctx,
 		uint64_t bufferSize,

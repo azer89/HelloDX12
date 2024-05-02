@@ -3,6 +3,7 @@
 
 #include "DX12Context.h"
 #include "DX12Exception.h"
+#include "DX12Descriptor.h"
 
 #include <span>
 
@@ -14,6 +15,12 @@ public:
 	void Create(DX12Context& ctx,
 		const D3D12_STATIC_SAMPLER_DESC& samplerDesc,
 		const std::span<CD3DX12_ROOT_PARAMETER1> rootParameters,
+		const D3D12_ROOT_SIGNATURE_FLAGS& rootSignatureFlags);
+
+	void Create(DX12Context& ctx,
+		const D3D12_STATIC_SAMPLER_DESC& samplerDesc,
+		const std::span<DX12Descriptor> descriptors,
+		uint32_t rootConstantCount,
 		const D3D12_ROOT_SIGNATURE_FLAGS& rootSignatureFlags);
 
 	//void CreateDescriptorHeap(DX12Context& ctx, uint32_t descriptorCount);

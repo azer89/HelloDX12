@@ -32,9 +32,10 @@ public:
 	void Destroy() override;
 
 private:
-	void CreateDescriptorHeap(DX12Context& ctx);
+	void CreateDescriptors(DX12Context& ctx);
+	//void CreateDescriptorHeap(DX12Context& ctx);
 	void CreateConstantBuffer(DX12Context& ctx);
-	void CreateRootSignature(DX12Context& ctx);
+	//void CreateRootSignature(DX12Context& ctx);
 	void CreateShaders(DX12Context& ctx);
 	void CreateGraphicsPipeline(DX12Context& ctx);
 
@@ -46,6 +47,7 @@ public:
 	ResourcesLights* resourcesLights_ = nullptr;
 
 private:
+	std::array<DX12DescriptorHeap, AppConfig::FrameCount> descriptorHeaps_ = {};
 	std::array<DX12Buffer, AppConfig::FrameCount> constBuffCamera_ = {};
 };
 

@@ -51,13 +51,42 @@ void DX12RootSignature::Create(DX12Context& ctx,
 	}
 }
 
-/*void DX12RootSignature::CreateDescriptorHeap(DX12Context& ctx, uint32_t descriptorCount)
+void DX12RootSignature::Create(DX12Context& ctx,
+	const D3D12_STATIC_SAMPLER_DESC& samplerDesc,
+	const std::span<DX12Descriptor> descriptors,
+	uint32_t rootConstantCount,
+	const D3D12_ROOT_SIGNATURE_FLAGS& rootSignatureFlags)
 {
-	D3D12_DESCRIPTOR_HEAP_DESC heapDesc =
+	uint32_t cvbRegister = 0;
+	uint32_t srvRegister = 0;
+	uint32_t uavRegister = 0;
+
+	std::vector<CD3DX12_DESCRIPTOR_RANGE1> ranges = {};
+	for (int i = 0; i < descriptors.size(); ++i)
 	{
-		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-		.NumDescriptors = descriptorCount,
-		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
-	};
-	ctx.GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&descriptorHeap_));
-}*/
+		if (descriptors[i].type_ == D3D12_DESCRIPTOR_RANGE_TYPE_CBV)
+		{
+			ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, cvbRegister++, 0, descriptors[i].rangeFlags_);
+		}
+		else if (descriptors[i].type_ == D3D12_DESCRIPTOR_RANGE_TYPE_SRV)
+		{
+			ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, srvRegister++, 0, descriptors[i].rangeFlags_);
+		}
+		else if (descriptors[i].type_ == D3D12_DESCRIPTOR_RANGE_TYPE_UAV)
+		{
+			ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, uavRegister++, 0, descriptors[i].rangeFlags_);
+		}
+	}
+
+	std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters = {};
+	if (rootConstantCount > 0)
+	{
+		rootParameters.emplace_back().InitAsConstants(rootConstantCount, 0);
+	}
+	for (int i = 0; i < descriptors.size(); ++i)
+	{
+		rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + i, descriptors[i].shaderVisibility_);
+	}
+
+	Create(ctx, samplerDesc, rootParameters, rootSignatureFlags);
+}
