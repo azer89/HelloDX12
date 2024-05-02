@@ -16,9 +16,7 @@ PipelineSimple::PipelineSimple(
 	resourcesLights_(resourcesLights)
 {
 	CreateConstantBuffer(ctx);
-	//CreateDescriptorHeap(ctx);
 	CreateShaders(ctx);
-	//CreateRootSignature(ctx);
 	CreateDescriptors(ctx);
 	CreateGraphicsPipeline(ctx);
 }
@@ -86,7 +84,6 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 		.srvDescription_ = resourcesLights_->GetSRVDescription()
 	};
 
-	uint32_t descriptorCount = 4;
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
 		descriptors[0].buffer_ = &(constBuffCamera_[i]);

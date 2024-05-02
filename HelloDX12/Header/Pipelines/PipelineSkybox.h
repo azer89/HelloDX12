@@ -24,9 +24,8 @@ public:
 	void PopulateCommandList(DX12Context& ctx) override;
 
 private:
+	void CreateDescriptors(DX12Context& ctx);
 	void GenerateShader(DX12Context& ctx);
-	void CreateRootSignature(DX12Context& ctx);
-	void CreateDescriptorHeap(DX12Context& ctx);
 	void CreatePipeline(DX12Context& ctx);
 	void CreateConstantBuffer(DX12Context& ctx);
 
@@ -35,6 +34,7 @@ private:
 	ResourcesShared* resourcesShared_;
 	Camera* camera_;
 
+	std::array<DX12DescriptorHeap, AppConfig::FrameCount> descriptorHeaps_ = {};
 	std::array<DX12Buffer, AppConfig::FrameCount> constBuffCamera_ = {};
 };
 
