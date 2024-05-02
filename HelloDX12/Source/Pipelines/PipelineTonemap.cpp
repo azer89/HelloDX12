@@ -60,7 +60,7 @@ void PipelineTonemap::CreateRootSignature(DX12Context& ctx)
 	};
 
 	// Root signature
-	descriptorManager_.CreateRootDescriptor(
+	descriptorManager_.CreateRootSignature(
 		ctx, 
 		samplerDesc, 
 		rootParameters, 

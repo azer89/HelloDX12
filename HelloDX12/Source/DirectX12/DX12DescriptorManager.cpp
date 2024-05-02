@@ -16,7 +16,7 @@ void DX12DescriptorManager::Destroy()
 }
 
 // TODO Rename to CreateRootSignature()
-void DX12DescriptorManager::CreateRootDescriptor(DX12Context& ctx,
+void DX12DescriptorManager::CreateRootSignature(DX12Context& ctx,
 	const D3D12_STATIC_SAMPLER_DESC& samplerDesc,
 	const std::span<CD3DX12_ROOT_PARAMETER1> rootParameters,
 	const D3D12_ROOT_SIGNATURE_FLAGS& rootSignatureFlags)

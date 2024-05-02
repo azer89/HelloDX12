@@ -132,9 +132,6 @@
     <ClInclude Include="Header\Pipelines\PipelineResolve.h">
       <Filter>Header\Pipelines</Filter>
     </ClInclude>
-    <ClInclude Include="Header\DirectX12\DX12Descriptor.h">
-      <Filter>Header\DirectX12</Filter>
-    </ClInclude>
     <ClInclude Include="Header\Pipelines\PipelineEquirect2Cube.h">
       <Filter>Header\Pipelines</Filter>
     </ClInclude>
@@ -143,6 +140,9 @@
     </ClInclude>
     <ClInclude Include="Header\Resources\ResourcesIBL.h">
       <Filter>Header\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\DirectX12\DX12DescriptorManager.h">
+      <Filter>Header\DirectX12</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -218,9 +218,6 @@
     <ClCompile Include="Source\Pipelines\PipelineResolve.cpp">
       <Filter>Source\Pipelines</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DirectX12\DX12Descriptor.cpp">
-      <Filter>Source\DirectX12</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Pipelines\PipelineEquirect2Cube.cpp">
       <Filter>Source\Pipelines</Filter>
     </ClCompile>
@@ -229,6 +226,9 @@
     </ClCompile>
     <ClCompile Include="Source\Resources\ResourcesIBL.cpp">
       <Filter>Source\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX12\DX12DescriptorManager.cpp">
+      <Filter>Source\DirectX12</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

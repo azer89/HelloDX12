@@ -11,7 +11,7 @@ class DX12DescriptorManager
 public:
 	void Destroy();
 
-	void CreateRootDescriptor(DX12Context& ctx,
+	void CreateRootSignature(DX12Context& ctx,
 		const D3D12_STATIC_SAMPLER_DESC& samplerDesc,
 		const std::span<CD3DX12_ROOT_PARAMETER1> rootParameters,
 		const D3D12_ROOT_SIGNATURE_FLAGS& rootSignatureFlags);
