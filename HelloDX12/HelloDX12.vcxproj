@@ -22,7 +22,7 @@
     <ClInclude Include="Header\DirectX12\DX12Exception.h" />
     <ClInclude Include="Header\DirectX12\DX12Helper.h" />
     <ClInclude Include="Header\DirectX12\DX12Image.h" />
-    <ClInclude Include="Header\DirectX12\DX12Descriptor.h" />
+    <ClInclude Include="Header\DirectX12\DX12DescriptorManager.h" />
     <ClInclude Include="Header\DirectX12\DX12Shader.h" />
     <ClInclude Include="Header\Pipelines\PipelineBase.h" />
     <ClInclude Include="Header\Pipelines\PipelineClear.h" />
@@ -55,7 +55,7 @@
     <ClCompile Include="Source\DirectX12\DX12Context.cpp" />
     <ClCompile Include="Source\DirectX12\DX12Exception.cpp" />
     <ClCompile Include="Source\DirectX12\DX12Image.cpp" />
-    <ClCompile Include="Source\DirectX12\DX12Descriptor.cpp" />
+    <ClCompile Include="Source\DirectX12\DX12DescriptorManager.cpp" />
     <ClCompile Include="Source\DirectX12\DX12Shader.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineBase.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineClear.cpp" />

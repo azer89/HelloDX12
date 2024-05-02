@@ -104,14 +104,14 @@ void PipelineSkybox::CreateRootSignature(DX12Context& ctx)
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
 	// Root signature
-	descriptor_.CreateRootDescriptor(ctx, sampler, rootParameters, rootSignatureFlags);
+	descriptorManager_.CreateRootDescriptor(ctx, sampler, rootParameters, rootSignatureFlags);
 }
 
 void PipelineSkybox::CreatePipeline(DX12Context& ctx)
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc =
 	{
-		.pRootSignature = descriptor_.rootSignature_,
+		.pRootSignature = descriptorManager_.rootSignature_,
 		.VS = CD3DX12_SHADER_BYTECODE(vertexShader_.GetHandle()),
 		.PS = CD3DX12_SHADER_BYTECODE(fragmentShader_.GetHandle()),
 		.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT),
@@ -148,7 +148,7 @@ void PipelineSkybox::PopulateCommandList(DX12Context& ctx)
 	commandList->SetPipelineState(pipelineState_);
 	commandList->RSSetViewports(1, &viewport_);
 	commandList->RSSetScissorRects(1, &scissor_);
-	commandList->SetGraphicsRootSignature(descriptor_.rootSignature_);
+	commandList->SetGraphicsRootSignature(descriptorManager_.rootSignature_);
 
 	// Descriptors
 	uint32_t rootParamIndex = 0;

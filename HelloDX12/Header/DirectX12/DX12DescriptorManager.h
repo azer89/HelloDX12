@@ -6,7 +6,7 @@
 #include "DX12Exception.h"
 #include <span>
 
-class DX12Descriptor
+class DX12DescriptorManager
 {
 public:
 	void Destroy();

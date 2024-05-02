@@ -3,7 +3,7 @@
 
 #include "DX12Context.h"
 #include "DX12Shader.h"
-#include "DX12Descriptor.h"
+#include "DX12DescriptorManager.h"
 
 class PipelineBase
 {
@@ -18,8 +18,8 @@ public:
 protected:
 	ID3D12PipelineState* pipelineState_ = nullptr;
 	
-	DX12Descriptor descriptor_ = {};
-	ID3D12DescriptorHeap* descriptorHeap_ = nullptr; // TODO Use DX12Descriptor::CreateDescriptorHeap(...)
+	DX12DescriptorManager descriptorManager_ = {};
+	ID3D12DescriptorHeap* descriptorHeap_ = nullptr; // TODO Use DX12DescriptorManager::CreateDescriptorHeap(...)
 
 	DX12Shader vertexShader_ = {};
 	DX12Shader fragmentShader_ = {};
