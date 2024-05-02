@@ -19,7 +19,6 @@ protected:
 	ID3D12PipelineState* pipelineState_ = nullptr;
 	
 	DX12DescriptorManager descriptorManager_ = {};
-	ID3D12DescriptorHeap* descriptorHeap_ = nullptr; // TODO Use DX12DescriptorManager::CreateDescriptorHeap(...)
 
 	DX12Shader vertexShader_ = {};
 	DX12Shader fragmentShader_ = {};

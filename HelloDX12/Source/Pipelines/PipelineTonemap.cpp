@@ -16,19 +16,11 @@ PipelineTonemap::PipelineTonemap(
 
 void PipelineTonemap::CreateDescriptorHeap(DX12Context& ctx)
 {
-	constexpr uint32_t descriptorCount = 1;
-
-	D3D12_DESCRIPTOR_HEAP_DESC heapDesc =
-	{
-		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-		.NumDescriptors = descriptorCount,
-		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE
-	};
-	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&descriptorHeap_)))
+	descriptorManager_.CreateDescriptorHeap(ctx, 1);
 
 	// TODO handles can be precomputed
 	uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	CD3DX12_CPU_DESCRIPTOR_HANDLE handle1(descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), 0, incrementSize); 
+	CD3DX12_CPU_DESCRIPTOR_HANDLE handle1(descriptorManager_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), 0, incrementSize);
 
 	// Source image SRV
 	auto srcSRVDesc = resourcesShared_->GetSingleSampledSRVDescription();
@@ -107,9 +99,9 @@ void PipelineTonemap::PopulateCommandList(DX12Context& ctx)
 
 	// Descriptors
 	const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 0, incrementSize);
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(descriptorManager_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 0, incrementSize);
 
-	ID3D12DescriptorHeap* ppHeaps[] = { descriptorHeap_ };
+	ID3D12DescriptorHeap* ppHeaps[] = { descriptorManager_.descriptorHeap_ };
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 	commandList->SetGraphicsRootDescriptorTable(0, handle1);
 
