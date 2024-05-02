@@ -153,12 +153,11 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 
 void PipelineSimple::Update(DX12Context& ctx)
 {
-	CCamera cb = {
-		.viewMatrix = glm::transpose(camera_->GetViewMatrix()),
-		.projectionMatrix = glm::transpose(camera_->GetProjectionMatrix()),
-		.cameraPosition = camera_->Position()
-	};
-	constBuffCamera_[ctx.GetFrameIndex()].UploadData(&cb);
+	// TODO find a way without transpose
+	CCamera* ptr = constBuffCamera_[ctx.GetFrameIndex()].As<CCamera>();
+	ptr->viewMatrix = glm::transpose(camera_->GetViewMatrix());
+	ptr->projectionMatrix = glm::transpose(camera_->GetProjectionMatrix());
+	ptr->cameraPosition = camera_->Position();
 }
 
 void PipelineSimple::PopulateCommandList(DX12Context& ctx)
