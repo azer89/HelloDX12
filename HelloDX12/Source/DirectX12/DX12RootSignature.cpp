@@ -1,22 +1,16 @@
-#include "DX12DescriptorManager.h"
+#include "DX12RootSignature.h"
 
-void DX12DescriptorManager::Destroy()
+void DX12RootSignature::Destroy()
 {
 	if (rootSignature_)
 	{
 		rootSignature_->Release();
 		rootSignature_ = nullptr;
 	}
-
-	if (descriptorHeap_)
-	{
-		descriptorHeap_->Release();
-		descriptorHeap_ = nullptr;
-	}
 }
 
 // TODO Rename to CreateRootSignature()
-void DX12DescriptorManager::CreateRootSignature(DX12Context& ctx,
+void DX12RootSignature::Create(DX12Context& ctx,
 	const D3D12_STATIC_SAMPLER_DESC& samplerDesc,
 	const std::span<CD3DX12_ROOT_PARAMETER1> rootParameters,
 	const D3D12_ROOT_SIGNATURE_FLAGS& rootSignatureFlags)
@@ -57,7 +51,7 @@ void DX12DescriptorManager::CreateRootSignature(DX12Context& ctx,
 	}
 }
 
-void DX12DescriptorManager::CreateDescriptorHeap(DX12Context& ctx, uint32_t descriptorCount)
+/*void DX12RootSignature::CreateDescriptorHeap(DX12Context& ctx, uint32_t descriptorCount)
 {
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc =
 	{
@@ -66,4 +60,4 @@ void DX12DescriptorManager::CreateDescriptorHeap(DX12Context& ctx, uint32_t desc
 		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
 	};
 	ctx.GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&descriptorHeap_));
-}
+}*/

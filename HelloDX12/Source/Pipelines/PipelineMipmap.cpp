@@ -53,7 +53,7 @@ void PipelineMipmap::CreatePipeline(DX12Context& ctx)
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 	// Root signature
-	descriptorManager_.CreateRootSignature(ctx, samplerDesc, rootParameters, rootSignatureFlags);
+	descriptorManager_.Create(ctx, samplerDesc, rootParameters, rootSignatureFlags);
 
 	// PSO
 	const D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc =

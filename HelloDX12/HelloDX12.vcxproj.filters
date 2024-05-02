@@ -141,7 +141,13 @@
     <ClInclude Include="Header\Resources\ResourcesIBL.h">
       <Filter>Header\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Header\DirectX12\DX12DescriptorManager.h">
+    <ClInclude Include="Header\DirectX12\DX12RootSignature.h">
+      <Filter>Header\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\DirectX12\DX12Descriptor.h">
+      <Filter>Header\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\DirectX12\DX12DescriptorHeap.h">
       <Filter>Header\DirectX12</Filter>
     </ClInclude>
   </ItemGroup>
@@ -227,7 +233,10 @@
     <ClCompile Include="Source\Resources\ResourcesIBL.cpp">
       <Filter>Source\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DirectX12\DX12DescriptorManager.cpp">
+    <ClCompile Include="Source\DirectX12\DX12RootSignature.cpp">
+      <Filter>Source\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DirectX12\DX12DescriptorHeap.cpp">
       <Filter>Source\DirectX12</Filter>
     </ClCompile>
   </ItemGroup>

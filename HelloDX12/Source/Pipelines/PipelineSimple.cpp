@@ -45,7 +45,7 @@ void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
 
 void PipelineSimple::CreateDescriptorHeap(DX12Context& ctx)
 {
-	descriptorManager_.CreateDescriptorHeap(ctx, 6);
+	descriptorHeap_.Create(ctx, 6);
 
 	uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	uint32_t descriptorOffset = 0;
@@ -53,7 +53,7 @@ void PipelineSimple::CreateDescriptorHeap(DX12Context& ctx)
 	// Camera
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
-		CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptorManager_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), descriptorOffset++, incrementSize);
+		CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptorHeap_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), descriptorOffset++, incrementSize);
 		D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc =
 		{
 			.BufferLocation = constBuffCamera_[i].gpuAddress_,
@@ -65,7 +65,7 @@ void PipelineSimple::CreateDescriptorHeap(DX12Context& ctx)
 	// Model
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
-		CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptorManager_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), descriptorOffset++, incrementSize);
+		CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptorHeap_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), descriptorOffset++, incrementSize);
 		D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc =
 		{
 			.BufferLocation = scene_->modelConstBuffs_[i].gpuAddress_,
@@ -75,13 +75,13 @@ void PipelineSimple::CreateDescriptorHeap(DX12Context& ctx)
 	}
 
 	// Texture
-	CD3DX12_CPU_DESCRIPTOR_HANDLE texHandle(descriptorManager_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), descriptorOffset++, incrementSize);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE texHandle(descriptorHeap_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), descriptorOffset++, incrementSize);
 	auto imgSRVDesc = scene_->model_.meshes_[0].image_->GetSRVDescription();
 	auto imageResource = scene_->model_.meshes_[0].image_->GetResource();
 	ctx.GetDevice()->CreateShaderResourceView(imageResource, &imgSRVDesc, texHandle);
 
 	// Lights
-	CD3DX12_CPU_DESCRIPTOR_HANDLE lightHandle(descriptorManager_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), descriptorOffset++, incrementSize);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE lightHandle(descriptorHeap_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), descriptorOffset++, incrementSize);
 	auto lightSRVDesc = resourcesLights_->GetSRVDescription();
 	ctx.GetDevice()->CreateShaderResourceView(
 		resourcesLights_->GetResource(),
@@ -123,7 +123,7 @@ void PipelineSimple::CreateRootSignature(DX12Context& ctx)
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
 	// Root signature
-	descriptorManager_.CreateRootSignature(ctx, sampler, rootParameters, rootSignatureFlags);
+	descriptorManager_.Create(ctx, sampler, rootParameters, rootSignatureFlags);
 }
 
 void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
@@ -174,12 +174,12 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	// TODO handles can be precomputed
 	const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-	const CD3DX12_GPU_DESCRIPTOR_HANDLE camHandle(descriptorManager_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), ctx.GetFrameIndex(), incrementSize);
-	const CD3DX12_GPU_DESCRIPTOR_HANDLE modelHandle(descriptorManager_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), ctx.GetFrameIndex() + 2, incrementSize);
-	const CD3DX12_GPU_DESCRIPTOR_HANDLE texHandle(descriptorManager_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 4, incrementSize);
-	const CD3DX12_GPU_DESCRIPTOR_HANDLE lightHandle(descriptorManager_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 5, incrementSize);
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE camHandle(descriptorHeap_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), ctx.GetFrameIndex(), incrementSize);
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE modelHandle(descriptorHeap_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), ctx.GetFrameIndex() + 2, incrementSize);
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE texHandle(descriptorHeap_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 4, incrementSize);
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE lightHandle(descriptorHeap_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 5, incrementSize);
 	
-	ID3D12DescriptorHeap* ppHeaps[] = { descriptorManager_.descriptorHeap_};
+	ID3D12DescriptorHeap* ppHeaps[] = { descriptorHeap_.descriptorHeap_};
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 
 	commandList->SetGraphicsRootDescriptorTable(rootParamIndex++, camHandle);

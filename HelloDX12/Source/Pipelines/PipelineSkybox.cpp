@@ -42,7 +42,7 @@ void PipelineSkybox::CreateConstantBuffer(DX12Context& ctx)
 
 void PipelineSkybox::CreateDescriptorHeap(DX12Context& ctx)
 {
-	descriptorManager_.CreateDescriptorHeap(ctx, 3);
+	descriptorHeap_.Create(ctx, 3);
 
 	const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	uint32_t descriptorOffset = 0;
@@ -50,7 +50,7 @@ void PipelineSkybox::CreateDescriptorHeap(DX12Context& ctx)
 	// Camera (CVB)
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
-		CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptorManager_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), descriptorOffset++, incrementSize);
+		CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptorHeap_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), descriptorOffset++, incrementSize);
 		D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc =
 		{
 			.BufferLocation = constBuffCamera_[i].gpuAddress_,
@@ -62,7 +62,7 @@ void PipelineSkybox::CreateDescriptorHeap(DX12Context& ctx)
 	// Cubemap (SRV)
 	auto imgSRVDesc = resourcesIBL_->environmentCubemap_.GetSRVDescription();
 	auto imageResource = resourcesIBL_->environmentCubemap_.GetResource();
-	CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptorManager_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), descriptorOffset++, incrementSize);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptorHeap_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), descriptorOffset++, incrementSize);
 	ctx.GetDevice()->CreateShaderResourceView(imageResource, &imgSRVDesc, handle);
 }
 
@@ -96,7 +96,7 @@ void PipelineSkybox::CreateRootSignature(DX12Context& ctx)
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
 	// Root signature
-	descriptorManager_.CreateRootSignature(ctx, sampler, rootParameters, rootSignatureFlags);
+	descriptorManager_.Create(ctx, sampler, rootParameters, rootSignatureFlags);
 }
 
 void PipelineSkybox::CreatePipeline(DX12Context& ctx)
@@ -145,9 +145,9 @@ void PipelineSkybox::PopulateCommandList(DX12Context& ctx)
 	// Descriptors
 	uint32_t rootParamIndex = 0;
 	const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(descriptorManager_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), ctx.GetFrameIndex(), incrementSize);
-	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle2(descriptorManager_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 2, incrementSize);
-	ID3D12DescriptorHeap* ppHeaps[] = { descriptorManager_.descriptorHeap_ };
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(descriptorHeap_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), ctx.GetFrameIndex(), incrementSize);
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle2(descriptorHeap_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 2, incrementSize);
+	ID3D12DescriptorHeap* ppHeaps[] = { descriptorHeap_.descriptorHeap_ };
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 	commandList->SetGraphicsRootDescriptorTable(rootParamIndex++, handle1);
 	commandList->SetGraphicsRootDescriptorTable(rootParamIndex++, handle2);
