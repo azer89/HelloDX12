@@ -12,7 +12,7 @@ void DX12Context::Destroy()
 		dmaAllocator_->Release();
 		dmaAllocator_ = nullptr;
 	}
-	CloseHandle(fenceEvent_);
+	CloseHandle(fenceCompletionEvent_);
 }
 
 void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
@@ -58,7 +58,6 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 	D3D12_COMMAND_QUEUE_DESC queueDesc = {};
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 	queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-
 	ThrowIfFailed(device_->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&commandQueue_)))
 
 	// Describe and create the swap chain.
@@ -94,11 +93,11 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 		ThrowIfFailed(device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocators_[i])))
 	}
 
-	// TODO Why only one command list?
+	// Default command list
 	ThrowIfFailed(device_->CreateCommandList(
 		0, 
 		D3D12_COMMAND_LIST_TYPE_DIRECT, 
-		commandAllocators_[frameIndex_].Get(), 
+		commandAllocators_[0].Get(), // TODO
 		nullptr, 
 		IID_PPV_ARGS(&commandList_)))
 	commandList_->Close();
@@ -164,8 +163,8 @@ void DX12Context::WaitForGPU()
 	ThrowIfFailed(commandQueue_->Signal(fence_.Get(), fenceValues_[frameIndex_]))
 
 	// Wait until the fence has been processed.
-	ThrowIfFailed(fence_->SetEventOnCompletion(fenceValues_[frameIndex_], fenceEvent_))
-	WaitForSingleObjectEx(fenceEvent_, INFINITE, FALSE);
+	ThrowIfFailed(fence_->SetEventOnCompletion(fenceValues_[frameIndex_], fenceCompletionEvent_))
+	WaitForSingleObjectEx(fenceCompletionEvent_, INFINITE, FALSE);
 
 	// Increment the fence value for the current frame.
 	fenceValues_[frameIndex_]++;
@@ -188,8 +187,8 @@ void DX12Context::MoveToNextFrame()
 	// If the next frame is not ready to be rendered yet, wait until it is ready.
 	if (fence_->GetCompletedValue() < fenceValues_[frameIndex_])
 	{
-		ThrowIfFailed(fence_->SetEventOnCompletion(fenceValues_[frameIndex_], fenceEvent_))
-		WaitForSingleObjectEx(fenceEvent_, INFINITE, FALSE);
+		ThrowIfFailed(fence_->SetEventOnCompletion(fenceValues_[frameIndex_], fenceCompletionEvent_))
+		WaitForSingleObjectEx(fenceCompletionEvent_, INFINITE, FALSE);
 	}
 
 	// Set the fence value for the next frame.
@@ -230,16 +229,11 @@ void DX12Context::CreateFence()
 	fenceValues_[frameIndex_]++;
 
 	// Create an event handle to use for frame synchronization.
-	fenceEvent_ = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-	if (fenceEvent_ == nullptr)
+	fenceCompletionEvent_ = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	if (fenceCompletionEvent_ == nullptr)
 	{
 		ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()))
 	}
-
-	// Wait for the command list to execute; we are reusing the same command 
-	// list in our main loop but for now, we just want to wait for setup to 
-	// complete before continuing.
-	WaitForGPU();
 }
 
 // Helper function for acquiring the first available hardware adapter that supports Direct3D 12.
