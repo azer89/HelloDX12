@@ -65,49 +65,9 @@ void PipelineEquirect2Cube::CreateDescriptors(
 	rootSignature_.Create(ctx, samplerDesc, descriptors, 0, rootSignatureFlags);
 }
 
-void PipelineEquirect2Cube::CreateDescriptorHeap(DX12Context& ctx,
-	DX12Image* hdrImage,
-	DX12Image* cubemapImage,
-	const D3D12_UNORDERED_ACCESS_VIEW_DESC& cubemapUAVDesc)
-{
-	uint32_t descriptorCount = 2;
-
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvSrcDesc = hdrImage->GetSRVDescription();
-
-	descriptorHeap_.Create(ctx, descriptorCount);
-
-	UINT incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	CD3DX12_CPU_DESCRIPTOR_HANDLE handle1(descriptorHeap_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), 0, incrementSize);
-	CD3DX12_CPU_DESCRIPTOR_HANDLE handle2(descriptorHeap_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), 1, incrementSize);
-
-	ctx.GetDevice()->CreateShaderResourceView(hdrImage->GetResource(), &srvSrcDesc, handle1);
-	ctx.GetDevice()->CreateUnorderedAccessView(cubemapImage->GetResource(), nullptr, &cubemapUAVDesc, handle2);
-}
-
 void PipelineEquirect2Cube::GenerateShader(DX12Context& ctx)
 {
 	computeShader_.Create(ctx, AppConfig::ShaderFolder + "Equirect2Cube.hlsl", ShaderType::Compute);
-}
-
-void PipelineEquirect2Cube::CreateRootSignature(DX12Context& ctx)
-{
-	std::vector<CD3DX12_DESCRIPTOR_RANGE1> ranges = {};
-	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE);
-	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE);
-
-	uint32_t paramOffset = 0;
-	std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters = {};
-	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + paramOffset++, D3D12_SHADER_VISIBILITY_ALL);
-	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + paramOffset++, D3D12_SHADER_VISIBILITY_ALL);
-
-	CD3DX12_STATIC_SAMPLER_DESC samplerDesc{ 0, D3D12_FILTER_MIN_MAG_MIP_LINEAR };
-	samplerDesc.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
-
-	constexpr D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
-		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-
-	// Root signature
-	rootSignature_.Create(ctx, samplerDesc, rootParameters, rootSignatureFlags);
 }
 
 void PipelineEquirect2Cube::CreatePipeline(DX12Context& ctx)

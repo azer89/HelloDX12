@@ -20,7 +20,7 @@ protected:
 	ID3D12PipelineState* pipelineState_ = nullptr;
 	
 	DX12RootSignature rootSignature_ = {};
-	DX12DescriptorHeap descriptorHeap_ = {};
+	//DX12DescriptorHeap descriptorHeap_ = {};
 
 	DX12Shader vertexShader_ = {};
 	DX12Shader fragmentShader_ = {};

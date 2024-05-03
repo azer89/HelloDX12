@@ -11,21 +11,20 @@ public:
 	PipelineTonemap(
 		DX12Context& ctx,
 		ResourcesShared* resourcesShared);
-	~PipelineTonemap()
-	{
-	}
+	~PipelineTonemap();
+	void Destroy();
 
 	void Update(DX12Context& ctx) override {}
 	void PopulateCommandList(DX12Context& ctx) override;
 
 private:
-	void CreateDescriptorHeap(DX12Context& ctx);
-	void CreateRootSignature(DX12Context& ctx);
+	void CreateDescriptors(DX12Context& ctx);
 	void CreateGraphicsPipeline(DX12Context& ctx);
 	void CreateShaders(DX12Context& ctx);
 
 private:
 	ResourcesShared* resourcesShared_;
+	DX12DescriptorHeap descriptorHeap_ = {};
 };
 
 #endif
