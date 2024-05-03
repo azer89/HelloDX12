@@ -157,7 +157,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 
 	// Descriptors
 	descriptorHeaps_[ctx.GetFrameIndex()].BindHeap(commandList);
-	descriptorHeaps_[ctx.GetFrameIndex()].BindDescriptors(commandList, 0);
+	descriptorHeaps_[ctx.GetFrameIndex()].BindDescriptorsGraphics(commandList, 0);
 
 	const auto rtvHandle = resourcesShared_->GetMultiSampledRTVHandle();
 	const auto dsvHandle = resourcesShared_->GetDSVHandle();

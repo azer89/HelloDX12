@@ -10,7 +10,9 @@ class PipelineEquirect2Cube final : public PipelineBase
 public:
 	PipelineEquirect2Cube(
 		DX12Context& ctx);
-	~PipelineEquirect2Cube() = default;
+	~PipelineEquirect2Cube();
+
+	void Destroy();
 
 	void GenerateCubemapFromHDR(
 		DX12Context& ctx, 
@@ -22,17 +24,24 @@ public:
 	void PopulateCommandList(DX12Context& ctx) override {};
 
 private:
-	void GenerateShader(DX12Context& ctx);
+	void CreateDescriptors(DX12Context& ctx, 
+		DX12Image* hdrImage,
+		DX12Image* cubemapImage,
+		const D3D12_UNORDERED_ACCESS_VIEW_DESC& cubemapUAVDesc);
 	void CreateRootSignature(DX12Context& ctx);
 	void CreateDescriptorHeap(
 		DX12Context& ctx,
 		DX12Image* hdrImage,
 		DX12Image* cubemapImage,
 		const D3D12_UNORDERED_ACCESS_VIEW_DESC& cubemapUAVDesc);
+	void GenerateShader(DX12Context& ctx);
 	void CreatePipeline(DX12Context& ctx);
 	void Execute(DX12Context& ctx,
 		DX12Image* hdrImage,
 		DX12Image* cubemapImage);
+
+private:
+	DX12DescriptorHeap descriptorHeap2_ = {}; // TODO Rename
 };
 
 #endif

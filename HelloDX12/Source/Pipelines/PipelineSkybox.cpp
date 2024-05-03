@@ -56,7 +56,6 @@ void PipelineSkybox::CreateDescriptors(DX12Context& ctx)
 
 	descriptors[1] =
 	{
-
 		.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
 		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
 		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
@@ -138,7 +137,7 @@ void PipelineSkybox::PopulateCommandList(DX12Context& ctx)
 
 	// Descriptors
 	descriptorHeaps_[ctx.GetFrameIndex()].BindHeap(commandList);
-	descriptorHeaps_[ctx.GetFrameIndex()].BindDescriptors(commandList, 0);
+	descriptorHeaps_[ctx.GetFrameIndex()].BindDescriptorsGraphics(commandList, 0);
 
 	const auto rtvHandle = resourcesShared_->GetMultiSampledRTVHandle();
 	const auto dsvHandle = resourcesShared_->GetDSVHandle();

@@ -61,11 +61,20 @@ void DX12DescriptorHeap::BindHeap(ID3D12GraphicsCommandList* commandList)
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 }
 
-void DX12DescriptorHeap::BindDescriptors(ID3D12GraphicsCommandList* commandList, uint32_t startRootParamIndex)
+void DX12DescriptorHeap::BindDescriptorsGraphics(ID3D12GraphicsCommandList* commandList, uint32_t startRootParamIndex)
 {
 	uint32_t rootParamIndex = startRootParamIndex;
 	for (uint32_t i = 0; i < descriptors_.size(); ++i)
 	{
 		commandList->SetGraphicsRootDescriptorTable(rootParamIndex++, descriptors_[i].gpuHandle_);
+	}
+}
+
+void DX12DescriptorHeap::BindDescriptorsCompute(ID3D12GraphicsCommandList* commandList, uint32_t startRootParamIndex)
+{
+	uint32_t rootParamIndex = startRootParamIndex;
+	for (uint32_t i = 0; i < descriptors_.size(); ++i)
+	{
+		commandList->SetComputeRootDescriptorTable(rootParamIndex++, descriptors_[i].gpuHandle_);
 	}
 }
