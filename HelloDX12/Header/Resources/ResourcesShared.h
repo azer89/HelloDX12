@@ -20,6 +20,7 @@ public:
 	[[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetMultiSampledRTVHandle() const { return multiSampledRTVHandle_; }
 	[[nodiscard]] D3D12_SHADER_RESOURCE_VIEW_DESC GetMultiSampledSRVDescription() const { return multiSampledImage_.GetSRVDescription(); }
 
+	[[nodiscard]] DX12Buffer* GetSingleSampledBuffer() { return &(singleSampledImage_.buffer_); }
 	[[nodiscard]] ID3D12Resource* GetSingleSampledRenderTarget() const { return singleSampledImage_.GetResource(); }
 	[[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetSingleSampledRTVHandle() const { return singleSampledRTVHandle_; }
 	[[nodiscard]] D3D12_SHADER_RESOURCE_VIEW_DESC GetSingleSampledSRVDescription() const { return singleSampledImage_.GetSRVDescription(); }

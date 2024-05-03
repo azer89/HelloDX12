@@ -8,24 +8,46 @@ PipelineTonemap::PipelineTonemap(
 	PipelineBase(ctx),
 	resourcesShared_(resourcesShared)
 {
-	CreateDescriptorHeap(ctx);
+	CreateDescriptors(ctx);
 	CreateShaders(ctx);
-	CreateRootSignature(ctx);
 	CreateGraphicsPipeline(ctx);
 }
 
-void PipelineTonemap::CreateDescriptorHeap(DX12Context& ctx)
+PipelineTonemap::~PipelineTonemap()
 {
-	descriptorManager_.CreateDescriptorHeap(ctx, 1);
+	Destroy();
+}
 
-	// TODO handles can be precomputed
-	uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	CD3DX12_CPU_DESCRIPTOR_HANDLE handle1(descriptorManager_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), 0, incrementSize);
+void PipelineTonemap::Destroy()
+{
+	descriptorHeap_.Destroy();
+}
 
-	// Source image SRV
-	auto srcSRVDesc = resourcesShared_->GetSingleSampledSRVDescription();
-	auto srcResource = resourcesShared_->GetSingleSampledRenderTarget();
-	ctx.GetDevice()->CreateShaderResourceView(srcResource, &srcSRVDesc, handle1);
+void PipelineTonemap::CreateDescriptors(DX12Context& ctx)
+{
+	std::vector<DX12Descriptor> descriptors(1);
+	descriptors[0] =
+	{
+		.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DESCRIPTORS_VOLATILE,
+		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
+		.buffer_ = resourcesShared_->GetSingleSampledBuffer(),
+		.srvDescription_ = resourcesShared_->GetSingleSampledSRVDescription()
+	};
+
+	descriptorHeap_.descriptors_ = descriptors;
+	descriptorHeap_.Create(ctx);
+
+	CD3DX12_STATIC_SAMPLER_DESC samplerDesc{ 0, D3D12_FILTER_MIN_MAG_MIP_LINEAR };
+	samplerDesc.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+	constexpr D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
+		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
+		D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+		D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
+		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
+
+	rootSignature_.Create(ctx, samplerDesc, descriptors, 0, rootSignatureFlags);
 }
 
 void PipelineTonemap::CreateShaders(DX12Context& ctx)
@@ -34,44 +56,11 @@ void PipelineTonemap::CreateShaders(DX12Context& ctx)
 	fragmentShader_.Create(ctx, AppConfig::ShaderFolder + "Tonemap.hlsl", ShaderType::Fragment);
 }
 
-void PipelineTonemap::CreateRootSignature(DX12Context& ctx)
-{
-	std::vector<CD3DX12_DESCRIPTOR_RANGE1> ranges = {};
-	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DESCRIPTORS_VOLATILE);
-
-	std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters = {};
-	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data(), D3D12_SHADER_VISIBILITY_PIXEL);
-
-	constexpr D3D12_STATIC_SAMPLER_DESC samplerDesc =
-	{
-		.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR,
-		.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
-		.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
-		.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
-		.MipLODBias = 0.0f,
-		.MaxAnisotropy = 0,
-		.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER,
-		.BorderColor = D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK,
-		.MinLOD = 0.0f,
-		.MaxLOD = D3D12_FLOAT32_MAX,
-		.ShaderRegister = 0,
-		.RegisterSpace = 0,
-		.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL
-	};
-
-	// Root signature
-	descriptorManager_.CreateRootDescriptor(
-		ctx, 
-		samplerDesc, 
-		rootParameters, 
-		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-}
-
 void PipelineTonemap::CreateGraphicsPipeline(DX12Context& ctx)
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc =
 	{
-		.pRootSignature = descriptorManager_.rootSignature_,
+		.pRootSignature = rootSignature_.rootSignature_,
 		.VS = CD3DX12_SHADER_BYTECODE(vertexShader_.GetHandle()),
 		.PS = CD3DX12_SHADER_BYTECODE(fragmentShader_.GetHandle()),
 		.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT),
@@ -95,15 +84,14 @@ void PipelineTonemap::PopulateCommandList(DX12Context& ctx)
 	commandList->SetPipelineState(pipelineState_);
 	commandList->RSSetViewports(1, &viewport_);
 	commandList->RSSetScissorRects(1, &scissor_);
-	commandList->SetGraphicsRootSignature(descriptorManager_.rootSignature_);
+	commandList->SetGraphicsRootSignature(rootSignature_.rootSignature_);
 
 	// Descriptors
 	const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(descriptorManager_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 0, incrementSize);
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(descriptorHeap_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 0, incrementSize);
 
-	ID3D12DescriptorHeap* ppHeaps[] = { descriptorManager_.descriptorHeap_ };
-	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
-	commandList->SetGraphicsRootDescriptorTable(0, handle1);
+	descriptorHeap_.BindHeap(commandList);
+	descriptorHeap_.BindDescriptorsGraphics(commandList, 0);
 
 	const auto rtvHandle = resourcesShared_->GetSwapchainRTVHandle(ctx.GetFrameIndex());
 	constexpr uint32_t renderTargetCount = 1;

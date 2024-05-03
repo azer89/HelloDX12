@@ -13,15 +13,18 @@ PipelineSkybox::PipelineSkybox(
 	camera_(camera)
 {
 	CreateConstantBuffer(ctx);
-	CreateDescriptorHeap(ctx);
+	CreateDescriptors(ctx);
 	GenerateShader(ctx);
-	CreateRootSignature(ctx);
 	CreatePipeline(ctx);
 }
 
 PipelineSkybox::~PipelineSkybox()
 {
 	Destroy();
+	for (auto& heap : descriptorHeaps_)
+	{
+		heap.Destroy();
+	}
 }
 
 void PipelineSkybox::Destroy()
@@ -40,50 +43,34 @@ void PipelineSkybox::CreateConstantBuffer(DX12Context& ctx)
 	}
 }
 
-void PipelineSkybox::CreateDescriptorHeap(DX12Context& ctx)
+void PipelineSkybox::CreateDescriptors(DX12Context& ctx)
 {
-	descriptorManager_.CreateDescriptorHeap(ctx, 3);
+	std::vector<DX12Descriptor> descriptors(2);
+	descriptors[0] =
+	{
+		.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
+		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_VERTEX,
+		.buffer_ = nullptr
+	};
 
-	const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	uint32_t descriptorOffset = 0;
+	descriptors[1] =
+	{
+		.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
+		.buffer_ = &(resourcesIBL_->environmentCubemap_.buffer_),
+		.srvDescription_ = resourcesIBL_->environmentCubemap_.GetSRVDescription()
+	};
 
-	// Camera (CVB)
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
-		CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptorManager_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), descriptorOffset++, incrementSize);
-		D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc =
-		{
-			.BufferLocation = constBuffCamera_[i].gpuAddress_,
-			.SizeInBytes = static_cast<UINT>(constBuffCamera_[i].constantBufferSize_)
-		};
-		ctx.GetDevice()->CreateConstantBufferView(&cbvDesc, handle);
+		descriptors[0].buffer_ = &(constBuffCamera_[i]);
+		descriptors[0].cbvDescription_ = constBuffCamera_[i].GetCBVDescription();
+
+		descriptorHeaps_[i].descriptors_ = descriptors;
+		descriptorHeaps_[i].Create(ctx);
 	}
-
-	// Cubemap (SRV)
-	auto imgSRVDesc = resourcesIBL_->environmentCubemap_.GetSRVDescription();
-	auto imageResource = resourcesIBL_->environmentCubemap_.GetResource();
-	CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptorManager_.descriptorHeap_->GetCPUDescriptorHandleForHeapStart(), descriptorOffset++, incrementSize);
-	ctx.GetDevice()->CreateShaderResourceView(imageResource, &imgSRVDesc, handle);
-}
-
-void PipelineSkybox::GenerateShader(DX12Context& ctx)
-{
-	vertexShader_.Create(ctx, AppConfig::ShaderFolder + "Skybox.hlsl", ShaderType::Vertex);
-	fragmentShader_.Create(ctx, AppConfig::ShaderFolder + "Skybox.hlsl", ShaderType::Fragment);
-}
-
-void PipelineSkybox::CreateRootSignature(DX12Context& ctx)
-{
-	uint32_t cvbRegister = 0;
-	uint32_t srvRegister = 0;
-	std::vector<CD3DX12_DESCRIPTOR_RANGE1> ranges;
-	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, cvbRegister++, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
-	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, srvRegister++, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
-
-	uint32_t paramOffset = 0;
-	std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters;
-	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + paramOffset++, D3D12_SHADER_VISIBILITY_VERTEX);
-	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + paramOffset++, D3D12_SHADER_VISIBILITY_PIXEL);
 
 	CD3DX12_STATIC_SAMPLER_DESC sampler{ 0, D3D12_FILTER_ANISOTROPIC };
 	sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
@@ -96,14 +83,20 @@ void PipelineSkybox::CreateRootSignature(DX12Context& ctx)
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
 	// Root signature
-	descriptorManager_.CreateRootDescriptor(ctx, sampler, rootParameters, rootSignatureFlags);
+	rootSignature_.Create(ctx, sampler, descriptors, 0, rootSignatureFlags);
+}
+
+void PipelineSkybox::GenerateShader(DX12Context& ctx)
+{
+	vertexShader_.Create(ctx, AppConfig::ShaderFolder + "Skybox.hlsl", ShaderType::Vertex);
+	fragmentShader_.Create(ctx, AppConfig::ShaderFolder + "Skybox.hlsl", ShaderType::Fragment);
 }
 
 void PipelineSkybox::CreatePipeline(DX12Context& ctx)
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc =
 	{
-		.pRootSignature = descriptorManager_.rootSignature_,
+		.pRootSignature = rootSignature_.rootSignature_,
 		.VS = CD3DX12_SHADER_BYTECODE(vertexShader_.GetHandle()),
 		.PS = CD3DX12_SHADER_BYTECODE(fragmentShader_.GetHandle()),
 		.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT),
@@ -140,17 +133,11 @@ void PipelineSkybox::PopulateCommandList(DX12Context& ctx)
 	commandList->SetPipelineState(pipelineState_);
 	commandList->RSSetViewports(1, &viewport_);
 	commandList->RSSetScissorRects(1, &scissor_);
-	commandList->SetGraphicsRootSignature(descriptorManager_.rootSignature_);
+	commandList->SetGraphicsRootSignature(rootSignature_.rootSignature_);
 
 	// Descriptors
-	uint32_t rootParamIndex = 0;
-	const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(descriptorManager_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), ctx.GetFrameIndex(), incrementSize);
-	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle2(descriptorManager_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 2, incrementSize);
-	ID3D12DescriptorHeap* ppHeaps[] = { descriptorManager_.descriptorHeap_ };
-	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
-	commandList->SetGraphicsRootDescriptorTable(rootParamIndex++, handle1);
-	commandList->SetGraphicsRootDescriptorTable(rootParamIndex++, handle2);
+	descriptorHeaps_[ctx.GetFrameIndex()].BindHeap(commandList);
+	descriptorHeaps_[ctx.GetFrameIndex()].BindDescriptorsGraphics(commandList, 0);
 
 	const auto rtvHandle = resourcesShared_->GetMultiSampledRTVHandle();
 	const auto dsvHandle = resourcesShared_->GetDSVHandle();

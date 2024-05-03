@@ -44,9 +44,25 @@ public:
 		uint32_t msaaCount,
 		DXGI_FORMAT imageFormat);
 	
+	// Alternative to UploadData()
+	template<typename T>
+	T* As()
+	{
+		return reinterpret_cast<T*>(mappedData_);
+	}
+
 	void UploadData(void* data);
 
 	void Destroy();
+
+	D3D12_CONSTANT_BUFFER_VIEW_DESC GetCBVDescription()
+	{
+		return
+		{
+			.BufferLocation = gpuAddress_,
+			.SizeInBytes = static_cast<UINT>(constantBufferSize_)
+		};
+	}
 
 private:
 	void CreateUploadHeap(DX12Context& ctx,
@@ -66,7 +82,7 @@ public:
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_ = {};
 	
 	uint64_t constantBufferSize_ = 0;
-	unsigned char* mappedData_ = nullptr;
+	uint8_t* mappedData_ = nullptr;
 	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress_ = 0;
 };
 

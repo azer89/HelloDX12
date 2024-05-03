@@ -76,7 +76,7 @@ private:
 
 	// Synchronization objects.
 	uint32_t frameIndex_ = 0;
-	HANDLE fenceEvent_ = nullptr;
+	HANDLE fenceCompletionEvent_ = nullptr;
 	ComPtr<ID3D12Fence> fence_ = nullptr;
 	uint64_t fenceValues_[AppConfig::FrameCount] = {};
 
