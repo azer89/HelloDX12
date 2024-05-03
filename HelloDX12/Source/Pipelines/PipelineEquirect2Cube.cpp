@@ -13,7 +13,7 @@ PipelineEquirect2Cube::~PipelineEquirect2Cube()
 
 void PipelineEquirect2Cube::Destroy()
 {
-	descriptorHeap2_.Destroy();
+	descriptorHeap_.Destroy();
 }
 
 void PipelineEquirect2Cube::GenerateCubemapFromHDR(DX12Context& ctx, 
@@ -52,8 +52,8 @@ void PipelineEquirect2Cube::CreateDescriptors(
 		.uavDescription_ = cubemapUAVDesc
 	};
 
-	descriptorHeap2_.descriptors_ = descriptors;
-	descriptorHeap2_.Create(ctx);
+	descriptorHeap_.descriptors_ = descriptors;
+	descriptorHeap_.Create(ctx);
 
 	CD3DX12_STATIC_SAMPLER_DESC samplerDesc{ 0, D3D12_FILTER_MIN_MAG_MIP_LINEAR };
 	samplerDesc.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
@@ -106,8 +106,8 @@ void PipelineEquirect2Cube::Execute(
 	commandList->ResourceBarrier(1, &barrier2);
 
 	// Descriptors
-	descriptorHeap2_.BindHeap(commandList);
-	descriptorHeap2_.BindDescriptorsCompute(commandList, 0);
+	descriptorHeap_.BindHeap(commandList);
+	descriptorHeap_.BindDescriptorsCompute(commandList, 0);
 
 	commandList->Dispatch(cubemapImage->width_ / 32, cubemapImage->height_ / 32, 6);
 
