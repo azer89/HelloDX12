@@ -17,22 +17,24 @@ public:
 	void Init(DX12Context& ctx);
 	void Destroy() override;
 	
+	// Color attachment (MSAA)
 	[[nodiscard]] DX12Buffer* GetMultiSampledBuffer() { return &(multiSampledImage_.buffer_); }
 	[[nodiscard]] ID3D12Resource* GetMultiSampledRenderTarget() const { return multiSampledImage_.GetResource(); }
 	[[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetMultiSampledRTVHandle() const { return multiSampledRTVHandle_; }
 	[[nodiscard]] D3D12_SHADER_RESOURCE_VIEW_DESC GetMultiSampledSRVDescription() const { return multiSampledImage_.GetSRVDescription(); }
 
+	// Color attachment (no MSAA)
 	[[nodiscard]] DX12Buffer* GetSingleSampledBuffer() { return &(singleSampledImage_.buffer_); }
 	[[nodiscard]] ID3D12Resource* GetSingleSampledRenderTarget() const { return singleSampledImage_.GetResource(); }
 	[[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetSingleSampledRTVHandle() const { return singleSampledRTVHandle_; }
 	[[nodiscard]] D3D12_SHADER_RESOURCE_VIEW_DESC GetSingleSampledSRVDescription() const { return singleSampledImage_.GetSRVDescription(); }
 	
-	//[[nodiscard]] ID3D12Resource* GetSwapchainRenderTarget(uint32_t frameIndex) const { return swapchainRenderTargets_[frameIndex]; }
-	//[[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetSwapchainRTVHandle(uint32_t frameIndex) const { return swapchainRTVHandles_[frameIndex]; }
+	// Swapchain buffers
 	[[nodiscard]] DX12Buffer* GetSwapchainBuffer(uint32_t frameIndex) { return &(swapchainBuffers_[frameIndex]); }
 	[[nodiscard]] ID3D12Resource* GetSwapchainResource(uint32_t frameIndex) const { return swapchainBuffers_[frameIndex].resource_; }
 	[[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetSwapchainCPUHandle(uint32_t frameIndex) const { return swapchainCPUHandles_[frameIndex]; }
 
+	// Depth attachment
 	[[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetDSVHandle() const { return dsvHandle_; }
 
 private:
@@ -49,8 +51,6 @@ private:
 
 	// Swapchain RTV
 	ID3D12DescriptorHeap* swapchainRTVHeap_ = nullptr;
-	//std::array<CD3DX12_CPU_DESCRIPTOR_HANDLE, AppConfig::FrameCount> swapchainRTVHandles_ = {};
-	//std::array<ID3D12Resource*, AppConfig::FrameCount> swapchainRenderTargets_ = { nullptr }; // TODO Set as DX12Buffer
 	std::array<DX12Buffer, AppConfig::FrameCount> swapchainBuffers_ = {};
 	std::array<CD3DX12_CPU_DESCRIPTOR_HANDLE, AppConfig::FrameCount> swapchainCPUHandles_ = {};
 

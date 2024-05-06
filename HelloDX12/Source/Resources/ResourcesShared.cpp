@@ -33,7 +33,7 @@ void ResourcesShared::Destroy()
 
 	for (auto& sw : swapchainBuffers_)
 	{
-		sw.resource_->Release();
+		sw.Destroy();
 	}
 }
 
@@ -61,7 +61,7 @@ void ResourcesShared::GrabSwapchain(DX12Context& ctx)
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(swapchainRTVHeap_->GetCPUDescriptorHandleForHeapStart());
 	for (uint32_t i = 0; i < AppConfig::FrameCount; i++)
 	{
-		swapchainBuffers_[i].SetBufferAsSwapchain(ctx, rtvHandle, i);
+		swapchainBuffers_[i].SetAsSwapchainBuffer(ctx, rtvHandle, i);
 		rtvHandle.Offset(1, rtvIncrementSize_);
 	}
 

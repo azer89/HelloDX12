@@ -6,6 +6,11 @@
 
 void DX12Buffer::Destroy()
 {
+	if (isSwapchainBuffer_)
+	{
+		resource_->Release();
+	}
+
 	if (dmaAllocation_ != nullptr)
 	{
 		resource_->Release();
@@ -496,11 +501,12 @@ void DX12Buffer::CreateImageFromData(
 	bufferUploadHeapAllocation->Release();
 }
 
-void DX12Buffer::SetBufferAsSwapchain(DX12Context& ctx, CD3DX12_CPU_DESCRIPTOR_HANDLE& rtvHandle, uint32_t frameIndex)
+void DX12Buffer::SetAsSwapchainBuffer(DX12Context& ctx, CD3DX12_CPU_DESCRIPTOR_HANDLE& rtvHandle, uint32_t frameIndex)
 {
 	ThrowIfFailed(ctx.GetSwapchain()->GetBuffer(frameIndex, IID_PPV_ARGS(&resource_)))
 	ctx.GetDevice()->CreateRenderTargetView(resource_, nullptr, rtvHandle);
 	state_ = D3D12_RESOURCE_STATE_PRESENT;
+	isSwapchainBuffer_ = true;
 }
 
 void DX12Buffer::CreateUploadHeap(DX12Context& ctx,

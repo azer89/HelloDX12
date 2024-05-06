@@ -43,7 +43,7 @@ public:
 		uint32_t height,
 		uint32_t msaaCount,
 		DXGI_FORMAT imageFormat);
-	void SetBufferAsSwapchain(
+	void SetAsSwapchainBuffer(
 		DX12Context& ctx, 
 		CD3DX12_CPU_DESCRIPTOR_HANDLE& rtvHandle, 
 		uint32_t frameIndex);
@@ -101,6 +101,7 @@ public:
 
 private:
 	D3D12_RESOURCE_STATES state_;
+	bool isSwapchainBuffer_ = false;
 };
 
 #endif
