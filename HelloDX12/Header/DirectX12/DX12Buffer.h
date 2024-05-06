@@ -64,6 +64,10 @@ public:
 		};
 	}
 
+	void TransitionCommand(ID3D12GraphicsCommandList* commmandList,
+		D3D12_RESOURCE_STATES beforeState,
+		D3D12_RESOURCE_STATES afterState);
+
 private:
 	void CreateUploadHeap(DX12Context& ctx,
 		uint64_t bufferSize,
@@ -74,7 +78,9 @@ private:
 	static uint32_t GetConstantBufferByteSize(uint64_t byteSize);
 
 public:
-	uint64_t bufferSize_ = 0;
+	// TODO Set below as private
+
+	uint64_t bufferSize_ = 0; // TODO Set as width_
 	ID3D12Resource* resource_ = nullptr;
 	D3D12MA::Allocation* dmaAllocation_ = nullptr;
 	
@@ -84,6 +90,9 @@ public:
 	uint64_t constantBufferSize_ = 0;
 	uint8_t* mappedData_ = nullptr;
 	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress_ = 0;
+
+private:
+	D3D12_RESOURCE_STATES state_;
 };
 
 #endif
