@@ -39,8 +39,8 @@ public:
 	[[nodiscard]] DXGI_FORMAT GetSwapchainFormat() const { return swapchainFormat_; }
 	[[nodiscard]] IDXGISwapChain3* GetSwapchain() const { return swapchain_.Get(); }
 	[[nodiscard]] D3D12MA::Allocator* GetDMAAllocator() const { return dmaAllocator_; }
-	[[nodiscard]] IDxcLibrary* GetDXCLibrary() const { return dxcLibrary_.Get(); }
-	[[nodiscard]] IDxcCompiler* GetDXCCompiler() const { return dxcCompiler_.Get(); }
+	[[nodiscard]] IDxcUtils* GetDXCUtils() const { return dxcUtils_.Get(); }
+	[[nodiscard]] IDxcCompiler3* GetDXCCompiler() const { return dxcCompiler_.Get(); }
 	[[nodiscard]] ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
 	
 	void CreateFence();
@@ -90,8 +90,8 @@ private:
 	D3D12MA::Allocator* dmaAllocator_ = nullptr;
 
 	// DXC
-	ComPtr<IDxcLibrary> dxcLibrary_ = nullptr;
-	ComPtr<IDxcCompiler> dxcCompiler_ = nullptr;
+	ComPtr<IDxcUtils> dxcUtils_ = nullptr;
+	ComPtr<IDxcCompiler3> dxcCompiler_ = nullptr;
 };
 
 #endif

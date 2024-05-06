@@ -19,11 +19,11 @@ public:
 	~DX12Shader() = default;
 
 	void Destroy();
-	ID3DBlob* GetHandle() const { return handle_; }
+	IDxcBlob* GetHandle() const { return handle_; }
 	void Create(DX12Context& ctx, const std::string& filename, ShaderType shaderType);
 
 private:
-	ID3DBlob* handle_ = nullptr;
+	IDxcBlob* handle_ = nullptr;
 };
 
 #endif

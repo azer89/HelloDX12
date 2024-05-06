@@ -48,11 +48,11 @@ float4 PSMain(PSInput input) : SV_TARGET
     // Albedo component
     float3 lighting = albedo.xyz * 0.01;
     
-    float viewDir = normalize(camData.cameraPosition - input.worldPosition.xyz);
+    float3 viewDir = normalize(camData.cameraPosition - input.worldPosition.xyz);
     for (uint i = 0; i < len; ++i)
     {
         LightData light = lightDataArray[i];
-        float3 lightDir = normalize(light.position - input.worldPosition);
+        float3 lightDir = normalize(light.position - input.worldPosition).xyz;
         
         // Diffuse component
         float3 diffuse = max(dot(input.normal, lightDir), 0.0) * albedo.xyz * light.color.xyz;
