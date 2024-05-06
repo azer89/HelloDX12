@@ -45,7 +45,7 @@ private:
 	// Swapchain RTV
 	ID3D12DescriptorHeap* swapchainRTVHeap_ = nullptr;
 	std::array<CD3DX12_CPU_DESCRIPTOR_HANDLE, AppConfig::FrameCount> swapchainRTVHandles_ = {};
-	std::array<ID3D12Resource*, AppConfig::FrameCount> swapchainRenderTargets_ = { nullptr };
+	std::array<ID3D12Resource*, AppConfig::FrameCount> swapchainRenderTargets_ = { nullptr }; // TODO Set as DX12Buffer
 
 	// Offscreen Multisampled RTV (MSAA)
 	DX12Image multiSampledImage_;

@@ -531,7 +531,20 @@ void DX12Buffer::CreateUploadHeap(DX12Context& ctx,
 		IID_PPV_ARGS(bufferUploadHeap)))
 }
 
-void DX12Buffer::TransitionCommand(ID3D12GraphicsCommandList* commmandList,
+void DX12Buffer::TransitionCommand(
+	ID3D12GraphicsCommandList* commmandList,
+	D3D12_RESOURCE_STATES afterState)
+{
+	if (state_ == afterState)
+	{
+		return;
+	}
+
+	TransitionCommand(commmandList, state_, afterState);
+}
+
+void DX12Buffer::TransitionCommand(
+	ID3D12GraphicsCommandList* commmandList,
 	D3D12_RESOURCE_STATES beforeState,
 	D3D12_RESOURCE_STATES afterState)
 {
@@ -540,7 +553,10 @@ void DX12Buffer::TransitionCommand(ID3D12GraphicsCommandList* commmandList,
 			resource_,
 			beforeState,
 			afterState);
+
 	commmandList->ResourceBarrier(1, &barrier);
+
+	state_ = afterState;
 }
 
 uint32_t DX12Buffer::GetConstantBufferByteSize(uint64_t byteSize)

@@ -187,6 +187,13 @@ D3D12_STATIC_SAMPLER_DESC DX12Image::GetSampler()
 	};
 }
 
+void DX12Image::TransitionCommand(
+	ID3D12GraphicsCommandList* commmandList,
+	D3D12_RESOURCE_STATES afterState)
+{
+	buffer_.TransitionCommand(commmandList, afterState);
+}
+
 // Generate a simple black and white checkerboard texture.
 std::vector<uint8_t> DX12Image::GenerateCheckerboard(DX12Context& ctx)
 {

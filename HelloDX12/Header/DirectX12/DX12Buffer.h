@@ -64,10 +64,14 @@ public:
 		};
 	}
 
-	void TransitionCommand(ID3D12GraphicsCommandList* commmandList,
+	void TransitionCommand(
+		ID3D12GraphicsCommandList* commmandList,
+		D3D12_RESOURCE_STATES afterState);
+	void TransitionCommand(
+		ID3D12GraphicsCommandList* commmandList,
 		D3D12_RESOURCE_STATES beforeState,
 		D3D12_RESOURCE_STATES afterState);
-
+	
 private:
 	void CreateUploadHeap(DX12Context& ctx,
 		uint64_t bufferSize,
