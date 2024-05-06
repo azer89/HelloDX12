@@ -121,6 +121,15 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 		device_->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &msLevels, sizeof(msLevels));
 		std::cout << "MSAA = " << msLevels.SampleCount << '\n';
 	}
+
+	// Shader compiler
+	CreateDXC();
+}
+
+void DX12Context::CreateDXC()
+{
+	ThrowIfFailed(DxcCreateInstance(CLSID_DxcLibrary, IID_PPV_ARGS(&dxcLibrary_)))
+	ThrowIfFailed(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler_)))
 }
 
 // Debug callback

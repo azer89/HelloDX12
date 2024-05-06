@@ -3,11 +3,13 @@
 
 #include <d3d12.h>
 #include <dxgi1_6.h>
-#include <D3Dcompiler.h>
+#include <d3dcompiler.h>
 #include <windows.h>
 #include <wrl.h>
 #include <shellapi.h>
-#include "d3dx12.h"
+
+#include "d3dx12.h" // Agility SDK
+#include "dxcapi.h" // DXC
 
 #include "D3D12MemAlloc.h"
 
@@ -37,6 +39,8 @@ public:
 	[[nodiscard]] DXGI_FORMAT GetSwapchainFormat() const { return swapchainFormat_; }
 	[[nodiscard]] IDXGISwapChain3* GetSwapchain() const { return swapchain_.Get(); }
 	[[nodiscard]] D3D12MA::Allocator* GetDMAAllocator() const { return dmaAllocator_; }
+	[[nodiscard]] IDxcLibrary* GetDXCLibrary() const { return dxcLibrary_.Get(); }
+	[[nodiscard]] IDxcCompiler* GetDXCCompiler() const { return dxcCompiler_.Get(); }
 	[[nodiscard]] ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
 	
 	void CreateFence();
@@ -61,6 +65,8 @@ private:
 		_Outptr_result_maybenull_ IDXGIAdapter1** ppAdapter,
 		bool requestHighPerformanceAdapter = false);
 
+	void CreateDXC();
+
 private:
 	uint32_t swapchainWidth_ = 0;
 	uint32_t swapchainHeight_ = 0;
@@ -82,6 +88,10 @@ private:
 
 	// D12 Memory Allocator
 	D3D12MA::Allocator* dmaAllocator_ = nullptr;
+
+	// DXC
+	ComPtr<IDxcLibrary> dxcLibrary_ = nullptr;
+	ComPtr<IDxcCompiler> dxcCompiler_ = nullptr;
 };
 
 #endif
