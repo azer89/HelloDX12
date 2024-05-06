@@ -43,6 +43,10 @@ public:
 		uint32_t height,
 		uint32_t msaaCount,
 		DXGI_FORMAT imageFormat);
+	void SetBufferAsSwapchain(
+		DX12Context& ctx, 
+		CD3DX12_CPU_DESCRIPTOR_HANDLE& rtvHandle, 
+		uint32_t frameIndex);
 	
 	// Alternative to UploadData()
 	template<typename T>
