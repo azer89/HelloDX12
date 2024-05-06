@@ -167,15 +167,12 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t buffe
 		&subresourceData);
 	assert(r);
 
-	// Transition the vertex buffer data from copy destination state to vertex buffer state
-	D3D12_RESOURCE_BARRIER barrier = 
-	{
-		.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION
-	};
-	barrier.Transition.pResource = resource_;
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
-	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	// Barrier
+	auto barrier =
+		CD3DX12_RESOURCE_BARRIER::Transition(
+			resource_,
+			D3D12_RESOURCE_STATE_COPY_DEST,
+			D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 	ctx.GetCommandList()->ResourceBarrier(1, &barrier);
 
 	// End recording
@@ -255,15 +252,12 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t buffer
 		&subresourceData);
 	assert(r);
 
-	// Transition the index buffer data from copy destination state to vertex buffer state
-	D3D12_RESOURCE_BARRIER barrier = 
-	{
-		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION
-	};
-	barrier.Transition.pResource = resource_;
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_INDEX_BUFFER;
-	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	// Barrier
+	auto barrier =
+		CD3DX12_RESOURCE_BARRIER::Transition(
+			resource_,
+			D3D12_RESOURCE_STATE_COPY_DEST,
+			D3D12_RESOURCE_STATE_INDEX_BUFFER);
 	ctx.GetCommandList()->ResourceBarrier(1, &barrier);
 
 	// End recording 
@@ -489,14 +483,12 @@ void DX12Buffer::CreateImageFromData(
 		1, 
 		&subresourceData);
 
-	D3D12_RESOURCE_BARRIER barrier = 
-	{
-		.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION
-	};
-	barrier.Transition.pResource = resource_;
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	// Barrier
+	auto barrier =
+		CD3DX12_RESOURCE_BARRIER::Transition(
+			resource_,
+			D3D12_RESOURCE_STATE_COPY_DEST,
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	ctx.GetCommandList()->ResourceBarrier(1, &barrier);
 
 	// End recording 
