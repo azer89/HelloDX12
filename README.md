@@ -1,5 +1,5 @@
 
-A rendering app written using C++ and DirectX 12. The shading is still fairly basic as the project is still in its infancy and I put more focus on the abstraction layer.
+A rendering app written using C++ and DirectX 12. The shading is fairly basic as the project is still in its infancy and I'm putting more focus on the abstraction layer.
 
 <img width="600" alt="Zaku" src="https://github.com/azer89/HelloDX12/assets/790432/59e07438-9340-4527-92c6-097df28b6214">
 
