@@ -6,6 +6,11 @@
 
 void DX12Buffer::Destroy()
 {
+	if (isSwapchainBuffer_)
+	{
+		resource_->Release();
+	}
+
 	if (dmaAllocation_ != nullptr)
 	{
 		resource_->Release();
@@ -18,6 +23,7 @@ void DX12Buffer::Destroy()
 void DX12Buffer::CreateBuffer(DX12Context& ctx, uint64_t bufferSize)
 {
 	bufferSize_ = bufferSize;
+	state_ = D3D12_RESOURCE_STATE_GENERIC_READ;
 
 	D3D12MA::ALLOCATION_DESC constantBufferUploadAllocDesc =
 	{
@@ -42,7 +48,7 @@ void DX12Buffer::CreateBuffer(DX12Context& ctx, uint64_t bufferSize)
 	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&constantBufferUploadAllocDesc,
 		&resourceDesc,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
+		state_,
 		nullptr,
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)));
@@ -60,6 +66,7 @@ void DX12Buffer::CreateConstantBuffer(DX12Context& ctx, uint64_t bufferSize)
 {
 	bufferSize_ = bufferSize;
 	constantBufferSize_ = GetConstantBufferByteSize(bufferSize_);
+	state_ = D3D12_RESOURCE_STATE_GENERIC_READ;
 
 	D3D12MA::ALLOCATION_DESC constantBufferUploadAllocDesc = 
 	{
@@ -84,7 +91,7 @@ void DX12Buffer::CreateConstantBuffer(DX12Context& ctx, uint64_t bufferSize)
 	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&constantBufferUploadAllocDesc,
 		&constantBufferResourceDesc,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
+		state_,
 		nullptr,
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)));
@@ -106,6 +113,7 @@ void DX12Buffer::UploadData(void* data)
 void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t bufferSize, uint32_t stride)
 {
 	bufferSize_ = bufferSize;
+	state_ = D3D12_RESOURCE_STATE_COMMON;
 
 	constexpr D3D12MA::ALLOCATION_DESC allocDesc = 
 	{
@@ -130,7 +138,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t buffe
 	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&allocDesc,
 		&resourceDesc,
-		D3D12_RESOURCE_STATE_COMMON,
+		state_,
 		nullptr,
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)))
@@ -167,16 +175,8 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t buffe
 		&subresourceData);
 	assert(r);
 
-	// Transition the vertex buffer data from copy destination state to vertex buffer state
-	D3D12_RESOURCE_BARRIER barrier = 
-	{
-		.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION
-	};
-	barrier.Transition.pResource = resource_;
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
-	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-	ctx.GetCommandList()->ResourceBarrier(1, &barrier);
+	// Transition
+	TransitionCommand(ctx.GetCommandList(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
 	// End recording
 	ctx.SubmitCommandListAndWaitForGPU();
@@ -194,6 +194,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t buffe
 void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t bufferSize, DXGI_FORMAT format)
 {
 	bufferSize_ = bufferSize;
+	state_ = D3D12_RESOURCE_STATE_COMMON;
 
 	// Create default heap to hold index buffer
 	constexpr D3D12MA::ALLOCATION_DESC allocDesc = 
@@ -219,7 +220,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t buffer
 	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&allocDesc,
 		&resourceDesc,
-		D3D12_RESOURCE_STATE_COMMON,
+		state_,
 		nullptr,
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)))
@@ -255,16 +256,8 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t buffer
 		&subresourceData);
 	assert(r);
 
-	// Transition the index buffer data from copy destination state to vertex buffer state
-	D3D12_RESOURCE_BARRIER barrier = 
-	{
-		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION
-	};
-	barrier.Transition.pResource = resource_;
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_INDEX_BUFFER;
-	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-	ctx.GetCommandList()->ResourceBarrier(1, &barrier);
+	// Transition
+	TransitionCommand(ctx.GetCommandList(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_INDEX_BUFFER);
 
 	// End recording 
 	ctx.SubmitCommandListAndWaitForGPU();
@@ -288,6 +281,8 @@ void DX12Buffer::CreateImage(
 	DXGI_FORMAT imageFormat,
 	D3D12_RESOURCE_FLAGS flags)
 {
+	state_ = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+
 	D3D12_RESOURCE_DESC textureDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
@@ -310,7 +305,7 @@ void DX12Buffer::CreateImage(
 	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&textureAllocDesc,
 		&textureDesc,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		state_,
 		nullptr, // pOptimizedClearValue
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)))
@@ -328,6 +323,8 @@ void DX12Buffer::CreateColorAttachment(
 	DXGI_FORMAT imageFormat,
 	D3D12_RESOURCE_FLAGS flags)
 {
+	state_ = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+
 	D3D12_RESOURCE_DESC textureDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
@@ -361,7 +358,7 @@ void DX12Buffer::CreateColorAttachment(
 	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&textureAllocDesc,
 		&textureDesc,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		state_,
 		&clearValue, // pOptimizedClearValue
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)))
@@ -376,6 +373,8 @@ void DX12Buffer::CreateDepthAttachment(
 	uint32_t msaaCount,
 	DXGI_FORMAT imageFormat) // DXGI_FORMAT_D32_FLOAT
 {
+	state_ = D3D12_RESOURCE_STATE_DEPTH_WRITE;
+
 	D3D12_CLEAR_VALUE clearValue =
 	{
 		.Format = imageFormat
@@ -404,7 +403,7 @@ void DX12Buffer::CreateDepthAttachment(
 	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&depthStencilAllocDesc,
 		&depthStencilResourceDesc,
-		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		state_,
 		&clearValue,
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)
@@ -423,6 +422,8 @@ void DX12Buffer::CreateImageFromData(
 	DXGI_FORMAT imageFormat,
 	D3D12_RESOURCE_FLAGS flags)
 {
+	state_ = D3D12_RESOURCE_STATE_COPY_DEST;
+
 	D3D12_RESOURCE_DESC textureDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
@@ -445,7 +446,7 @@ void DX12Buffer::CreateImageFromData(
 	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&textureAllocDesc,
 		&textureDesc,
-		D3D12_RESOURCE_STATE_COPY_DEST,
+		state_,
 		nullptr, // pOptimizedClearValue
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)))
@@ -489,15 +490,8 @@ void DX12Buffer::CreateImageFromData(
 		1, 
 		&subresourceData);
 
-	D3D12_RESOURCE_BARRIER barrier = 
-	{
-		.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION
-	};
-	barrier.Transition.pResource = resource_;
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-	ctx.GetCommandList()->ResourceBarrier(1, &barrier);
+	// Transition
+	TransitionCommand(ctx.GetCommandList(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
 	// End recording 
 	ctx.SubmitCommandListAndWaitForGPU();
@@ -505,6 +499,14 @@ void DX12Buffer::CreateImageFromData(
 	// Release
 	bufferUploadHeap->Release();
 	bufferUploadHeapAllocation->Release();
+}
+
+void DX12Buffer::SetAsSwapchainBuffer(DX12Context& ctx, CD3DX12_CPU_DESCRIPTOR_HANDLE& rtvHandle, uint32_t frameIndex)
+{
+	ThrowIfFailed(ctx.GetSwapchain()->GetBuffer(frameIndex, IID_PPV_ARGS(&resource_)))
+	ctx.GetDevice()->CreateRenderTargetView(resource_, nullptr, rtvHandle);
+	state_ = D3D12_RESOURCE_STATE_PRESENT;
+	isSwapchainBuffer_ = true;
 }
 
 void DX12Buffer::CreateUploadHeap(DX12Context& ctx,
@@ -540,6 +542,40 @@ void DX12Buffer::CreateUploadHeap(DX12Context& ctx,
 		nullptr,
 		bufferUploadHeapAllocation,
 		IID_PPV_ARGS(bufferUploadHeap)))
+}
+
+void DX12Buffer::UAVBarrier(ID3D12GraphicsCommandList* commandList)
+{
+	auto barrier2 = CD3DX12_RESOURCE_BARRIER::UAV(resource_);
+	commandList->ResourceBarrier(1, &barrier2);
+}
+
+void DX12Buffer::TransitionCommand(
+	ID3D12GraphicsCommandList* commandList,
+	D3D12_RESOURCE_STATES afterState)
+{
+	if (state_ == afterState)
+	{
+		return;
+	}
+
+	TransitionCommand(commandList, state_, afterState);
+}
+
+void DX12Buffer::TransitionCommand(
+	ID3D12GraphicsCommandList* commandList,
+	D3D12_RESOURCE_STATES beforeState,
+	D3D12_RESOURCE_STATES afterState)
+{
+	auto barrier =
+		CD3DX12_RESOURCE_BARRIER::Transition(
+			resource_,
+			beforeState,
+			afterState);
+
+	commandList->ResourceBarrier(1, &barrier);
+
+	state_ = afterState;
 }
 
 uint32_t DX12Buffer::GetConstantBufferByteSize(uint64_t byteSize)

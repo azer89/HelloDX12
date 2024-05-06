@@ -43,6 +43,10 @@ public:
 		uint32_t height,
 		uint32_t msaaCount,
 		DXGI_FORMAT imageFormat);
+	void SetAsSwapchainBuffer(
+		DX12Context& ctx, 
+		CD3DX12_CPU_DESCRIPTOR_HANDLE& rtvHandle, 
+		uint32_t frameIndex);
 	
 	// Alternative to UploadData()
 	template<typename T>
@@ -64,6 +68,15 @@ public:
 		};
 	}
 
+	void UAVBarrier(ID3D12GraphicsCommandList* commandList);
+	void TransitionCommand(
+		ID3D12GraphicsCommandList* commandList,
+		D3D12_RESOURCE_STATES afterState);
+	void TransitionCommand(
+		ID3D12GraphicsCommandList* commandList,
+		D3D12_RESOURCE_STATES beforeState,
+		D3D12_RESOURCE_STATES afterState);
+	
 private:
 	void CreateUploadHeap(DX12Context& ctx,
 		uint64_t bufferSize,
@@ -74,7 +87,9 @@ private:
 	static uint32_t GetConstantBufferByteSize(uint64_t byteSize);
 
 public:
-	uint64_t bufferSize_ = 0;
+	// TODO Set below as private
+
+	uint64_t bufferSize_ = 0; // TODO Set as width_
 	ID3D12Resource* resource_ = nullptr;
 	D3D12MA::Allocation* dmaAllocation_ = nullptr;
 	
@@ -84,6 +99,10 @@ public:
 	uint64_t constantBufferSize_ = 0;
 	uint8_t* mappedData_ = nullptr;
 	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress_ = 0;
+
+private:
+	D3D12_RESOURCE_STATES state_;
+	bool isSwapchainBuffer_ = false;
 };
 
 #endif

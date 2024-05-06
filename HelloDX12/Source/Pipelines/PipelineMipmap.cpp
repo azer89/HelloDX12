@@ -108,13 +108,7 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	ctx.ResetCommandList();
 	auto commandList = ctx.GetCommandList();
 
-	// Barrier
-	auto barrier1 =
-		CD3DX12_RESOURCE_BARRIER::Transition(
-			image->GetResource(),
-			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-			D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-	commandList->ResourceBarrier(1, &barrier1);
+	image->TransitionCommand(commandList, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 
 	commandList->SetComputeRootSignature(rootSignature_.rootSignature_);
 	commandList->SetPipelineState(pipelineState_);
@@ -163,16 +157,10 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 			1);
 
 		// Barrier
-		auto barrier2 = CD3DX12_RESOURCE_BARRIER::UAV(image->GetResource());
-		commandList->ResourceBarrier(1, &barrier2);
+		image->UAVBarrier(commandList);
 	}
 
-	// Barrier
-	auto barrier3 = CD3DX12_RESOURCE_BARRIER::Transition(
-		image->GetResource(),
-		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-	commandList->ResourceBarrier(1, &barrier3);
+	image->TransitionCommand(commandList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
 	ctx.SubmitCommandListAndWaitForGPU();
 

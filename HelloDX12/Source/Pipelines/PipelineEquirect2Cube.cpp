@@ -92,18 +92,9 @@ void PipelineEquirect2Cube::Execute(
 
 	commandList->SetPipelineState(pipelineState_);
 	commandList->SetComputeRootSignature(rootSignature_.rootSignature_);
-	
-	// Barrier
-	auto barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(cubemapImage->buffer_.resource_, 
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-		D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-	commandList->ResourceBarrier(1, &barrier1);
 
-	// Barrier
-	auto barrier2 = CD3DX12_RESOURCE_BARRIER::Transition(hdrImage->buffer_.resource_,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-	commandList->ResourceBarrier(1, &barrier2);
+	cubemapImage->TransitionCommand(commandList, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+	hdrImage->TransitionCommand(commandList, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 
 	// Descriptors
 	descriptorHeap_.BindHeap(commandList);
@@ -111,17 +102,8 @@ void PipelineEquirect2Cube::Execute(
 
 	commandList->Dispatch(cubemapImage->width_ / 32, cubemapImage->height_ / 32, 6);
 
-	// Barrier
-	auto barrier3 = CD3DX12_RESOURCE_BARRIER::Transition(cubemapImage->buffer_.resource_,
-		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-	commandList->ResourceBarrier(1, &barrier3);
-
-	// Barrier
-	auto barrier4 = CD3DX12_RESOURCE_BARRIER::Transition(hdrImage->buffer_.resource_,
-		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-	commandList->ResourceBarrier(1, &barrier4);
+	cubemapImage->TransitionCommand(commandList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	hdrImage->TransitionCommand(commandList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
 	ctx.SubmitCommandListAndWaitForGPU();
 }

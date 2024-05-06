@@ -31,22 +31,22 @@ void ResourcesShared::Destroy()
 	}
 	singleSampledImage_.Destroy();
 
-	for (auto& rt : swapchainRenderTargets_)
+	for (auto& sw : swapchainBuffers_)
 	{
-		if (rt) { rt->Release(); }
+		sw.Destroy();
 	}
 }
 
 void ResourcesShared::Init(DX12Context& ctx)
 {
 	rtvIncrementSize_ = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	CreateSwapchainRTV(ctx);
+	GrabSwapchain(ctx);
 	CreateSingleSampledRTV(ctx);
 	CreateMultiSampledRTV(ctx);
 	CreateDSV(ctx);
 }
 
-void ResourcesShared::CreateSwapchainRTV(DX12Context& ctx)
+void ResourcesShared::GrabSwapchain(DX12Context& ctx)
 {
 	// RTV
 	const D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
@@ -61,14 +61,13 @@ void ResourcesShared::CreateSwapchainRTV(DX12Context& ctx)
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(swapchainRTVHeap_->GetCPUDescriptorHandleForHeapStart());
 	for (uint32_t i = 0; i < AppConfig::FrameCount; i++)
 	{
-		ThrowIfFailed(ctx.GetSwapchain()->GetBuffer(i, IID_PPV_ARGS(&swapchainRenderTargets_[i])))
-		ctx.GetDevice()->CreateRenderTargetView(swapchainRenderTargets_[i], nullptr, rtvHandle);
+		swapchainBuffers_[i].SetAsSwapchainBuffer(ctx, rtvHandle, i);
 		rtvHandle.Offset(1, rtvIncrementSize_);
 	}
 
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
-		swapchainRTVHandles_[i] = CD3DX12_CPU_DESCRIPTOR_HANDLE(
+		swapchainCPUHandles_[i] = CD3DX12_CPU_DESCRIPTOR_HANDLE(
 			swapchainRTVHeap_->GetCPUDescriptorHandleForHeapStart(),
 			i,
 			rtvIncrementSize_);
@@ -85,14 +84,7 @@ void ResourcesShared::CreateMultiSampledRTV(DX12Context& ctx)
 	// Barrier
 	{
 		ctx.ResetCommandList();
-		const auto commandList = ctx.GetCommandList();
-
-		const auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-			multiSampledImage_.GetResource(),
-			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, 
-			D3D12_RESOURCE_STATE_RENDER_TARGET);
-		commandList->ResourceBarrier(1, &barrier);
-
+		multiSampledImage_.TransitionCommand(ctx.GetCommandList(), D3D12_RESOURCE_STATE_RENDER_TARGET);
 		ctx.SubmitCommandListAndWaitForGPU();
 	}
 

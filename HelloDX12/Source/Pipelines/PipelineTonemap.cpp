@@ -93,7 +93,7 @@ void PipelineTonemap::PopulateCommandList(DX12Context& ctx)
 	descriptorHeap_.BindHeap(commandList);
 	descriptorHeap_.BindDescriptorsGraphics(commandList, 0);
 
-	const auto rtvHandle = resourcesShared_->GetSwapchainRTVHandle(ctx.GetFrameIndex());
+	const auto rtvHandle = resourcesShared_->GetSwapchainCPUHandle(ctx.GetFrameIndex());
 	constexpr uint32_t renderTargetCount = 1;
 	commandList->OMSetRenderTargets(renderTargetCount, &rtvHandle, FALSE, nullptr); // No depth attachment
 

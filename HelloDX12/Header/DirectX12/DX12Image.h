@@ -19,6 +19,11 @@ public:
 	D3D12_SHADER_RESOURCE_VIEW_DESC GetSRVDescription() const;
 	D3D12_STATIC_SAMPLER_DESC GetSampler();
 
+	void UAVBarrier(ID3D12GraphicsCommandList* commandList);
+	void TransitionCommand(
+		ID3D12GraphicsCommandList* commandList,
+		D3D12_RESOURCE_STATES afterState);
+
 private:
 	std::vector<uint8_t> GenerateCheckerboard(DX12Context& ctx);
 

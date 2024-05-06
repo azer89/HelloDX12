@@ -11,11 +11,6 @@ PipelinePresent::PipelinePresent(
 void PipelinePresent::PopulateCommandList(DX12Context& ctx)
 {
 	ID3D12GraphicsCommandList* commandList = ctx.GetCommandList();
-
-	const auto resourceBarrier =
-		CD3DX12_RESOURCE_BARRIER::Transition(
-			resourcesShared_->GetSwapchainRenderTarget(ctx.GetFrameIndex()),
-			D3D12_RESOURCE_STATE_RENDER_TARGET,
-			D3D12_RESOURCE_STATE_PRESENT);
-	commandList->ResourceBarrier(1, &resourceBarrier);
+	const uint32_t frameIndex = ctx.GetFrameIndex();
+	resourcesShared_->GetSwapchainBuffer(frameIndex)->TransitionCommand(commandList, D3D12_RESOURCE_STATE_PRESENT);
 }
