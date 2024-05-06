@@ -85,14 +85,7 @@ void ResourcesShared::CreateMultiSampledRTV(DX12Context& ctx)
 	// Barrier
 	{
 		ctx.ResetCommandList();
-		const auto commandList = ctx.GetCommandList();
-
-		const auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-			multiSampledImage_.GetResource(),
-			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, 
-			D3D12_RESOURCE_STATE_RENDER_TARGET);
-		commandList->ResourceBarrier(1, &barrier);
-
+		multiSampledImage_.TransitionCommand(ctx.GetCommandList(), D3D12_RESOURCE_STATE_RENDER_TARGET);
 		ctx.SubmitCommandListAndWaitForGPU();
 	}
 
