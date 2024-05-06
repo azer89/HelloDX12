@@ -157,8 +157,7 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 			1);
 
 		// Barrier
-		auto barrier2 = CD3DX12_RESOURCE_BARRIER::UAV(image->GetResource());
-		commandList->ResourceBarrier(1, &barrier2);
+		image->UAVBarrier(commandList);
 	}
 
 	image->TransitionCommand(commandList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);

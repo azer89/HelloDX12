@@ -544,8 +544,14 @@ void DX12Buffer::CreateUploadHeap(DX12Context& ctx,
 		IID_PPV_ARGS(bufferUploadHeap)))
 }
 
+void DX12Buffer::UAVBarrier(ID3D12GraphicsCommandList* commandList)
+{
+	auto barrier2 = CD3DX12_RESOURCE_BARRIER::UAV(resource_);
+	commandList->ResourceBarrier(1, &barrier2);
+}
+
 void DX12Buffer::TransitionCommand(
-	ID3D12GraphicsCommandList* commmandList,
+	ID3D12GraphicsCommandList* commandList,
 	D3D12_RESOURCE_STATES afterState)
 {
 	if (state_ == afterState)
@@ -553,11 +559,11 @@ void DX12Buffer::TransitionCommand(
 		return;
 	}
 
-	TransitionCommand(commmandList, state_, afterState);
+	TransitionCommand(commandList, state_, afterState);
 }
 
 void DX12Buffer::TransitionCommand(
-	ID3D12GraphicsCommandList* commmandList,
+	ID3D12GraphicsCommandList* commandList,
 	D3D12_RESOURCE_STATES beforeState,
 	D3D12_RESOURCE_STATES afterState)
 {
@@ -567,7 +573,7 @@ void DX12Buffer::TransitionCommand(
 			beforeState,
 			afterState);
 
-	commmandList->ResourceBarrier(1, &barrier);
+	commandList->ResourceBarrier(1, &barrier);
 
 	state_ = afterState;
 }

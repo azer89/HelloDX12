@@ -68,11 +68,12 @@ public:
 		};
 	}
 
+	void UAVBarrier(ID3D12GraphicsCommandList* commandList);
 	void TransitionCommand(
-		ID3D12GraphicsCommandList* commmandList,
+		ID3D12GraphicsCommandList* commandList,
 		D3D12_RESOURCE_STATES afterState);
 	void TransitionCommand(
-		ID3D12GraphicsCommandList* commmandList,
+		ID3D12GraphicsCommandList* commandList,
 		D3D12_RESOURCE_STATES beforeState,
 		D3D12_RESOURCE_STATES afterState);
 	
