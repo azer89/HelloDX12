@@ -9,6 +9,7 @@ A rendering app written using C++ and DirectX 12.
 * MSAA
 * Mipmap generator using compute shader
 * Skybox from equirectangular HDR image
+* Basic abstraction with simple resource state tracking and eaier barrier insertion.
 
 ### Build
 * Either use `HelloDX12/HelloDX12.sln` or run CMake
