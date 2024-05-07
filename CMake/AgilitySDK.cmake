@@ -1,6 +1,6 @@
 # Adapted from github.com/alipbcs/ZetaRay
 
-function(SetupAgilitySDK SDK_VERSION)
+function(SetupAgilitySDK SDK_DIR_RETURN)
     set(VER "1.613.2")
     set(SDK_DIR "${PROJECT_SOURCE_DIR}/External/D3D12/${VER}")
 
@@ -39,5 +39,5 @@ function(SetupAgilitySDK SDK_VERSION)
         file(REMOVE_RECURSE "${SDK_DIR}/temp")
     endif()
 
-    set(${SDK_VERSION} ${VER} PARENT_SCOPE)
+    set(${SDK_DIR_RETURN} ${SDK_DIR} PARENT_SCOPE)
 endfunction()

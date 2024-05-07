@@ -46,12 +46,12 @@ foreach(item ${ITEMS})
 endforeach()
 
 # Agility SDK
-SetupAgilitySDK(AGILITY_SDK_VER)
+SetupAgilitySDK(AGILITY_DIRECTORY)
+
+message(AGILITY_DIRECTORY="${AGILITY_DIRECTORY}")
 
 # DXC
 SetupDXC(DXC_DIRECTORY)
-
-#message(DXC_DIR="${DXC_DIR}")
 
 set(DXC_DLL_FILES 
     dxcompiler.dll
@@ -74,10 +74,10 @@ endforeach()
 
 # Include directories from dependencies
 target_include_directories(HelloDX12 PRIVATE
+    "${DXC_DIRECTORY}/inc"
+    "${AGILITY_DIRECTORY}/d3dx12"
     "${PROJECT_SOURCE_DIR}/External/stb"
     "${PROJECT_SOURCE_DIR}/External/glm"
-    "${PROJECT_SOURCE_DIR}/External/D3D12/${AGILITY_SDK_VER}/d3dx12"
-    "${DXC_DIRECTORY}/inc"
     "${PROJECT_SOURCE_DIR}/External/assimp/include"
     "${PROJECT_SOURCE_DIR}/External/Binaries/assimp/include"
     "${PROJECT_SOURCE_DIR}/External/D3D12MemoryAllocator/include"
