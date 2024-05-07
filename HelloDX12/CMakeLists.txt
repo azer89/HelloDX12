@@ -1,4 +1,5 @@
 include("${CMAKE_INCLUDE_DIR}/AgilitySDK.cmake")
+include("${CMAKE_INCLUDE_DIR}/DXC.cmake")
 include("${CMAKE_INCLUDE_DIR}/Copy.cmake")
 
 file(GLOB_RECURSE SHADER_FILES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Shader/*")
@@ -52,14 +53,25 @@ set(DX12AgilitySDK_BIN
     "${PROJECT_SOURCE_DIR}/External/D3D12/${AGILITY_SDK_VER}/D3D12Core.dll"
     "${PROJECT_SOURCE_DIR}/External/D3D12/${AGILITY_SDK_VER}/d3d12SDKLayers.dll")
 
-Copy("${DX12AgilitySDK_BIN}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/D3D12/" CopyDX12AgilitySDKBins)
+Copy("${DX12AgilitySDK_BIN}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/" CopyDX12AgilitySDKBins)
 add_dependencies(DX12AgilitySDK CopyDX12AgilitySDKBins)
 
+# DXC
+SetupDXC()
+add_library(DXC_SDK INTERFACE)
+set(DXC_BIN 
+    "${PROJECT_SOURCE_DIR}/External/DXC/bin/x64/dxcompiler.dll"
+    "${PROJECT_SOURCE_DIR}/External/DXC/bin/x64/dxil.dll")
+Copy("${DXC_BIN}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/" CopyDXCBin)
+add_dependencies(DXC_SDK CopyDXCBin)
+
+# TODO Below can be cleaner
 # Include directories from dependencies
 target_include_directories(HelloDX12 PRIVATE
     "${PROJECT_SOURCE_DIR}/External/stb"
     "${PROJECT_SOURCE_DIR}/External/glm"
     "${PROJECT_SOURCE_DIR}/External/D3D12/${AGILITY_SDK_VER}/d3dx12"
+    "${PROJECT_SOURCE_DIR}/External/DXC/inc"
     "${PROJECT_SOURCE_DIR}/External/assimp/include"
     "${PROJECT_SOURCE_DIR}/External/Binaries/assimp/include"
     "${PROJECT_SOURCE_DIR}/External/D3D12MemoryAllocator/include"
@@ -67,4 +79,10 @@ target_include_directories(HelloDX12 PRIVATE
 
 # Set dependencies
 target_link_libraries(HelloDX12 PRIVATE assimp D3D12MemoryAllocator)
-target_link_libraries(HelloDX12 PRIVATE d3d12.lib dxgi.lib d3dcompiler.lib dxguid.lib) 
+target_link_libraries(HelloDX12 PRIVATE d3d12.lib dxgi.lib d3dcompiler.lib dxguid.lib)
+target_link_libraries(HelloDX12 PRIVATE "${PROJECT_SOURCE_DIR}/External/DXC/lib/x64/dxcompiler.lib") 
+
+install(FILES $<TARGET_RUNTIME_DLLS:
+    "${PROJECT_SOURCE_DIR}/External/DXC/bin/x64/dxcompiler.dll"
+    "${PROJECT_SOURCE_DIR}/External/DXC/bin/x64/dxil.dll"> 
+    TYPE BIN)
