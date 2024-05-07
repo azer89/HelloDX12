@@ -20,6 +20,7 @@ void DX12Buffer::Destroy()
 	}
 }
 
+// TODO rename to CreateHostVisibleBuffer()
 void DX12Buffer::CreateBuffer(DX12Context& ctx, uint64_t bufferSize)
 {
 	bufferSize_ = bufferSize;
@@ -60,6 +61,98 @@ void DX12Buffer::CreateBuffer(DX12Context& ctx, uint64_t bufferSize)
 
 	// GPU virtual address
 	gpuAddress_ = resource_->GetGPUVirtualAddress();
+}
+
+void DX12Buffer::CreateDeviceOnlyBuffer(
+	DX12Context& ctx, 
+	void* data, 
+	uint32_t elementCount, 
+	uint64_t bufferSize, 
+	uint32_t stride)
+{
+	bufferSize_ = bufferSize;
+	state_ = D3D12_RESOURCE_STATE_COMMON;
+
+	constexpr D3D12MA::ALLOCATION_DESC allocDesc =
+	{
+		.HeapType = D3D12_HEAP_TYPE_DEFAULT
+	};
+
+	D3D12_RESOURCE_DESC resourceDesc =
+	{
+		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
+		.Alignment = 0,
+		.Width = bufferSize_,
+		.Height = 1,
+		.DepthOrArraySize = 1,
+		.MipLevels = 1,
+		.Format = DXGI_FORMAT_UNKNOWN,
+		.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
+		.Flags = D3D12_RESOURCE_FLAG_NONE
+	};
+	resourceDesc.SampleDesc.Count = 1;
+	resourceDesc.SampleDesc.Quality = 0;
+
+	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
+		&allocDesc,
+		&resourceDesc,
+		state_,
+		nullptr,
+		&dmaAllocation_,
+		IID_PPV_ARGS(&resource_)))
+
+	resource_->SetName(L"Device_Only_Resource");
+	dmaAllocation_->SetName(L"Device_Only_Allocation_DMA");
+
+	// Upload heap
+	ID3D12Resource* bufferUploadHeap;
+	D3D12MA::Allocation* bufferUploadHeapAllocation;
+	CreateUploadHeap(ctx, static_cast<uint64_t>(bufferSize_), 1, &bufferUploadHeap, &bufferUploadHeapAllocation);
+	bufferUploadHeap->SetName(L"Device_Only_Buffer_Upload_Heap");
+	bufferUploadHeapAllocation->SetName(L"Device_Only_Buffer_Upload_Heap_Allocation_DMA");
+
+	D3D12_SUBRESOURCE_DATA subresourceData =
+	{
+		.pData = reinterpret_cast<BYTE*>(data), // Pointer to our vertex array
+		.RowPitch = static_cast<LONG_PTR>(bufferSize_), // Size of all our triangle vertex data
+		.SlicePitch = static_cast<LONG_PTR>(bufferSize_), // Also the size of our triangle vertex data
+	};
+
+	// Start recording 
+	ctx.ResetCommandList();
+
+	// Copy data
+	uint64_t r = UpdateSubresources(
+		ctx.GetCommandList(),
+		resource_,
+		bufferUploadHeap,
+		0,
+		0,
+		1,
+		&subresourceData);
+	assert(r);
+
+	// Transition
+	TransitionCommand(ctx.GetCommandList(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
+
+	// End recording
+	ctx.SubmitCommandListAndWaitForGPU();
+
+	// Release
+	bufferUploadHeap->Release();
+	bufferUploadHeapAllocation->Release();
+
+	// SRV Description
+	srvDesccription_ =
+	{
+		.Format = DXGI_FORMAT_UNKNOWN,
+		.ViewDimension = D3D12_SRV_DIMENSION_BUFFER,
+		.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
+	};
+	srvDesccription_.Buffer.FirstElement = 0;
+	srvDesccription_.Buffer.NumElements = static_cast<UINT>(elementCount);
+	srvDesccription_.Buffer.StructureByteStride = stride;
+	srvDesccription_.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 }
 
 void DX12Buffer::CreateConstantBuffer(DX12Context& ctx, uint64_t bufferSize)

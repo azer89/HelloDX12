@@ -7,6 +7,7 @@ class DX12Buffer
 {
 public:
 	void CreateBuffer(DX12Context& ctx, uint64_t bufferSize);
+	void CreateDeviceOnlyBuffer(DX12Context& ctx, void* data, uint32_t elementCount, uint64_t bufferSize, uint32_t stride);
 	void CreateConstantBuffer(DX12Context& ctx, uint64_t bufferSize);
 	void CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t bufferSize, uint32_t stride);
 	void CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t bufferSize, DXGI_FORMAT format);
@@ -93,6 +94,7 @@ public:
 	ID3D12Resource* resource_ = nullptr;
 	D3D12MA::Allocation* dmaAllocation_ = nullptr;
 	
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesccription_ = {};
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_ = {};
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_ = {};
 	
