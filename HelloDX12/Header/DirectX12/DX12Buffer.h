@@ -59,7 +59,7 @@ public:
 
 	void Destroy();
 
-	D3D12_CONSTANT_BUFFER_VIEW_DESC GetCBVDescription()
+	D3D12_CONSTANT_BUFFER_VIEW_DESC GetCBVDescription() const
 	{
 		return
 		{
@@ -101,7 +101,7 @@ public:
 	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress_ = 0;
 
 private:
-	D3D12_RESOURCE_STATES state_;
+	D3D12_RESOURCE_STATES state_ = D3D12_RESOURCE_STATE_COMMON;
 	bool isSwapchainBuffer_ = false;
 };
 

@@ -8,16 +8,16 @@
 LPCWSTR GetEntryPoint(ShaderType shaderType)
 {
 	if (shaderType == ShaderType::Vertex) { return L"VSMain"; }
-	else if (shaderType == ShaderType::Fragment) { return L"PSMain"; }
-	else if (shaderType == ShaderType::Compute) { return L"CSMain"; }
+	if (shaderType == ShaderType::Fragment) { return L"PSMain"; }
+	if (shaderType == ShaderType::Compute) { return L"CSMain"; }
 	throw std::runtime_error("Shader type not recognized");
 }
 
 LPCWSTR GetTarget(ShaderType shaderType)
 {
 	if (shaderType == ShaderType::Vertex) { return L"vs_6_0"; }
-	else if (shaderType == ShaderType::Fragment) { return L"ps_6_0"; }
-	else if (shaderType == ShaderType::Compute) { return L"cs_6_0"; }
+	if (shaderType == ShaderType::Fragment) { return L"ps_6_0"; }
+	if (shaderType == ShaderType::Compute) { return L"cs_6_0"; }
 	throw std::runtime_error("Shader type not recognized");
 }
 
@@ -28,12 +28,12 @@ void DX12Shader::Destroy()
 
 void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderType shaderType)
 {
-	std::wstring assetPath = Utility::WStringConvert(filename);
+	const std::wstring assetPath = Utility::WStringConvert(filename);
 
-	LPCWSTR entryPoint = GetEntryPoint(shaderType);
-	LPCWSTR target = GetTarget(shaderType);
+	const LPCWSTR entryPoint = GetEntryPoint(shaderType);
+	const LPCWSTR target = GetTarget(shaderType);
 
-	ComPtr<IDxcIncludeHandler> pIncludeHandler;
+	ComPtr<IDxcIncludeHandler> pIncludeHandler = nullptr;
 	ctx.GetDXCUtils()->CreateDefaultIncludeHandler(&pIncludeHandler);
 
 	LPCWSTR argument[] =
@@ -43,18 +43,20 @@ void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderTyp
 		L"-T", target,
 		L"-Zs", // Enable debug information (slim format)
 		//L"-D", L"MYDEFINE=1", // A single define.
-		//L"-Fo", L"myshader.bin", // Optional, stored in the pdb
-		//L"-Fd", L"myshader.pdb", // The file name of the pdb
+		//L"-Fo", L"MyShader.bin", // Optional, stored in the pdb
+		//L"-Fd", L"MyShader.pdb", // The file name of the pdb
 		L"-Qstrip_reflect", // Strip reflection into a separate blob
 	};
 
 	ComPtr<IDxcBlobEncoding> pSource = nullptr;
 	ctx.GetDXCUtils()->LoadFile(assetPath.c_str(), nullptr, &pSource);
-	DxcBuffer sourceBuffer;
-	sourceBuffer.Ptr = pSource->GetBufferPointer();
-	sourceBuffer.Size = pSource->GetBufferSize();
-	sourceBuffer.Encoding = DXC_CP_ACP; // Assume BOM says UTF8 or UTF16 or this is ANSI text.
-
+	const DxcBuffer sourceBuffer =
+	{
+		.Ptr = pSource->GetBufferPointer(),
+		.Size = pSource->GetBufferSize(),
+		.Encoding = DXC_CP_ACP // Assume BOM says UTF8 or UTF16 or this is ANSI text.
+	};
+	
 	ComPtr<IDxcResult> pResults;
 	ctx.GetDXCCompiler()->Compile(
 		&sourceBuffer,
