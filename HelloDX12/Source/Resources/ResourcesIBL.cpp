@@ -29,11 +29,11 @@ void ResourcesIBL::CreateEnviromentCubemap(DX12Context& ctx)
 {
 	environmentCubemap_.CreateCubemap(ctx, CUBE_SIZE, CUBE_SIZE);
 	environmentCubemap_.buffer_.resource_->SetName(L"Environment_Cubemap");
+
 	envCubemapUAVDesc_ =
 	{
 		envCubemapUAVDesc_.Format = environmentCubemap_.format_
 	};
-
 	envCubemapUAVDesc_.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2DARRAY;
 	envCubemapUAVDesc_.Texture2DArray.MipSlice = 0;
 	envCubemapUAVDesc_.Texture2DArray.FirstArraySlice = 0;

@@ -15,10 +15,10 @@ void ResourcesLights::AddLights(DX12Context& ctx, const std::vector<LightData>& 
 {
 	lights_ = lights;
 	const uint64_t bufferSize = lights.size() * sizeof(LightData);
-	buffer_.CreateDeviceOnlyBuffer(ctx, lights_.data(), lights_.size(), bufferSize, sizeof(LightData));
-}
-
-D3D12_SHADER_RESOURCE_VIEW_DESC ResourcesLights::GetSRVDescription() const
-{
-	return buffer_.srvDesccription_;
+	buffer_.CreateDeviceOnlyBuffer(
+		ctx, 
+		lights_.data(), 
+		static_cast<uint32_t>(lights_.size()), 
+		bufferSize, 
+		sizeof(LightData));
 }
