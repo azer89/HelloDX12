@@ -49,9 +49,11 @@ endforeach()
 SetupAgilitySDK(AGILITY_SDK_VER)
 
 # DXC
-SetupDXC()
+SetupDXC(DXC_DIRECTORY)
 
-set(DXC_DLL 
+#message(DXC_DIR="${DXC_DIR}")
+
+set(DXC_DLL_FILES 
     dxcompiler.dll
     dxil.dll)
 
@@ -60,24 +62,22 @@ set(CONFIG_TYPES
     "Release")
 
 # TODO Currently copy DXC dlls to both Debug and Release folders
-foreach(DLL_FILE ${DXC_DLL})
+foreach(DLL_FILE ${DXC_DLL_FILES})
     foreach(CONFIG_TYPE ${CONFIG_TYPES})
         add_custom_command(
             TARGET HelloDX12 POST_BUILD
             COMMAND "${CMAKE_COMMAND}" -E copy
-            "${PROJECT_SOURCE_DIR}/External/DXC/bin/x64/${DLL_FILE}"
+            "${DXC_DIRECTORY}/bin/x64/${DLL_FILE}"
             "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CONFIG_TYPE}/${DLL_FILE}")
     endforeach()
 endforeach()
 
-
-# TODO Below can be cleaner
 # Include directories from dependencies
 target_include_directories(HelloDX12 PRIVATE
     "${PROJECT_SOURCE_DIR}/External/stb"
     "${PROJECT_SOURCE_DIR}/External/glm"
     "${PROJECT_SOURCE_DIR}/External/D3D12/${AGILITY_SDK_VER}/d3dx12"
-    "${PROJECT_SOURCE_DIR}/External/DXC/inc"
+    "${DXC_DIRECTORY}/inc"
     "${PROJECT_SOURCE_DIR}/External/assimp/include"
     "${PROJECT_SOURCE_DIR}/External/Binaries/assimp/include"
     "${PROJECT_SOURCE_DIR}/External/D3D12MemoryAllocator/include"
@@ -86,4 +86,4 @@ target_include_directories(HelloDX12 PRIVATE
 # Set dependencies
 target_link_libraries(HelloDX12 PRIVATE assimp D3D12MemoryAllocator)
 target_link_libraries(HelloDX12 PRIVATE d3d12.lib dxgi.lib d3dcompiler.lib dxguid.lib)
-target_link_libraries(HelloDX12 PRIVATE "${PROJECT_SOURCE_DIR}/External/DXC/lib/x64/dxcompiler.lib")
+target_link_libraries(HelloDX12 PRIVATE "${DXC_DIRECTORY}/lib/x64/dxcompiler.lib")

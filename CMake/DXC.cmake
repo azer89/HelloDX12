@@ -1,6 +1,6 @@
 # Adapted from github.com/alipbcs/ZetaRay
 
-function(SetupDXC)
+function(SetupDXC DXC_DIR_RETURN)
     set(DXC_DIR "${PROJECT_SOURCE_DIR}/External/DXC")
     file(GLOB_RECURSE DXC_BIN_PATH "${DXC_DIR}/*dxc.exe")
     
@@ -17,8 +17,9 @@ function(SetupDXC)
         file(REMOVE_RECURSE "${DXC_DIR}/bin/x86")
         file(REMOVE_RECURSE "${DXC_DIR}/lib/arm64")
         file(REMOVE_RECURSE "${DXC_DIR}/lib/x86")
-        file(REMOVE_RECURSE "${DXC_DIR}/lib")
         file(REMOVE "${ARCHIVE_PATH}")
 
     endif()
+
+    set(${DXC_DIR_RETURN} ${DXC_DIR} PARENT_SCOPE)
 endfunction()
