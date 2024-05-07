@@ -15,10 +15,16 @@ void ResourcesLights::AddLights(DX12Context& ctx, const std::vector<LightData>& 
 {
 	lights_ = lights;
 	const uint64_t bufferSize = lights.size() * sizeof(LightData);
-	buffer_.CreateDeviceOnlyBuffer(
+	/*buffer_.CreateDeviceOnlyBuffer(
 		ctx, 
 		lights_.data(), 
 		static_cast<uint32_t>(lights_.size()), 
 		bufferSize, 
+		sizeof(LightData));*/
+	buffer_.CreateHostVisibleBuffer(
+		ctx,
+		static_cast<uint32_t>(lights_.size()),
+		bufferSize,
 		sizeof(LightData));
+	buffer_.UploadData(lights_.data());
 }
