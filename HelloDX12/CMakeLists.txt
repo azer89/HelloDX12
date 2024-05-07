@@ -48,8 +48,6 @@ endforeach()
 # Agility SDK
 SetupAgilitySDK(AGILITY_DIRECTORY)
 
-message(AGILITY_DIRECTORY="${AGILITY_DIRECTORY}")
-
 # DXC
 SetupDXC(DXC_DIRECTORY)
 
