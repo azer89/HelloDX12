@@ -61,8 +61,6 @@ void PipelineTonemap::CreateGraphicsPipeline(DX12Context& ctx)
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc =
 	{
 		.pRootSignature = rootSignature_.rootSignature_,
-		.VS = CD3DX12_SHADER_BYTECODE(vertexShader_.GetHandle()),
-		.PS = CD3DX12_SHADER_BYTECODE(fragmentShader_.GetHandle()),
 		.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 		.SampleMask = UINT_MAX,
 		.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT),
@@ -74,6 +72,12 @@ void PipelineTonemap::CreateGraphicsPipeline(DX12Context& ctx)
 	psoDesc.RTVFormats[0] = ctx.GetSwapchainFormat();
 	psoDesc.SampleDesc.Count = 1;
 	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+
+	psoDesc.VS.BytecodeLength = vertexShader_.GetHandle()->GetBufferSize();
+	psoDesc.VS.pShaderBytecode = vertexShader_.GetHandle()->GetBufferPointer();
+	psoDesc.PS.BytecodeLength = fragmentShader_.GetHandle()->GetBufferSize();
+	psoDesc.PS.pShaderBytecode = fragmentShader_.GetHandle()->GetBufferPointer();
+
 	ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)))
 }
 

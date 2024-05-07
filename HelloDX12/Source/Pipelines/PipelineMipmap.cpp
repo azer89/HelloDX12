@@ -56,11 +56,14 @@ void PipelineMipmap::CreatePipeline(DX12Context& ctx)
 	rootSignature_.Create(ctx, samplerDesc, rootParameters, rootSignatureFlags);
 
 	// PSO
-	const D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc =
+	D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc =
 	{
 		.pRootSignature = rootSignature_.rootSignature_,
-		.CS = CD3DX12_SHADER_BYTECODE(computeShader_.GetHandle())
 	};
+
+	psoDesc.CS.BytecodeLength = computeShader_.GetHandle()->GetBufferSize();
+	psoDesc.CS.pShaderBytecode = computeShader_.GetHandle()->GetBufferPointer();
+
 	ctx.GetDevice()->CreateComputePipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_));
 }
 

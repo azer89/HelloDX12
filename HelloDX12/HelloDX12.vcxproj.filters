@@ -267,5 +267,6 @@
     <None Include="Shader\Tonemap.hlsl">
       <Filter>Shader</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

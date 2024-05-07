@@ -5,19 +5,19 @@
 #include <stdexcept>
 #include <iostream>
 
-LPCSTR GetEntryPoint(ShaderType shaderType)
+LPCWSTR GetEntryPoint(ShaderType shaderType)
 {
-	if (shaderType == ShaderType::Vertex) { return "VSMain"; }
-	else if (shaderType == ShaderType::Fragment) { return "PSMain"; } 
-	else if (shaderType == ShaderType::Compute) { return "CSMain"; }
+	if (shaderType == ShaderType::Vertex) { return L"VSMain"; }
+	else if (shaderType == ShaderType::Fragment) { return L"PSMain"; }
+	else if (shaderType == ShaderType::Compute) { return L"CSMain"; }
 	throw std::runtime_error("Shader type not recognized");
 }
 
-LPCSTR GetTarget(ShaderType shaderType)
+LPCWSTR GetTarget(ShaderType shaderType)
 {
-	if (shaderType == ShaderType::Vertex) { return "vs_5_1"; }
-	else if (shaderType == ShaderType::Fragment) { return "ps_5_1"; }
-	else if (shaderType == ShaderType::Compute) { return "cs_5_1"; }
+	if (shaderType == ShaderType::Vertex) { return L"vs_6_0"; }
+	else if (shaderType == ShaderType::Fragment) { return L"ps_6_0"; }
+	else if (shaderType == ShaderType::Compute) { return L"cs_6_0"; }
 	throw std::runtime_error("Shader type not recognized");
 }
 
@@ -28,33 +28,63 @@ void DX12Shader::Destroy()
 
 void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderType shaderType)
 {
-#if defined(_DEBUG)
-	// Enable better shader debugging with the graphics debugging tools.
-	uint32_t compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#else
-	uint32_t compileFlags = 0;
-#endif
 	std::wstring assetPath = Utility::WStringConvert(filename);
 
-	LPCSTR entryPoint = GetEntryPoint(shaderType);
-	LPCSTR target = GetTarget(shaderType);
+	LPCWSTR entryPoint = GetEntryPoint(shaderType);
+	LPCWSTR target = GetTarget(shaderType);
 
-	ID3DBlob* errorBuff; // Buffer holding the error data if any
-	HRESULT hr = D3DCompileFromFile(
+	ComPtr<IDxcIncludeHandler> pIncludeHandler;
+	ctx.GetDXCUtils()->CreateDefaultIncludeHandler(&pIncludeHandler);
+
+	LPCWSTR argument[] =
+	{
 		assetPath.c_str(),
-		nullptr,
-		D3D_COMPILE_STANDARD_FILE_INCLUDE,
-		entryPoint,
-		target,
-		compileFlags,
-		0,
-		&handle_,
-		&errorBuff);
+		L"-E", entryPoint,
+		L"-T", target,
+		L"-Zs", // Enable debug information (slim format)
+		//L"-D", L"MYDEFINE=1", // A single define.
+		//L"-Fo", L"myshader.bin", // Optional, stored in the pdb
+		//L"-Fd", L"myshader.pdb", // The file name of the pdb
+		L"-Qstrip_reflect", // Strip reflection into a separate blob
+	};
+
+	ComPtr<IDxcBlobEncoding> pSource = nullptr;
+	ctx.GetDXCUtils()->LoadFile(assetPath.c_str(), nullptr, &pSource);
+	DxcBuffer sourceBuffer;
+	sourceBuffer.Ptr = pSource->GetBufferPointer();
+	sourceBuffer.Size = pSource->GetBufferSize();
+	sourceBuffer.Encoding = DXC_CP_ACP; // Assume BOM says UTF8 or UTF16 or this is ANSI text.
+
+	ComPtr<IDxcResult> pResults;
+	ctx.GetDXCCompiler()->Compile(
+		&sourceBuffer,
+		argument,
+		_countof(argument),
+		pIncludeHandler.Get(), // User-provided interface to handle #include directives (optional)
+		IID_PPV_ARGS(&pResults) // Compiler output status, buffer, and errors
+	);
+
+	ComPtr<IDxcBlobUtf8> pErrors = nullptr;
+	pResults->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&pErrors), nullptr);
+	// Note that d3dcompiler would return null if no errors or warnings are present.
+	// IDxcCompiler3::Compile will always return an error buffer, 
+	// but its length will be zero if there are no warnings or errors.
+	if (pErrors != nullptr && pErrors->GetStringLength() != 0)
+	{
+		wprintf(L"Warnings and Errors:\n%S\n", pErrors->GetStringPointer());
+	}
+
+	HRESULT hr;
+	pResults->GetStatus(&hr);
 	if (FAILED(hr))
 	{
-		char* errorMessage = (char*)errorBuff->GetBufferPointer();
-		OutputDebugStringA(errorMessage); // Print to Output window on Visual Studio
-		std::cerr << errorMessage << '\n'; // Print to console
 		throw std::runtime_error("Shader error");
+	}
+
+	ComPtr<IDxcBlobUtf16> pShaderName = nullptr;
+	pResults->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&handle_), &pShaderName);
+	if (handle_ != nullptr)
+	{
+		std::cout << "Shader compiled " << filename << '\n';
 	}
 }

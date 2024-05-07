@@ -407,3 +407,6 @@ CMakeCache.txt
 
 # Agility SDK
 External/D3D12/*
+
+# DXC
+External/DXC/*
