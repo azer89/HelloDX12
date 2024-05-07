@@ -20,10 +20,11 @@ void DX12Buffer::Destroy()
 	}
 }
 
-void DX12Buffer::CreateHostVisibleBuffer(DX12Context& ctx, uint64_t bufferSize)
+void DX12Buffer::CreateHostVisibleBuffer(DX12Context& ctx, uint32_t elementCount, uint64_t bufferSize, uint32_t stride)
 {
 	bufferSize_ = bufferSize;
 	state_ = D3D12_RESOURCE_STATE_GENERIC_READ;
+	srvDesccription_ = GetSRVDescriptionFromBuffer(elementCount, stride);
 
 	D3D12MA::ALLOCATION_DESC constantBufferUploadAllocDesc =
 	{
@@ -71,6 +72,7 @@ void DX12Buffer::CreateDeviceOnlyBuffer(
 {
 	bufferSize_ = bufferSize;
 	state_ = D3D12_RESOURCE_STATE_COMMON;
+	srvDesccription_ = GetSRVDescriptionFromBuffer(elementCount, stride);
 
 	constexpr D3D12MA::ALLOCATION_DESC allocDesc =
 	{
@@ -100,7 +102,7 @@ void DX12Buffer::CreateDeviceOnlyBuffer(
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)))
 
-		resource_->SetName(L"Device_Only_Resource");
+	resource_->SetName(L"Device_Only_Resource");
 	dmaAllocation_->SetName(L"Device_Only_Allocation_DMA");
 
 	// Upload heap
@@ -140,18 +142,6 @@ void DX12Buffer::CreateDeviceOnlyBuffer(
 	// Release
 	bufferUploadHeap->Release();
 	bufferUploadHeapAllocation->Release();
-
-	// SRV Description
-	srvDesccription_ =
-	{
-		.Format = DXGI_FORMAT_UNKNOWN,
-		.ViewDimension = D3D12_SRV_DIMENSION_BUFFER,
-		.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
-	};
-	srvDesccription_.Buffer.FirstElement = 0;
-	srvDesccription_.Buffer.NumElements = static_cast<UINT>(elementCount);
-	srvDesccription_.Buffer.StructureByteStride = stride;
-	srvDesccription_.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 }
 
 void DX12Buffer::CreateConstantBuffer(DX12Context& ctx, uint64_t bufferSize)
@@ -193,8 +183,8 @@ void DX12Buffer::CreateConstantBuffer(DX12Context& ctx, uint64_t bufferSize)
 	// Mapping
 	ThrowIfFailed(resource_->Map(0, nullptr, reinterpret_cast<void**>(&mappedData_)))
 
-		// GPU virtual address
-		gpuAddress_ = resource_->GetGPUVirtualAddress();
+	// GPU virtual address
+	gpuAddress_ = resource_->GetGPUVirtualAddress();
 }
 
 void DX12Buffer::UploadData(void* data)
@@ -235,7 +225,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t buffe
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)))
 
-		resource_->SetName(L"Vertex_Buffer_Resource");
+	resource_->SetName(L"Vertex_Buffer_Resource");
 	dmaAllocation_->SetName(L"Vertex_Buffer_Allocation_DMA");
 
 	// Upload heap
@@ -503,8 +493,9 @@ void DX12Buffer::CreateDepthAttachment(
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)
 	))
-		ThrowIfFailed(resource_->SetName(L"Depth_Stencil_Resource"))
-		dmaAllocation_->SetName(L"Depth_Stencil_Allocation_DMA");
+
+	ThrowIfFailed(resource_->SetName(L"Depth_Stencil_Resource"))
+	dmaAllocation_->SetName(L"Depth_Stencil_Allocation_DMA");
 }
 
 void DX12Buffer::CreateImageFromData(
@@ -674,14 +665,31 @@ void DX12Buffer::TransitionCommand(
 	state_ = afterState;
 }
 
+D3D12_SHADER_RESOURCE_VIEW_DESC DX12Buffer::GetSRVDescriptionFromBuffer(uint32_t elementCount, uint32_t stride)
+{
+	// SRV Description
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc =
+	{
+		.Format = DXGI_FORMAT_UNKNOWN,
+		.ViewDimension = D3D12_SRV_DIMENSION_BUFFER,
+		.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
+	};
+	srvDesc.Buffer.FirstElement = 0;
+	srvDesc.Buffer.NumElements = static_cast<UINT>(elementCount);
+	srvDesc.Buffer.StructureByteStride = stride;
+	srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+
+	return srvDesc;
+}
+
 D3D12_SHADER_RESOURCE_VIEW_DESC DX12Buffer::GetSRVDescriptionFromImage(DXGI_FORMAT format, uint32_t layerCount, uint32_t mipmapCount)
 {
 	D3D12_SRV_DIMENSION srvDim;
 	switch (layerCount)
 	{
-	case 1:  srvDim = D3D12_SRV_DIMENSION_TEXTURE2D; break;
-	case 6:  srvDim = D3D12_SRV_DIMENSION_TEXTURECUBE; break;
-	default: srvDim = D3D12_SRV_DIMENSION_TEXTURE2DARRAY; break;
+		case 1:  srvDim = D3D12_SRV_DIMENSION_TEXTURE2D; break;
+		case 6:  srvDim = D3D12_SRV_DIMENSION_TEXTURECUBE; break;
+		default: srvDim = D3D12_SRV_DIMENSION_TEXTURE2DARRAY; break;
 	}
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc =

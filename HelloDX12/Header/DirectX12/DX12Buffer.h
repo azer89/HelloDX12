@@ -6,7 +6,7 @@
 class DX12Buffer
 {
 public:
-	void CreateHostVisibleBuffer(DX12Context& ctx, uint64_t bufferSize);
+	void CreateHostVisibleBuffer(DX12Context& ctx, uint32_t elementCount, uint64_t bufferSize, uint32_t stride);
 	void CreateDeviceOnlyBuffer(DX12Context& ctx, void* data, uint32_t elementCount, uint64_t bufferSize, uint32_t stride);
 	void CreateConstantBuffer(DX12Context& ctx, uint64_t bufferSize);
 	void CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t bufferSize, uint32_t stride);
@@ -85,6 +85,7 @@ private:
 		ID3D12Resource** bufferUploadHeap,
 		D3D12MA::Allocation** bufferUploadHeapAllocation);
 
+	D3D12_SHADER_RESOURCE_VIEW_DESC GetSRVDescriptionFromBuffer(uint32_t elementCount, uint32_t stride);
 	D3D12_SHADER_RESOURCE_VIEW_DESC GetSRVDescriptionFromImage(DXGI_FORMAT format, uint32_t layerCount, uint32_t mipmapCount);
 
 	static uint32_t GetConstantBufferByteSize(uint64_t byteSize);
