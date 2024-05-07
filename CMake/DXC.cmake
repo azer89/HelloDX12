@@ -11,11 +11,14 @@ function(SetupDXC)
         file(DOWNLOAD "${URL}" "${ARCHIVE_PATH}" TIMEOUT 120)
 
         file(ARCHIVE_EXTRACT INPUT "${ARCHIVE_PATH}" DESTINATION "${DXC_DIR}")
+
+        # Remove unused files
         file(REMOVE_RECURSE "${DXC_DIR}/bin/arm64")
         file(REMOVE_RECURSE "${DXC_DIR}/bin/x86")
         file(REMOVE_RECURSE "${DXC_DIR}/lib/arm64")
         file(REMOVE_RECURSE "${DXC_DIR}/lib/x86")
-        #file(REMOVE_RECURSE "${DXC_DIR}/lib")
+        file(REMOVE_RECURSE "${DXC_DIR}/lib")
         file(REMOVE "${ARCHIVE_PATH}")
+
     endif()
 endfunction()
