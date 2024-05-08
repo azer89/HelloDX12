@@ -72,7 +72,7 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
 		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
 		.buffer_ = &(scene_->model_.meshes_[0].image_->buffer_),
-		.srvDescription_ = scene_->model_.meshes_[0].image_->GetSRVDescription()
+		.srvDescription_ = scene_->model_.meshes_[0].image_->buffer_.srvDesccription_
 	};
 
 	descriptors[3] =
@@ -81,7 +81,7 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
 		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
 		.buffer_ = &(resourcesLights_->buffer_),
-		.srvDescription_ = resourcesLights_->GetSRVDescription()
+		.srvDescription_ = resourcesLights_->buffer_.srvDesccription_
 	};
 
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)

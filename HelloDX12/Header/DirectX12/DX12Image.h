@@ -16,7 +16,6 @@ public:
 	void CreateColorAttachment(DX12Context& ctx, uint32_t msaaCount);
 	void CreateDepthAttachment(DX12Context& ctx, uint32_t msaaCount);
 	ID3D12Resource* GetResource() const { return buffer_.resource_; }
-	D3D12_SHADER_RESOURCE_VIEW_DESC GetSRVDescription() const;
 	D3D12_STATIC_SAMPLER_DESC GetSampler();
 
 	void UAVBarrier(ID3D12GraphicsCommandList* commandList);
