@@ -32,7 +32,7 @@ void PipelineTonemap::CreateDescriptors(DX12Context& ctx)
 		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DESCRIPTORS_VOLATILE,
 		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
 		.buffer_ = resourcesShared_->GetSingleSampledBuffer(),
-		.srvDescription_ = resourcesShared_->GetSingleSampledBuffer()->srvDesccription_
+		.srvDescription_ = resourcesShared_->GetSingleSampledBuffer()->srvDescription_
 	};
 
 	descriptorHeap_.descriptors_ = descriptors;
@@ -103,5 +103,5 @@ void PipelineTonemap::PopulateCommandList(DX12Context& ctx)
 
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	constexpr uint32_t triangleCount = 3;
-	commandList->DrawIndexedInstanced(triangleCount, 1, 0, 0, 0);
+	commandList->DrawInstanced(triangleCount, 1, 0, 0);
 }

@@ -27,6 +27,7 @@ void Mesh::Destroy()
 {
 	vertexBuffer_.Destroy();
 	indexBuffer_.Destroy();
+
 	image_->Destroy();
 }
 
@@ -41,8 +42,20 @@ void Mesh::CreateCube(DX12Context& ctx)
 void Mesh::CreateBuffers(DX12Context& ctx)
 {
 	const uint32_t vertexBufferSize = static_cast<uint32_t>(sizeof(VertexData) * vertices_.size());
-	vertexBuffer_.CreateVertexBuffer(ctx, vertices_.data(), vertexBufferSize, sizeof(VertexData));
 
 	const uint32_t indexBufferSize = static_cast<uint32_t>(sizeof(uint32_t) * indices_.size());
-	indexBuffer_.CreateIndexBuffer(ctx, indices_.data(), indexBufferSize, DXGI_FORMAT_R32_UINT);
+
+	vertexBuffer_.CreateDeviceOnlyBuffer(
+		ctx,
+		vertices_.data(), 
+		vertices_.size(), 
+		vertexBufferSize, 
+		sizeof(VertexData));
+
+	indexBuffer_.CreateDeviceOnlyBuffer(
+		ctx,
+		indices_.data(),
+		indices_.size(),
+		indexBufferSize,
+		sizeof(uint32_t));
 }

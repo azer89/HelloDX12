@@ -48,40 +48,49 @@ void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
 
 void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 {
-	std::vector<DX12Descriptor> descriptors(4);
-	descriptors[0] =
+	std::vector<DX12Descriptor> descriptors =
 	{
-		.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
-		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
-		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
-		.buffer_ = nullptr
-	};
+		{ // b0
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
+			.buffer_ = nullptr
+		},
+		{ // b1
 
-	descriptors[1] =
-	{
-
-		.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
-		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
-		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_VERTEX,
-		.buffer_ = nullptr
-	};
-
-	descriptors[2] =
-	{
-		.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
-		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
-		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
-		.buffer_ = &(scene_->model_.meshes_[0].image_->buffer_),
-		.srvDescription_ = scene_->model_.meshes_[0].image_->buffer_.srvDesccription_
-	};
-
-	descriptors[3] =
-	{
-		.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
-		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
-		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
-		.buffer_ = &(resourcesLights_->buffer_),
-		.srvDescription_ = resourcesLights_->buffer_.srvDesccription_
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_VERTEX,
+			.buffer_ = nullptr
+		},
+		{ // t0
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
+			.buffer_ = &(scene_->model_.meshes_[0].image_->buffer_),
+			.srvDescription_ = scene_->model_.meshes_[0].image_->buffer_.srvDescription_
+		},
+		{ // t1
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
+			.buffer_ = &(resourcesLights_->buffer_),
+			.srvDescription_ = resourcesLights_->buffer_.srvDescription_
+		},
+		{ // t2
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
+			.buffer_ = &(scene_->model_.meshes_[0].vertexBuffer_),
+			.srvDescription_ = scene_->model_.meshes_[0].vertexBuffer_.srvDescription_
+		},
+		{ // t3
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
+			.buffer_ = &(scene_->model_.meshes_[0].indexBuffer_),
+			.srvDescription_ = scene_->model_.meshes_[0].indexBuffer_.srvDescription_
+		}
 	};
 
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
@@ -114,8 +123,6 @@ void PipelineSimple::CreateShaders(DX12Context& ctx)
 
 void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 {
-	std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs = VertexData::GetInputElementDescriptions();
-
 	// Describe and create the graphics pipeline state object (PSO).
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc =
 	{
@@ -124,7 +131,6 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 		.SampleMask = UINT_MAX,
 		.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT),
 		.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT),
-		.InputLayout = { inputElementDescs.data(), static_cast<uint32_t>(inputElementDescs.size()) },
 		.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 		.NumRenderTargets = 1,
 		.DSVFormat = DXGI_FORMAT_D32_FLOAT,
@@ -172,7 +178,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	const Mesh& mesh = scene_->model_.meshes_[0];
 
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	commandList->IASetVertexBuffers(0, 1, &(mesh.vertexBuffer_.vertexBufferView_));
-	commandList->IASetIndexBuffer(&mesh.indexBuffer_.indexBufferView_);
-	commandList->DrawIndexedInstanced(mesh.vertexCount_, 1, 0, 0, 0);
+
+	uint32_t triangleCount = mesh.vertexCount_;
+	commandList->DrawInstanced(triangleCount, 1, 0, 0);
 }

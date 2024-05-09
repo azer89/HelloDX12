@@ -1,13 +1,7 @@
+#include "VertexData.hlsli"
 #include "LightData.hlsli"
 #include "ModelData.hlsli"
 #include "CameraData.hlsli"
-
-struct VSInput
-{
-    float4 position : POSITION;
-    float3 normal : NORMAL;
-    float2 uv : TEXCOORD;
-};
 
 struct PSInput
 {
@@ -21,13 +15,19 @@ cbuffer C0 : register(b0) {  CameraData camData; };
 cbuffer C1 : register(b1) {  ModelData modelData; };
 Texture2D albedoTexture : register(t0);
 StructuredBuffer<LightData> lightDataArray : register(t1);
+StructuredBuffer<VertexData> vertexDataArray : register(t2);
+StructuredBuffer<uint> indexArray : register(t3);
 SamplerState albedoSampler : register(s0);
 
-PSInput VSMain(VSInput input)
+PSInput VSMain(uint vertexID : SV_VertexID)
 {
+    // Vertex pulling
+    uint vertexIndex = indexArray[vertexID];
+    VertexData input = vertexDataArray[vertexIndex];
+    
     PSInput result;
     
-    result.fragPosition = mul(input.position, modelData.modelMatrix);
+    result.fragPosition = mul(float4(input.position, 1.0), modelData.modelMatrix);
     result.worldPosition = result.fragPosition;
     result.fragPosition = mul(result.fragPosition, camData.viewMatrix);
     result.fragPosition = mul(result.fragPosition, camData.projectionMatrix);
