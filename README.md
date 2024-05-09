@@ -7,6 +7,7 @@ A rendering app written using C++ and DirectX 12. The shading is fairly basic as
 * Blinn-Phong shading
 * Tonemapping
 * MSAA
+* Vertex pulling
 * Mipmap generator using compute shader
 * Skybox from equirectangular HDR image
 * Basic abstraction with simple resource state tracking and easier barrier insertion.
