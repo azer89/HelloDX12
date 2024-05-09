@@ -30,9 +30,11 @@ public:
 
 	std::vector<VertexData> vertices_ = {};
 	DX12Buffer vertexBuffer_ = {};
+	DX12Buffer vertexBuffer2_ = {};
 
 	std::vector<uint32_t> indices_ = {};
 	DX12Buffer indexBuffer_ = {};
+	DX12Buffer indexBuffer2_ = {};
 
 private:
 	void CreateBuffers(DX12Context& ctx);
