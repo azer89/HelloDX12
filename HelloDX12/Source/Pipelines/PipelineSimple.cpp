@@ -81,15 +81,15 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
 			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
 			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
-			.buffer_ = &(scene_->model_.meshes_[0].vertexBuffer2_),
-			.srvDescription_ = scene_->model_.meshes_[0].vertexBuffer2_.srvDescription_
+			.buffer_ = &(scene_->model_.meshes_[0].vertexBuffer_),
+			.srvDescription_ = scene_->model_.meshes_[0].vertexBuffer_.srvDescription_
 		},
 		{ // t3
 			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
 			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
 			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
-			.buffer_ = &(scene_->model_.meshes_[0].indexBuffer2_),
-			.srvDescription_ = scene_->model_.meshes_[0].indexBuffer2_.srvDescription_
+			.buffer_ = &(scene_->model_.meshes_[0].indexBuffer_),
+			.srvDescription_ = scene_->model_.meshes_[0].indexBuffer_.srvDescription_
 		}
 	};
 
