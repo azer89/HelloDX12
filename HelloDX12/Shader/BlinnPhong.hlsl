@@ -1,3 +1,4 @@
+#include "VertexData.hlsli"
 #include "LightData.hlsli"
 #include "ModelData.hlsli"
 #include "CameraData.hlsli"
