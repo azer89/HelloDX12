@@ -22,6 +22,8 @@ cbuffer C0 : register(b0) {  CameraData camData; };
 cbuffer C1 : register(b1) {  ModelData modelData; };
 Texture2D albedoTexture : register(t0);
 StructuredBuffer<LightData> lightDataArray : register(t1);
+StructuredBuffer<VertexData> vertexDataArray : register(t2);
+StructuredBuffer<uint> indexArray : register(t3);
 SamplerState albedoSampler : register(s0);
 
 PSInput VSMain(VSInput input)

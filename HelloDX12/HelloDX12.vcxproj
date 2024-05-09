@@ -88,6 +88,7 @@
       </ShaderType>
       <FileType>Document</FileType>
     </None>
+    <None Include="Shader\VertexData.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Shader\LightData.hlsli">

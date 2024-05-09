@@ -48,40 +48,49 @@ void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
 
 void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 {
-	std::vector<DX12Descriptor> descriptors(4);
-	descriptors[0] =
+	std::vector<DX12Descriptor> descriptors =
 	{
-		.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
-		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
-		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
-		.buffer_ = nullptr
-	};
+		{ // b0
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
+			.buffer_ = nullptr
+		},
+		{ // b1
 
-	descriptors[1] =
-	{
-
-		.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
-		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
-		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_VERTEX,
-		.buffer_ = nullptr
-	};
-
-	descriptors[2] =
-	{
-		.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
-		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
-		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
-		.buffer_ = &(scene_->model_.meshes_[0].image_->buffer_),
-		.srvDescription_ = scene_->model_.meshes_[0].image_->buffer_.srvDesccription_
-	};
-
-	descriptors[3] =
-	{
-		.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
-		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
-		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
-		.buffer_ = &(resourcesLights_->buffer_),
-		.srvDescription_ = resourcesLights_->buffer_.srvDesccription_
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_VERTEX,
+			.buffer_ = nullptr
+		},
+		{ // t0
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
+			.buffer_ = &(scene_->model_.meshes_[0].image_->buffer_),
+			.srvDescription_ = scene_->model_.meshes_[0].image_->buffer_.srvDesccription_
+		},
+		{ // t1
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
+			.buffer_ = &(resourcesLights_->buffer_),
+			.srvDescription_ = resourcesLights_->buffer_.srvDesccription_
+		},
+		{ // t2
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
+			.buffer_ = &(scene_->model_.meshes_[0].vertexBuffer2_),
+			.srvDescription_ = scene_->model_.meshes_[0].vertexBuffer2_.srvDesccription_
+		},
+		{ // t3
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
+			.buffer_ = &(scene_->model_.meshes_[0].indexBuffer2_),
+			.srvDescription_ = scene_->model_.meshes_[0].indexBuffer2_.srvDesccription_
+		}
 	};
 
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
