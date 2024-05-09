@@ -67,29 +67,29 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
 			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
 			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
-			.buffer_ = &(scene_->model_.meshes_[0].image_->buffer_),
-			.srvDescription_ = scene_->model_.meshes_[0].image_->buffer_.srvDescription_
-		},
-		{ // t1
-			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
-			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
-			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
 			.buffer_ = &(resourcesLights_->buffer_),
 			.srvDescription_ = resourcesLights_->buffer_.srvDescription_
 		},
-		{ // t2
+		{ // t1
 			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
 			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
 			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
 			.buffer_ = &(scene_->model_.meshes_[0].vertexBuffer_),
 			.srvDescription_ = scene_->model_.meshes_[0].vertexBuffer_.srvDescription_
 		},
-		{ // t3
+		{ // t2
 			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
 			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
 			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
 			.buffer_ = &(scene_->model_.meshes_[0].indexBuffer_),
 			.srvDescription_ = scene_->model_.meshes_[0].indexBuffer_.srvDescription_
+		},
+		{ // t3
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
+			.buffer_ = &(scene_->model_.meshes_[0].image_->buffer_),
+			.srvDescription_ = scene_->model_.meshes_[0].image_->buffer_.srvDescription_
 		}
 	};
 
