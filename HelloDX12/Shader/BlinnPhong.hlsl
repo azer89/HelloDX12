@@ -3,13 +3,6 @@
 #include "ModelData.hlsli"
 #include "CameraData.hlsli"
 
-struct VSInput
-{
-    float4 position : POSITION;
-    float3 normal : NORMAL;
-    float2 uv : TEXCOORD;
-};
-
 struct PSInput
 {
     float4 fragPosition : SV_POSITION;
@@ -26,11 +19,15 @@ StructuredBuffer<VertexData> vertexDataArray : register(t2);
 StructuredBuffer<uint> indexArray : register(t3);
 SamplerState albedoSampler : register(s0);
 
-PSInput VSMain(VSInput input)
+PSInput VSMain(uint vertexID : SV_VertexID)
 {
+    // Vertex pulling
+    uint vertexIndex = indexArray[vertexID];
+    VertexData input = vertexDataArray[vertexIndex];
+    
     PSInput result;
     
-    result.fragPosition = mul(input.position, modelData.modelMatrix);
+    result.fragPosition = mul(float4(input.position, 1.0), modelData.modelMatrix);
     result.worldPosition = result.fragPosition;
     result.fragPosition = mul(result.fragPosition, camData.viewMatrix);
     result.fragPosition = mul(result.fragPosition, camData.projectionMatrix);

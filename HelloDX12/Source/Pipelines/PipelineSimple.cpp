@@ -123,8 +123,6 @@ void PipelineSimple::CreateShaders(DX12Context& ctx)
 
 void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 {
-	std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs = VertexData::GetInputElementDescriptions();
-
 	// Describe and create the graphics pipeline state object (PSO).
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc =
 	{
@@ -133,7 +131,6 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 		.SampleMask = UINT_MAX,
 		.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT),
 		.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT),
-		.InputLayout = { inputElementDescs.data(), static_cast<uint32_t>(inputElementDescs.size()) },
 		.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 		.NumRenderTargets = 1,
 		.DSVFormat = DXGI_FORMAT_D32_FLOAT,
@@ -181,7 +178,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	const Mesh& mesh = scene_->model_.meshes_[0];
 
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	commandList->IASetVertexBuffers(0, 1, &(mesh.vertexBuffer_.vertexBufferView_));
-	commandList->IASetIndexBuffer(&mesh.indexBuffer_.indexBufferView_);
-	commandList->DrawIndexedInstanced(mesh.vertexCount_, 1, 0, 0, 0);
+
+	uint32_t triangleCount = mesh.vertexCount_;
+	commandList->DrawInstanced(triangleCount, 1, 0, 0);
 }

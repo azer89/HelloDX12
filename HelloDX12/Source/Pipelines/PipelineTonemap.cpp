@@ -103,5 +103,5 @@ void PipelineTonemap::PopulateCommandList(DX12Context& ctx)
 
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	constexpr uint32_t triangleCount = 3;
-	commandList->DrawIndexedInstanced(triangleCount, 1, 0, 0, 0);
+	commandList->DrawInstanced(triangleCount, 1, 0, 0);
 }
