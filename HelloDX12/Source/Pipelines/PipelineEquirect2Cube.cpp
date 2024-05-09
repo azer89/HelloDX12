@@ -40,7 +40,7 @@ void PipelineEquirect2Cube::CreateDescriptors(
 		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE,
 		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
 		.buffer_ = &(hdrImage->buffer_),
-		.srvDescription_ = hdrImage->buffer_.srvDesccription_
+		.srvDescription_ = hdrImage->buffer_.srvDescription_
 	};
 
 	descriptors[1] =

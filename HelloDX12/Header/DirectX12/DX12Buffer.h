@@ -97,7 +97,7 @@ public:
 	ID3D12Resource* resource_ = nullptr;
 	D3D12MA::Allocation* dmaAllocation_ = nullptr;
 	
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesccription_ = {}; // TODO Typo
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDescription_ = {};
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_ = {};
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_ = {};
 	

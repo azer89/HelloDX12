@@ -32,7 +32,7 @@ void PipelineTonemap::CreateDescriptors(DX12Context& ctx)
 		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DESCRIPTORS_VOLATILE,
 		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
 		.buffer_ = resourcesShared_->GetSingleSampledBuffer(),
-		.srvDescription_ = resourcesShared_->GetSingleSampledBuffer()->srvDesccription_
+		.srvDescription_ = resourcesShared_->GetSingleSampledBuffer()->srvDescription_
 	};
 
 	descriptorHeap_.descriptors_ = descriptors;

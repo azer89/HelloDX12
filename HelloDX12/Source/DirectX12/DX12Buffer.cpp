@@ -24,7 +24,7 @@ void DX12Buffer::CreateHostVisibleBuffer(DX12Context& ctx, uint32_t elementCount
 {
 	bufferSize_ = bufferSize;
 	state_ = D3D12_RESOURCE_STATE_GENERIC_READ;
-	srvDesccription_ = GetSRVDescriptionFromBuffer(elementCount, stride);
+	srvDescription_ = GetSRVDescriptionFromBuffer(elementCount, stride);
 
 	D3D12MA::ALLOCATION_DESC constantBufferUploadAllocDesc =
 	{
@@ -72,7 +72,7 @@ void DX12Buffer::CreateDeviceOnlyBuffer(
 {
 	bufferSize_ = bufferSize;
 	state_ = D3D12_RESOURCE_STATE_COMMON;
-	srvDesccription_ = GetSRVDescriptionFromBuffer(elementCount, stride);
+	srvDescription_ = GetSRVDescriptionFromBuffer(elementCount, stride);
 
 	constexpr D3D12MA::ALLOCATION_DESC allocDesc =
 	{
@@ -364,7 +364,7 @@ void DX12Buffer::CreateImage(
 	D3D12_RESOURCE_FLAGS flags)
 {
 	state_ = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-	srvDesccription_ = GetSRVDescriptionFromImage(imageFormat, layerCount, mipmapCount);
+	srvDescription_ = GetSRVDescriptionFromImage(imageFormat, layerCount, mipmapCount);
 
 	D3D12_RESOURCE_DESC textureDesc =
 	{
@@ -407,7 +407,7 @@ void DX12Buffer::CreateColorAttachment(
 	D3D12_RESOURCE_FLAGS flags)
 {
 	state_ = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-	srvDesccription_ = GetSRVDescriptionFromImage(imageFormat, 1, mipmapCount);
+	srvDescription_ = GetSRVDescriptionFromImage(imageFormat, 1, mipmapCount);
 
 	D3D12_RESOURCE_DESC textureDesc =
 	{
@@ -458,7 +458,7 @@ void DX12Buffer::CreateDepthAttachment(
 	DXGI_FORMAT imageFormat) // DXGI_FORMAT_D32_FLOAT
 {
 	state_ = D3D12_RESOURCE_STATE_DEPTH_WRITE;
-	srvDesccription_ = GetSRVDescriptionFromImage(imageFormat, 1, 1);
+	srvDescription_ = GetSRVDescriptionFromImage(imageFormat, 1, 1);
 
 	D3D12_CLEAR_VALUE clearValue =
 	{
@@ -509,7 +509,7 @@ void DX12Buffer::CreateImageFromData(
 	D3D12_RESOURCE_FLAGS flags)
 {
 	state_ = D3D12_RESOURCE_STATE_COPY_DEST;
-	srvDesccription_ = GetSRVDescriptionFromImage(imageFormat, 1, mipmapCount);
+	srvDescription_ = GetSRVDescriptionFromImage(imageFormat, 1, mipmapCount);
 
 	D3D12_RESOURCE_DESC textureDesc =
 	{
