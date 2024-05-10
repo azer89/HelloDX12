@@ -9,7 +9,6 @@ void DX12RootSignature::Destroy()
 	}
 }
 
-// TODO Rename to CreateRootSignature()
 void DX12RootSignature::Create(DX12Context& ctx,
 	const D3D12_STATIC_SAMPLER_DESC& samplerDesc,
 	const std::span<CD3DX12_ROOT_PARAMETER1> rootParameters,
@@ -54,7 +53,7 @@ void DX12RootSignature::Create(DX12Context& ctx,
 void DX12RootSignature::Create(DX12Context& ctx,
 	const D3D12_STATIC_SAMPLER_DESC& samplerDesc,
 	const std::span<DX12Descriptor> descriptors,
-	const std::span<DX12Descriptor> textureArrayDescriptors,
+	const DX12DescriptorArray& descriptorArray,
 	uint32_t rootConstantCount,
 	const D3D12_ROOT_SIGNATURE_FLAGS& rootSignatureFlags)
 {
@@ -79,15 +78,14 @@ void DX12RootSignature::Create(DX12Context& ctx,
 		}
 	}
 
-	// Bindless
-	if (textureArrayDescriptors.size() > 0)
+	if (descriptorArray.HasBuffers())
 	{
 		ranges.emplace_back().Init(
-			D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 
-			textureArrayDescriptors.size(),
-			srvRegister++, 
-			0, 
-			textureArrayDescriptors[0].rangeFlags_, // TODO
+			D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+			descriptorArray.DescriptorCount(),
+			srvRegister++,
+			0,
+			descriptorArray.rangeFlags_,
 			0
 		);
 	}
@@ -103,12 +101,12 @@ void DX12RootSignature::Create(DX12Context& ctx,
 		rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + i, descriptors[i].shaderVisibility_);
 	}
 
-	if (textureArrayDescriptors.size() > 0)
+	if (descriptorArray.HasBuffers())
 	{
 		rootParameters.emplace_back().InitAsDescriptorTable(
-			1, 
-			ranges.data() + descriptors.size(), 
-			textureArrayDescriptors[0].shaderVisibility_);
+			1,
+			ranges.data() + descriptors.size(),
+			descriptorArray.shaderVisibility_);
 	}
 
 	Create(ctx, samplerDesc, rootParameters, rootSignatureFlags);

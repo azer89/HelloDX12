@@ -86,35 +86,26 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 		},
 	};
 
-	std::vector<DX12Descriptor> textureArrayDescriptors =
+	// t3
+	DX12DescriptorArray descriptorArray =
 	{
+		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
+		.buffers_ =
 		{
-			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
-			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
-			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
-			.buffer_ = &(scene_->model_.meshes_[0].image_->buffer_),
-			.srvDescription_ = scene_->model_.meshes_[0].image_->buffer_.srvDescription_
+			// TODO For testing
+			&(scene_->model_.meshes_[0].image_->buffer_),
+			&(scene_->model_.meshes_[0].image_->buffer_),
+			&(scene_->model_.meshes_[0].image_->buffer_),
+			&(scene_->model_.meshes_[0].image_->buffer_),
 		},
+		.srvDescriptions_ =
 		{
-			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
-			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
-			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
-			.buffer_ = &(scene_->model_.meshes_[0].image_->buffer_),
-			.srvDescription_ = scene_->model_.meshes_[0].image_->buffer_.srvDescription_
-		},
-		{
-			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
-			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
-			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
-			.buffer_ = &(scene_->model_.meshes_[0].image_->buffer_),
-			.srvDescription_ = scene_->model_.meshes_[0].image_->buffer_.srvDescription_
-		},
-		{
-			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
-			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
-			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
-			.buffer_ = &(scene_->model_.meshes_[0].image_->buffer_),
-			.srvDescription_ = scene_->model_.meshes_[0].image_->buffer_.srvDescription_
+			// TODO For testing
+			scene_->model_.meshes_[0].image_->buffer_.srvDescription_,
+			scene_->model_.meshes_[0].image_->buffer_.srvDescription_,
+			scene_->model_.meshes_[0].image_->buffer_.srvDescription_,
+			scene_->model_.meshes_[0].image_->buffer_.srvDescription_
 		}
 	};
 
@@ -127,7 +118,7 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 		descriptors[1].cbvDescription_ = scene_->modelConstBuffs_[i].GetCBVDescription();
 
 		descriptorHeaps_[i].descriptors_ = descriptors;
-		descriptorHeaps_[i].textureArraydescriptors_ = textureArrayDescriptors;
+		descriptorHeaps_[i].descriptorArray_ = descriptorArray;
 		descriptorHeaps_[i].Create(ctx);
 	}
 
@@ -138,7 +129,7 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
-	rootSignature_.Create(ctx, sampler, descriptors, textureArrayDescriptors, 0, rootSignatureFlags);
+	rootSignature_.Create(ctx, sampler, descriptors, descriptorArray, 0, rootSignatureFlags);
 }
 
 void PipelineSimple::CreateShaders(DX12Context& ctx)
