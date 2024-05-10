@@ -45,7 +45,7 @@ float4 PSMain(PSInput input) : SV_TARGET
     uint stride;
     lightDataArray.GetDimensions(len, stride);
     
-    uint texIndex = 0; // TODO
+    uint texIndex = 2; // TODO
     float4 albedo = albedoTexture[NonUniformResourceIndex(texIndex)].Sample(albedoSampler, input.uv);
     
     // Albedo component

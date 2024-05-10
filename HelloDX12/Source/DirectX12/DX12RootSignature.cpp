@@ -38,11 +38,11 @@ void DX12RootSignature::Create(DX12Context& ctx,
 		featureData.HighestVersion,
 		&signature,
 		&error))
-		ThrowIfFailed(ctx.GetDevice()->CreateRootSignature(
-			0,
-			signature->GetBufferPointer(),
-			signature->GetBufferSize(),
-			IID_PPV_ARGS(&rootSignature_)))
+	ThrowIfFailed(ctx.GetDevice()->CreateRootSignature(
+		0,
+		signature->GetBufferPointer(),
+		signature->GetBufferSize(),
+		IID_PPV_ARGS(&rootSignature_)))
 
 	signature->Release();
 	if (error)
@@ -54,6 +54,7 @@ void DX12RootSignature::Create(DX12Context& ctx,
 void DX12RootSignature::Create(DX12Context& ctx,
 	const D3D12_STATIC_SAMPLER_DESC& samplerDesc,
 	const std::span<DX12Descriptor> descriptors,
+	const std::span<DX12Descriptor> textureArrayDescriptors,
 	uint32_t rootConstantCount,
 	const D3D12_ROOT_SIGNATURE_FLAGS& rootSignatureFlags)
 {
@@ -78,14 +79,36 @@ void DX12RootSignature::Create(DX12Context& ctx,
 		}
 	}
 
+	// Bindless
+	if (textureArrayDescriptors.size() > 0)
+	{
+		ranges.emplace_back().Init(
+			D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 
+			textureArrayDescriptors.size(),
+			srvRegister++, 
+			0, 
+			textureArrayDescriptors[0].rangeFlags_, // TODO
+			0
+		);
+	}
+
 	std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters = {};
 	if (rootConstantCount > 0)
 	{
 		rootParameters.emplace_back().InitAsConstants(rootConstantCount, 0);
 	}
+	
 	for (int i = 0; i < descriptors.size(); ++i)
 	{
 		rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + i, descriptors[i].shaderVisibility_);
+	}
+
+	if (textureArrayDescriptors.size() > 0)
+	{
+		rootParameters.emplace_back().InitAsDescriptorTable(
+			1, 
+			ranges.data() + descriptors.size(), 
+			textureArrayDescriptors[0].shaderVisibility_);
 	}
 
 	Create(ctx, samplerDesc, rootParameters, rootSignatureFlags);

@@ -47,7 +47,7 @@ void PipelineTonemap::CreateDescriptors(DX12Context& ctx)
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
-	rootSignature_.Create(ctx, samplerDesc, descriptors, 0, rootSignatureFlags);
+	rootSignature_.Create(ctx, samplerDesc, descriptors, {}, 0, rootSignatureFlags);
 }
 
 void PipelineTonemap::CreateShaders(DX12Context& ctx)

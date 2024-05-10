@@ -83,7 +83,7 @@ void PipelineSkybox::CreateDescriptors(DX12Context& ctx)
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
 	// Root signature
-	rootSignature_.Create(ctx, sampler, descriptors, 0, rootSignatureFlags);
+	rootSignature_.Create(ctx, sampler, descriptors, {}, 0, rootSignatureFlags);
 }
 
 void PipelineSkybox::GenerateShader(DX12Context& ctx)

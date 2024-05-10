@@ -62,7 +62,7 @@ void PipelineEquirect2Cube::CreateDescriptors(
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 	// Root signature
-	rootSignature_.Create(ctx, samplerDesc, descriptors, 0, rootSignatureFlags);
+	rootSignature_.Create(ctx, samplerDesc, descriptors, {}, 0, rootSignatureFlags);
 }
 
 void PipelineEquirect2Cube::GenerateShader(DX12Context& ctx)
