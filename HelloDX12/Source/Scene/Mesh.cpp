@@ -17,7 +17,10 @@ Mesh::Mesh(
 	CreateBuffers(ctx);
 
 	image_ = std::make_unique<DX12Image>();
-	image_->Load(ctx, AppConfig::ModelFolder + "Zaku/Textures/m_14_baseColor.png");
+	//image_->Load(ctx, AppConfig::ModelFolder + "Zaku/Textures/m_14_baseColor.png");
+	auto data = DX12Image::GenerateCheckerboard(100, 100, 4);
+	image_->Load(ctx, data.data(), 100, 100);
+
 
 	PipelineMipmap pip(ctx);
 	pip.GenerateMipmap(ctx, image_.get());

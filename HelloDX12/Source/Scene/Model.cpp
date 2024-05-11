@@ -7,6 +7,9 @@
 
 #include <stdexcept>
 
+static const std::string DEFAULT_BLACK_TEXTURE = "DefaultBlackTexture";
+static const std::string DEFAULT_NORMAL_TEXTURE = "DefaultNormalTexture";
+
 inline glm::mat4 CastToGLMMat4(const aiMatrix4x4& m)
 {
 	return glm::transpose(glm::make_mat4(&m.a1));
@@ -123,4 +126,28 @@ std::vector<uint32_t> Model::GetMeshIndices(const aiMesh* mesh)
 		}
 	}
 	return indices;
+}
+
+void Model::CreateDefaultTextures(DX12Context& ctx)
+{
+	uint32_t black = 0xff000000;
+	AddTexture(ctx, DEFAULT_BLACK_TEXTURE, (void*)&black, 1, 1);
+
+	// TODO Investigate a correct value for normal vector
+	uint32_t normal = 0xffff8888;
+	AddTexture(ctx, DEFAULT_NORMAL_TEXTURE, (void*)&normal, 1, 1);
+}
+
+void Model::AddTexture(DX12Context& ctx, const std::string& textureFilename)
+{
+}
+
+void Model::AddTexture(DX12Context& ctx, const std::string& textureName, void* data, int width, int height)
+{
+	/*textures_.emplace_back().Load(
+		ctx,
+		data,
+		1,
+		1);
+	textureMap_[textureName] = static_cast<uint32_t>(textureList_.size() - 1);*/
 }

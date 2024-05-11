@@ -32,11 +32,18 @@ private:
 
 	[[nodiscard]] std::vector<VertexData> GetMeshVertices(const aiMesh* mesh, const glm::mat4& transform);
 	[[nodiscard]] std::vector<uint32_t> GetMeshIndices(const aiMesh* mesh);
+
+	void CreateDefaultTextures(DX12Context& ctx);
+	void AddTexture(DX12Context& ctx, const std::string& textureFilename);
+	void AddTexture(DX12Context& ctx, const std::string& textureName, void* data, int width, int height);
 		
 public:
 	std::string filepath_ = {};
 	std::string directory_ = {};
 	std::vector<Mesh> meshes_ = {};
+
+	std::vector<DX12Image> textures_ = {};
+	std::unordered_map<std::string, uint32_t> textureMap_ = {};
 
 private:
 	const aiScene* scene_ = nullptr;

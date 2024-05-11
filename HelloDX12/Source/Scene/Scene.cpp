@@ -23,6 +23,12 @@ void Scene::Init(DX12Context& ctx)
 	CreateModelBuffers(ctx);
 }
 
+DX12DescriptorArray Scene::GetImageDescriptors() const
+{
+	// TODO
+	return {};
+}
+
 void Scene::CreateModelBuffers(DX12Context& ctx)
 {
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)

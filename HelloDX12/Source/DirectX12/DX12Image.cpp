@@ -52,6 +52,28 @@ void DX12Image::Load(DX12Context& ctx, const std::string& filename)
 	stbi_image_free(pixels);
 }
 
+void DX12Image::Load(DX12Context& ctx, void* data, uint32_t width, uint32_t height)
+{
+	width_ = width;
+	height_ = height;
+	pixelSize_ = 4;
+	format_ = ctx.GetSwapchainFormat();
+	mipmapCount_ = Utility::MipMapCount(width_, height_);
+	layerCount_ = 1;
+	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+
+	buffer_.CreateImageFromData(
+		ctx,
+		data,
+		width_,
+		height_,
+		mipmapCount_,
+		pixelSize_,
+		format_,
+		flags
+	);
+}
+
 void DX12Image::LoadHDR(DX12Context& ctx, const std::string& filename)
 {
 	stbi_set_flip_vertically_on_load(false);
@@ -179,17 +201,17 @@ void DX12Image::TransitionCommand(
 }
 
 // Generate a simple black and white checkerboard texture.
-std::vector<uint8_t> DX12Image::GenerateCheckerboard(DX12Context& ctx)
+std::vector<uint8_t> DX12Image::GenerateCheckerboard(uint32_t width, uint32_t height, uint32_t pixelSize)
 {
-	const uint32_t rowPitch = width_ * pixelSize_;
-	const uint32_t cellPitch = rowPitch >> 6;        // The width of a cell in the checkboard texture.
-	const uint32_t cellHeight = width_ >> 6;    // The height of a cell in the checkerboard texture.
-	const uint32_t textureSize = rowPitch * height_;
+	const uint32_t rowPitch = width * pixelSize;
+	const uint32_t cellPitch = rowPitch >> 6; // The width of a cell in the checkboard texture.
+	const uint32_t cellHeight = width >> 6; // The height of a cell in the checkerboard texture.
+	const uint32_t textureSize = rowPitch * height;
 
 	std::vector<uint8_t> data(textureSize);
 	uint8_t* pData = &data[0];
 
-	for (uint32_t n = 0; n < textureSize; n += pixelSize_)
+	for (uint32_t n = 0; n < textureSize; n += pixelSize)
 	{
 		uint32_t x = n % rowPitch;
 		uint32_t y = n / rowPitch;
