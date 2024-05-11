@@ -150,6 +150,12 @@
     <ClInclude Include="Header\DirectX12\DX12DescriptorHeap.h">
       <Filter>Header\DirectX12</Filter>
     </ClInclude>
+    <ClInclude Include="Header\Scene\ScenePODs.h">
+      <Filter>Header\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Scene\TextureMapper.h">
+      <Filter>Header\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">

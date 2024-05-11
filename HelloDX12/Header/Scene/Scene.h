@@ -4,6 +4,7 @@
 #include "Model.h"
 #include "Configs.h"
 #include "ConstantDefinitions.h"
+#include "ScenePODs.h"
 
 #include <array>
 
@@ -21,7 +22,7 @@ private:
 
 public:
 	Model model_ = {};
-	std::array<CModel, AppConfig::FrameCount> modelConsts_ = {};
+	std::array<ModelMatrix, AppConfig::FrameCount> modelConsts_ = {};
 	std::array<DX12Buffer, AppConfig::FrameCount> modelConstBuffs_ = {};
 };
 

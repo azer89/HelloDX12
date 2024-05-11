@@ -44,7 +44,9 @@
     <ClInclude Include="Header\Scene\Mesh.h" />
     <ClInclude Include="Header\Scene\Model.h" />
     <ClInclude Include="Header\Scene\Scene.h" />
+    <ClInclude Include="Header\Scene\ScenePODs.h" />
     <ClInclude Include="Header\Scene\ShapeGenerator.h" />
+    <ClInclude Include="Header\Scene\TextureMapper.h" />
     <ClInclude Include="Header\Scene\VertexData.h" />
     <ClInclude Include="Header\UIData.h" />
     <ClInclude Include="Header\Utility.h" />
