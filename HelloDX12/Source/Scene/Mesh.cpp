@@ -6,15 +6,23 @@
 Mesh::Mesh(
 	DX12Context& ctx,
 	const std::string& meshName,
+	const uint32_t vertexOffset,
+	const uint32_t indexOffset,
+	const uint32_t vertexCount,
+	const uint32_t indexCount,
 	std::vector<VertexData>&& vertices,
 	std::vector<uint32_t>&& indices,
 	std::unordered_map<TextureType, uint32_t>&& textureIndices) :
+	vertexOffset_(vertexOffset),
+	indexOffset_(indexCount),
+	vertexCount_(vertexCount),
+	indexCount_(indexCount),
 	meshName_(meshName),
 	vertices_(std::move(vertices)),
 	indices_(std::move(indices)),
 	textureIndices_(std::move(textureIndices))
 {
-	vertexCount_ = static_cast<uint32_t>(indices_.size());
+	//vertexCount_ = static_cast<uint32_t>(indices_.size());
 
 	CreateBuffers(ctx);
 

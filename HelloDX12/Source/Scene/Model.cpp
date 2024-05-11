@@ -114,10 +114,14 @@ void Model::ProcessMesh(
 	sceneData.indexOffsets_.emplace_back(currIndexOffset + prevIndexOffset);
 
 	meshes_.emplace_back(
-		ctx, 
-		meshName, 
-		std::move(vertices), 
-		std::move(indices), 
+		ctx,
+		meshName,
+		prevVertexOffset,
+		prevIndexOffset,
+		vertices.size(),
+		indices.size(),
+		std::move(vertices),
+		std::move(indices),
 		std::move(textureIndices));
 }
 

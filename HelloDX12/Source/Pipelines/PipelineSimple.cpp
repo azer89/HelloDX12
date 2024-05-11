@@ -196,6 +196,6 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	uint32_t triangleCount = mesh.vertexCount_;
+	uint32_t triangleCount = mesh.indexCount_;
 	commandList->DrawInstanced(triangleCount, 1, 0, 0);
 }

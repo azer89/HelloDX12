@@ -33,11 +33,10 @@ public:
 
 	// TODO New
 	SceneData sceneData_ = {}; // Containing vertices and indices
-	std::vector<ModelMatrix> modelMatrices_ = {};
+	//std::vector<ModelMatrix> modelMatrices_ = {}; // TODO Only one model for now
 	DX12Buffer vertexBuffer_ = {};
 	DX12Buffer indexBuffer_ = {};
 	DX12Buffer meshDataBuffer_ = {};
-	std::array<DX12Buffer, AppConfig::FrameCount> modelSSBOBuffers_ = {}; // Frame-in-flight
 };
 
 #endif

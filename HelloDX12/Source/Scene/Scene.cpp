@@ -21,6 +21,7 @@ void Scene::Init(DX12Context& ctx)
 	model_.Load(ctx, modelFile, sceneData_);
 
 	CreateModelBuffers(ctx);
+	CreateBindlessResources(ctx);
 }
 
 void Scene::CreateBindlessResources(DX12Context& ctx)
