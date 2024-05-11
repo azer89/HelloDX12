@@ -3,6 +3,8 @@
 
 #include "DX12Context.h"
 #include "VertexData.h"
+#include "ScenePODs.h"
+#include "TextureMapper.h"
 #include "Mesh.h"
 
 #include <string>
@@ -17,18 +19,20 @@ public:
 	~Model() = default;
 
 	void Destroy();
-	void Load(DX12Context& ctx, const std::string& path);
+	void Load(DX12Context& ctx, const std::string& path, SceneData& sceneData);
 
 private:
 	void ProcessNode(
 		DX12Context& ctx,
 		const aiNode* node,
-		const glm::mat4& parentTransform);
+		const glm::mat4& parentTransform,
+		SceneData& sceneData);
 
 	void ProcessMesh(
 		DX12Context& ctx,
 		const aiMesh* mesh,
-		const glm::mat4& transform);
+		const glm::mat4& transform,
+		SceneData& sceneData);
 
 	[[nodiscard]] std::vector<VertexData> GetMeshVertices(const aiMesh* mesh, const glm::mat4& transform);
 	[[nodiscard]] std::vector<uint32_t> GetMeshIndices(const aiMesh* mesh);
@@ -36,6 +40,7 @@ private:
 	void CreateDefaultTextures(DX12Context& ctx);
 	void AddTexture(DX12Context& ctx, const std::string& textureFilename);
 	void AddTexture(DX12Context& ctx, const std::string& textureName, void* data, int width, int height);
+	[[nodiscard]] std::unordered_map<TextureType, uint32_t> GetTextureIndices(DX12Context& ctx, const aiMesh* mesh);
 		
 public:
 	std::string filepath_ = {};

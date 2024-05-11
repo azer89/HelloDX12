@@ -4,6 +4,7 @@
 #include "DX12Context.h"
 #include "DX12Image.h"
 #include "DX12Buffer.h"
+#include "TextureMapper.h"
 #include "VertexData.h"
 
 #include <vector>
@@ -16,7 +17,8 @@ public:
 		DX12Context& ctx,
 		const std::string& meshName,
 		std::vector<VertexData>&& vertices,
-		std::vector<uint32_t>&& indices);
+		std::vector<uint32_t>&& indices,
+		std::unordered_map<TextureType, uint32_t>&& textureIndices);
 
 	void Destroy();
 
@@ -29,10 +31,12 @@ public:
 	uint32_t vertexCount_ = 0;
 
 	std::vector<VertexData> vertices_ = {};
-	DX12Buffer vertexBuffer_ = {};
+	DX12Buffer vertexBuffer_ = {}; // TODO Delete
 
 	std::vector<uint32_t> indices_ = {};
-	DX12Buffer indexBuffer_ = {};
+	DX12Buffer indexBuffer_ = {}; // TODO Delete
+
+	std::unordered_map<TextureType, uint32_t> textureIndices_;
 
 private:
 	void CreateBuffers(DX12Context& ctx);

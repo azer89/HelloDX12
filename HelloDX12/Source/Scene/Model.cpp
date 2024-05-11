@@ -5,6 +5,8 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
+#include "PipelineMipmap.h"
+
 #include <stdexcept>
 
 static const std::string DEFAULT_BLACK_TEXTURE = "DefaultBlackTexture";
@@ -21,9 +23,17 @@ void Model::Destroy()
 	{
 		m.Destroy();
 	}
+
+	for (auto & t : textures_)
+	{
+		t.Destroy();
+	}
 }
 
-void Model::Load(DX12Context& ctx, const std::string& path)
+void Model::Load(
+	DX12Context& ctx,
+	const std::string& path,
+	SceneData& sceneData)
 {
 	filepath_ = path;
 	Assimp::Importer importer;
@@ -36,6 +46,8 @@ void Model::Load(DX12Context& ctx, const std::string& path)
 		throw std::runtime_error("Cannot load file " + path);
 	}
 
+	CreateDefaultTextures(ctx);
+
 	// Retrieve the directory path of the filepath
 	directory_ = filepath_.substr(0, filepath_.find_last_of('/'));
 
@@ -43,13 +55,15 @@ void Model::Load(DX12Context& ctx, const std::string& path)
 	ProcessNode(
 		ctx,
 		scene_->mRootNode,
-		glm::mat4(1.0));
+		glm::mat4(1.0),
+		sceneData);
 }
 
 void Model::ProcessNode(
 	DX12Context& ctx,
 	const aiNode* node,
-	const glm::mat4& parentTransform)
+	const glm::mat4& parentTransform,
+	SceneData& sceneData)
 {
 	const glm::mat4 nodeTransform = CastToGLMMat4(node->mTransformation);
 	const glm::mat4 totalTransform = parentTransform * nodeTransform;
@@ -60,7 +74,8 @@ void Model::ProcessNode(
 		ProcessMesh(
 			ctx,
 			mesh,
-			totalTransform);
+			totalTransform,
+			sceneData);
 	}
 
 	for (uint32_t i = 0; i < node->mNumChildren; ++i)
@@ -68,21 +83,42 @@ void Model::ProcessNode(
 		ProcessNode(
 			ctx,
 			node->mChildren[i],
-			totalTransform);
+			totalTransform,
+			sceneData);
 	}
 }
 
 void Model::ProcessMesh(
 	DX12Context& ctx,
 	const aiMesh* mesh,
-	const glm::mat4& transform)
+	const glm::mat4& transform,
+	SceneData& sceneData)
 {
 	const std::string meshName = mesh->mName.C_Str();
 
 	std::vector<VertexData> vertices = GetMeshVertices(mesh, transform);
 	std::vector<uint32_t> indices = GetMeshIndices(mesh);
+	std::unordered_map<TextureType, uint32_t> textureIndices = GetTextureIndices(ctx, mesh);
 
-	meshes_.emplace_back(ctx, meshName, std::move(vertices), std::move(indices));
+	const uint32_t prevVertexOffset = sceneData.GetCurrentVertexOffset();
+	const uint32_t prevIndexOffset = sceneData.GetCurrentIndexOffset();
+
+	sceneData.vertices_.insert(std::end(sceneData.vertices_), std::begin(vertices), std::end(vertices));
+	sceneData.indices_.insert(std::end(sceneData.indices_), std::begin(indices), std::end(indices));
+
+	const uint32_t currVertexOffset = static_cast<uint32_t>(vertices.size());
+	const uint32_t currIndexOffset = static_cast<uint32_t>(indices.size());
+
+	// Update offsets
+	sceneData.vertexOffsets_.emplace_back(currVertexOffset + prevVertexOffset);
+	sceneData.indexOffsets_.emplace_back(currIndexOffset + prevIndexOffset);
+
+	meshes_.emplace_back(
+		ctx, 
+		meshName, 
+		std::move(vertices), 
+		std::move(indices), 
+		std::move(textureIndices));
 }
 
 std::vector<VertexData> Model::GetMeshVertices(const aiMesh* mesh, const glm::mat4& transform)
@@ -140,14 +176,72 @@ void Model::CreateDefaultTextures(DX12Context& ctx)
 
 void Model::AddTexture(DX12Context& ctx, const std::string& textureFilename)
 {
+	const std::string fullFilePath = this->directory_ + '/' + textureFilename;
+	textures_.emplace_back().Load(
+		ctx,
+		fullFilePath);
+	textureMap_[textureFilename] = static_cast<uint32_t>(textures_.size() - 1);
 }
 
 void Model::AddTexture(DX12Context& ctx, const std::string& textureName, void* data, int width, int height)
 {
-	/*textures_.emplace_back().Load(
+	textures_.emplace_back().Load(
 		ctx,
 		data,
 		1,
 		1);
-	textureMap_[textureName] = static_cast<uint32_t>(textureList_.size() - 1);*/
+	textureMap_[textureName] = static_cast<uint32_t>(textures_.size() - 1);
+
+	if (width > 1 && height > 1)
+	{
+		PipelineMipmap pip(ctx);
+		pip.GenerateMipmap(ctx, &(textures_.back()));
+	}
+}
+
+std::unordered_map<TextureType, uint32_t> Model::GetTextureIndices(DX12Context& ctx, const aiMesh* mesh)
+{
+	// PBR textures
+	std::unordered_map<TextureType, uint32_t> textures;
+	const aiMaterial* material = scene_->mMaterials[mesh->mMaterialIndex];
+	for (const auto& aiTType : TextureMapper::aiTTypeSearchOrder)
+	{
+		const auto count = material->GetTextureCount(aiTType);
+		for (unsigned int i = 0; i < count; ++i)
+		{
+			aiString str;
+			material->GetTexture(aiTType, i, &str);
+			std::string filename = str.C_Str();
+			TextureType tType = TextureMapper::GetTextureType(aiTType);
+
+			// Make sure each texture is loaded once
+			if (!textureMap_.contains(filename))
+			{
+				AddTexture(ctx, filename);
+			}
+
+			// Only support one image per texture type, if we happen to load 
+			// multiple textures of the same type, we only use one.
+			if (!textures.contains(tType))
+			{
+				textures[tType] = textureMap_[filename];
+			}
+		}
+	}
+
+	// Replace missing PBR textures with a black 1x1 texture
+	if (!textures.contains(TextureType::Albedo))
+		{ textures[TextureType::Albedo] = textureMap_[DEFAULT_BLACK_TEXTURE]; }
+	if (!textures.contains(TextureType::Normal))
+		{ textures[TextureType::Normal] = textureMap_[DEFAULT_NORMAL_TEXTURE]; }
+	if (!textures.contains(TextureType::Metalness))
+		{ textures[TextureType::Metalness] = textureMap_[DEFAULT_BLACK_TEXTURE]; }
+	if (!textures.contains(TextureType::Roughness))
+		{ textures[TextureType::Roughness] = textureMap_[DEFAULT_BLACK_TEXTURE]; }
+	if (!textures.contains(TextureType::AmbientOcclusion))
+		{ textures[TextureType::AmbientOcclusion] = textureMap_[DEFAULT_BLACK_TEXTURE]; }
+	if (!textures.contains(TextureType::Emissive))
+		{ textures[TextureType::Emissive] = textureMap_[DEFAULT_BLACK_TEXTURE]; }
+
+	return textures;
 }

@@ -7,10 +7,12 @@ Mesh::Mesh(
 	DX12Context& ctx,
 	const std::string& meshName,
 	std::vector<VertexData>&& vertices,
-	std::vector<uint32_t>&& indices) :
+	std::vector<uint32_t>&& indices,
+	std::unordered_map<TextureType, uint32_t>&& textureIndices) :
 	meshName_(meshName),
 	vertices_(std::move(vertices)),
-	indices_(indices)
+	indices_(std::move(indices)),
+	textureIndices_(std::move(textureIndices))
 {
 	vertexCount_ = static_cast<uint32_t>(indices_.size());
 
@@ -45,7 +47,6 @@ void Mesh::CreateCube(DX12Context& ctx)
 void Mesh::CreateBuffers(DX12Context& ctx)
 {
 	const uint32_t vertexBufferSize = static_cast<uint32_t>(sizeof(VertexData) * vertices_.size());
-
 	const uint32_t indexBufferSize = static_cast<uint32_t>(sizeof(uint32_t) * indices_.size());
 
 	vertexBuffer_.CreateDeviceOnlyBuffer(

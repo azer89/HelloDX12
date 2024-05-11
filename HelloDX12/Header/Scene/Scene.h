@@ -6,6 +6,7 @@
 #include "ConstantDefinitions.h"
 #include "ScenePODs.h"
 #include "DX12Descriptor.h"
+#include "DX12Buffer.h"
 
 #include <array>
 
@@ -19,21 +20,24 @@ public:
 	void Init(DX12Context& ctx);
 
 	// TODO
-	DX12DescriptorArray GetImageDescriptors() const;
+	DX12DescriptorArray GetImageDescriptors();
 
 private:
 	void CreateModelBuffers(DX12Context& ctx);
+	void CreateBindlessResources(DX12Context& ctx);
 
 public:
 	Model model_ = {};
 	std::array<ModelMatrix, AppConfig::FrameCount> modelConsts_ = {};
 	std::array<DX12Buffer, AppConfig::FrameCount> modelConstBuffs_ = {};
 
-	std::vector<VertexData> vertices_ = {};
+	// TODO New
+	SceneData sceneData_ = {}; // Containing vertices and indices
+	std::vector<ModelMatrix> modelMatrices_ = {};
 	DX12Buffer vertexBuffer_ = {};
-
-	std::vector<uint32_t> indices_ = {};
 	DX12Buffer indexBuffer_ = {};
+	DX12Buffer meshDataBuffer_ = {};
+	std::array<DX12Buffer, AppConfig::FrameCount> modelSSBOBuffers_ = {}; // Frame-in-flight
 };
 
 #endif
