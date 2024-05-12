@@ -1,6 +1,7 @@
 #include "VertexData.hlsli"
 #include "LightData.hlsli"
 #include "ModelData.hlsli"
+#include "MeshData.hlsli"
 #include "CameraData.hlsli"
 
 struct PSInput

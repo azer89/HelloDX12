@@ -33,6 +33,7 @@ public:
 
 	// TODO New
 	SceneData sceneData_ = {}; // Containing vertices and indices
+	std::vector<MeshData> meshDataArray_ = {};
 	//std::vector<ModelMatrix> modelMatrices_ = {}; // TODO Only one model for now
 	DX12Buffer vertexBuffer_ = {};
 	DX12Buffer indexBuffer_ = {};

@@ -277,5 +277,8 @@
     <None Include="Shader\VertexData.hlsli">
       <Filter>Shader</Filter>
     </None>
+    <None Include="Shader\MeshData.hlsli">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

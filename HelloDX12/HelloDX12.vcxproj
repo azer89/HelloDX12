@@ -90,6 +90,7 @@
       </ShaderType>
       <FileType>Document</FileType>
     </None>
+    <None Include="Shader\MeshData.hlsli" />
     <None Include="Shader\VertexData.hlsli" />
   </ItemGroup>
   <ItemGroup>

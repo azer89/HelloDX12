@@ -6,6 +6,7 @@
 #include "DX12Buffer.h"
 #include "TextureMapper.h"
 #include "VertexData.h"
+#include "ScenePODs.h"
 
 #include <vector>
 #include <memory>
@@ -27,6 +28,22 @@ public:
 	void Destroy();
 
 	void CreateCube(DX12Context& ctx);
+
+	[[nodiscard]] MeshData GetMeshData(uint32_t textureIndexOffset, uint32_t modelMatrixIndex)
+	{
+		return
+		{
+			.vertexOffset_ = vertexOffset_,
+			.indexOffset_ = indexOffset_,
+			.modelMatrixIndex_ = modelMatrixIndex,
+			.albedo_ = textureIndices_[TextureType::Albedo] + textureIndexOffset,
+			.normal_ = textureIndices_[TextureType::Normal] + textureIndexOffset,
+			.metalness_ = textureIndices_[TextureType::Metalness] + textureIndexOffset,
+			.roughness_ = textureIndices_[TextureType::Roughness] + textureIndexOffset,
+			.ao_ = textureIndices_[TextureType::AmbientOcclusion] + textureIndexOffset,
+			.emissive_ = textureIndices_[TextureType::Emissive] + textureIndexOffset,
+		};
+	}
 
 public:
 	std::string meshName_ = {};
