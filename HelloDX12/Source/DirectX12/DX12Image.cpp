@@ -168,7 +168,7 @@ void DX12Image::CreateDepthAttachment(DX12Context& ctx, uint32_t msaaCount)
 	buffer_.CreateDepthAttachment(ctx, width_, height_, msaaCount, format_);
 }
 
-D3D12_STATIC_SAMPLER_DESC DX12Image::GetSampler()
+D3D12_STATIC_SAMPLER_DESC DX12Image::GetDefaultSampler()
 {
 	return
 	{

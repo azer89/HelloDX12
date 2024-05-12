@@ -120,8 +120,6 @@ void Model::ProcessMesh(
 		prevIndexOffset,
 		vertices.size(),
 		indices.size(),
-		std::move(vertices),
-		std::move(indices),
 		std::move(textureIndices));
 }
 

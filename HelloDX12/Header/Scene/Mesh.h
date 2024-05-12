@@ -21,8 +21,6 @@ public:
 		const uint32_t indexOffset,
 		const uint32_t vertexCount,
 		const uint32_t indexCount,
-		std::vector<VertexData>&& vertices,
-		std::vector<uint32_t>&& indices,
 		std::unordered_map<TextureType, uint32_t>&& textureIndices);
 
 	void Destroy();
@@ -48,22 +46,12 @@ public:
 public:
 	std::string meshName_ = {};
 
-	std::unique_ptr<DX12Image> image_ = nullptr; // TODO Delete
 	uint32_t vertexCount_ = 0;
 	uint32_t indexCount_ = 0;
 	uint32_t vertexOffset_ = 0;
 	uint32_t indexOffset_ = 0;
 
-	std::vector<VertexData> vertices_ = {};
-	DX12Buffer vertexBuffer_ = {}; // TODO Delete
-
-	std::vector<uint32_t> indices_ = {};
-	DX12Buffer indexBuffer_ = {}; // TODO Delete
-
 	std::unordered_map<TextureType, uint32_t> textureIndices_;
-
-private:
-	void CreateBuffers(DX12Context& ctx);
 };
 
 #endif

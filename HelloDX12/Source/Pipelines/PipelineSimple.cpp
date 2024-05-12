@@ -67,15 +67,15 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
 			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
 			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
-			.buffer_ = &(scene_->model_.meshes_[0].vertexBuffer_),
-			.srvDescription_ = scene_->model_.meshes_[0].vertexBuffer_.srvDescription_
+			.buffer_ = &(scene_->vertexBuffer_),
+			.srvDescription_ = scene_->vertexBuffer_.srvDescription_
 		},
 		{ // t1
 			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
 			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
 			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
-			.buffer_ = &(scene_->model_.meshes_[0].indexBuffer_),
-			.srvDescription_ = scene_->model_.meshes_[0].indexBuffer_.srvDescription_
+			.buffer_ = &(scene_->indexBuffer_),
+			.srvDescription_ = scene_->indexBuffer_.srvDescription_
 		},
 		{ // t2
 			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
@@ -109,7 +109,7 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 		descriptorHeaps_[i].Create(ctx);
 	}
 
-	D3D12_STATIC_SAMPLER_DESC sampler = scene_->model_.meshes_[0].image_->GetSampler();
+	D3D12_STATIC_SAMPLER_DESC sampler = DX12Image::GetDefaultSampler();
 	constexpr D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
