@@ -185,6 +185,12 @@ void Model::AddTexture(DX12Context& ctx, const std::string& textureFilename)
 		ctx,
 		fullFilePath);
 	textureMap_[textureFilename] = static_cast<uint32_t>(textures_.size() - 1);
+
+	if (textures_.back().width_ > 1 && textures_.back().height_ > 1)
+	{
+		PipelineMipmap pip(ctx);
+		pip.GenerateMipmap(ctx, &(textures_.back()));
+	}
 }
 
 void Model::AddTexture(DX12Context& ctx, const std::string& textureName, void* data, int width, int height)

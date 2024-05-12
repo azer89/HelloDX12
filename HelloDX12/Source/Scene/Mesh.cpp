@@ -14,7 +14,7 @@ Mesh::Mesh(
 	std::vector<uint32_t>&& indices,
 	std::unordered_map<TextureType, uint32_t>&& textureIndices) :
 	vertexOffset_(vertexOffset),
-	indexOffset_(indexCount),
+	indexOffset_(indexOffset),
 	vertexCount_(vertexCount),
 	indexCount_(indexCount),
 	meshName_(meshName),

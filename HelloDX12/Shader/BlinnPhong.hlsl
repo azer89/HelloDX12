@@ -15,15 +15,17 @@ struct PSInput
 cbuffer C0 : register(b0) {  CameraData camData; };
 cbuffer C1 : register(b1) {  ModelData modelData; };
 
-StructuredBuffer<LightData> lightDataArray : register(t0);
-StructuredBuffer<VertexData> vertexDataArray : register(t1);
-StructuredBuffer<uint> indexArray : register(t2);
-Texture2D albedoTexture[] : register(t3);
+StructuredBuffer<VertexData> vertexDataArray : register(t0);
+StructuredBuffer<uint> indexArray : register(t1);
+StructuredBuffer<MeshData> meshDataArray : register(t2);
+StructuredBuffer<LightData> lightDataArray : register(t3);
 
-SamplerState albedoSampler : register(s0);
+Texture2D allTextures[] : register(t4); // Unbounded array
+
+SamplerState defaultSampler : register(s0);
 
 PSInput VSMain(uint vertexID : SV_VertexID)
-{
+{ 
     // Vertex pulling
     uint vertexIndex = indexArray[vertexID];
     VertexData input = vertexDataArray[vertexIndex];
@@ -46,8 +48,10 @@ float4 PSMain(PSInput input) : SV_TARGET
     uint stride;
     lightDataArray.GetDimensions(len, stride);
     
-    uint texIndex = 2; // TODO
-    float4 albedo = albedoTexture[NonUniformResourceIndex(texIndex)].Sample(albedoSampler, input.uv);
+    // TODO Only one mesh for now
+    MeshData m = meshDataArray[0];
+    uint texIndex = m.albedo;
+    float4 albedo = allTextures[NonUniformResourceIndex(texIndex)].Sample(defaultSampler, input.uv);
     
     // Albedo component
     float3 lighting = albedo.xyz * 0.01;

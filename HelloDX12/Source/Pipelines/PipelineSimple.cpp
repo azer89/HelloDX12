@@ -66,48 +66,35 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 		{ // t0
 			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
 			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
-			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
-			.buffer_ = &(resourcesLights_->buffer_),
-			.srvDescription_ = resourcesLights_->buffer_.srvDescription_
-		},
-		{ // t1
-			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
-			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
 			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
 			.buffer_ = &(scene_->model_.meshes_[0].vertexBuffer_),
 			.srvDescription_ = scene_->model_.meshes_[0].vertexBuffer_.srvDescription_
 		},
-		{ // t2
+		{ // t1
 			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
 			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
 			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
 			.buffer_ = &(scene_->model_.meshes_[0].indexBuffer_),
 			.srvDescription_ = scene_->model_.meshes_[0].indexBuffer_.srvDescription_
 		},
+		{ // t2
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
+			.buffer_ = &(scene_->meshDataBuffer_),
+			.srvDescription_ = scene_->meshDataBuffer_.srvDescription_
+		},
+		{ // t3
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
+			.buffer_ = &(resourcesLights_->buffer_),
+			.srvDescription_ = resourcesLights_->buffer_.srvDescription_
+		},
 	};
 
-	// t3
-	DX12DescriptorArray descriptorArray =
-	{
-		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
-		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
-		.buffers_ =
-		{
-			// TODO For testing
-			&(scene_->model_.meshes_[0].image_->buffer_),
-			&(scene_->model_.meshes_[0].image_->buffer_),
-			&(scene_->model_.meshes_[0].image_->buffer_),
-			&(scene_->model_.meshes_[0].image_->buffer_),
-		},
-		.srvDescriptions_ =
-		{
-			// TODO For testing
-			scene_->model_.meshes_[0].image_->buffer_.srvDescription_,
-			scene_->model_.meshes_[0].image_->buffer_.srvDescription_,
-			scene_->model_.meshes_[0].image_->buffer_.srvDescription_,
-			scene_->model_.meshes_[0].image_->buffer_.srvDescription_
-		}
-	};
+	// t4
+	DX12DescriptorArray descriptorArray =  scene_->GetImageDescriptors(); 
 
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
