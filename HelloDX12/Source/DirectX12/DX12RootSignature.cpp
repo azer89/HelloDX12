@@ -36,12 +36,12 @@ void DX12RootSignature::Create(DX12Context& ctx,
 		&rootSignatureDesc,
 		featureData.HighestVersion,
 		&signature,
-		&error))
+		&error));
 	ThrowIfFailed(ctx.GetDevice()->CreateRootSignature(
 		0,
 		signature->GetBufferPointer(),
 		signature->GetBufferSize(),
-		IID_PPV_ARGS(&rootSignature_)))
+		IID_PPV_ARGS(&rootSignature_)));
 
 	signature->Release();
 	if (error)

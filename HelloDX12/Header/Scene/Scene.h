@@ -31,10 +31,8 @@ public:
 	std::array<ModelMatrix, AppConfig::FrameCount> modelConsts_ = {};
 	std::array<DX12Buffer, AppConfig::FrameCount> modelConstBuffs_ = {};
 
-	// TODO New
 	SceneData sceneData_ = {}; // Containing vertices and indices
 	std::vector<MeshData> meshDataArray_ = {};
-	//std::vector<ModelMatrix> modelMatrices_ = {}; // TODO Only one model for now
 	DX12Buffer vertexBuffer_ = {};
 	DX12Buffer indexBuffer_ = {};
 	DX12Buffer meshDataBuffer_ = {};

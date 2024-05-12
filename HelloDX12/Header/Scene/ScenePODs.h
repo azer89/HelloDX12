@@ -44,5 +44,4 @@ struct SceneData
 	}
 };
 
-
 #endif

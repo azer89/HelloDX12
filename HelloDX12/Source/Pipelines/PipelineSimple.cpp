@@ -148,7 +148,7 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 	psoDesc.PS.BytecodeLength = fragmentShader_.GetHandle()->GetBufferSize();
 	psoDesc.PS.pShaderBytecode = fragmentShader_.GetHandle()->GetBufferPointer();
 
-	ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)))
+	ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)));
 }
 
 void PipelineSimple::Update(DX12Context& ctx)

@@ -57,10 +57,10 @@ void DX12Buffer::CreateHostVisibleBuffer(DX12Context& ctx, uint32_t elementCount
 	dmaAllocation_->SetName(L"Buffer_Allocation_DMA");
 
 	// Mapping
-	ThrowIfFailed(resource_->Map(0, nullptr, reinterpret_cast<void**>(&mappedData_)))
+	ThrowIfFailed(resource_->Map(0, nullptr, reinterpret_cast<void**>(&mappedData_)));
 
-		// GPU virtual address
-		gpuAddress_ = resource_->GetGPUVirtualAddress();
+	// GPU virtual address
+	gpuAddress_ = resource_->GetGPUVirtualAddress();
 }
 
 void DX12Buffer::CreateDeviceOnlyBuffer(
@@ -100,7 +100,7 @@ void DX12Buffer::CreateDeviceOnlyBuffer(
 		state_,
 		nullptr,
 		&dmaAllocation_,
-		IID_PPV_ARGS(&resource_)))
+		IID_PPV_ARGS(&resource_)));
 
 	resource_->SetName(L"Device_Only_Resource");
 	dmaAllocation_->SetName(L"Device_Only_Allocation_DMA");
@@ -181,7 +181,7 @@ void DX12Buffer::CreateConstantBuffer(DX12Context& ctx, uint64_t bufferSize)
 	dmaAllocation_->SetName(L"Constant_Buffer_Allocation_DMA");
 
 	// Mapping
-	ThrowIfFailed(resource_->Map(0, nullptr, reinterpret_cast<void**>(&mappedData_)))
+	ThrowIfFailed(resource_->Map(0, nullptr, reinterpret_cast<void**>(&mappedData_)));
 
 	// GPU virtual address
 	gpuAddress_ = resource_->GetGPUVirtualAddress();
@@ -223,7 +223,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t buffe
 		state_,
 		nullptr,
 		&dmaAllocation_,
-		IID_PPV_ARGS(&resource_)))
+		IID_PPV_ARGS(&resource_)));
 
 	resource_->SetName(L"Vertex_Buffer_Resource");
 	dmaAllocation_->SetName(L"Vertex_Buffer_Allocation_DMA");
@@ -305,8 +305,8 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t buffer
 		state_,
 		nullptr,
 		&dmaAllocation_,
-		IID_PPV_ARGS(&resource_)))
-		resource_->SetName(L"Index_Buffer_Resource");
+		IID_PPV_ARGS(&resource_)));
+	resource_->SetName(L"Index_Buffer_Resource");
 	dmaAllocation_->SetName(L"Index_Buffer_Allocation_DMA");
 
 	// Upload heap
@@ -391,8 +391,8 @@ void DX12Buffer::CreateImage(
 		state_,
 		nullptr, // pOptimizedClearValue
 		&dmaAllocation_,
-		IID_PPV_ARGS(&resource_)))
-		resource_->SetName(L"Texture");
+		IID_PPV_ARGS(&resource_)));
+	resource_->SetName(L"Texture");
 	dmaAllocation_->SetName(L"Texture_Allocation_DMA");
 }
 
@@ -445,8 +445,8 @@ void DX12Buffer::CreateColorAttachment(
 		state_,
 		&clearValue, // pOptimizedClearValue
 		&dmaAllocation_,
-		IID_PPV_ARGS(&resource_)))
-		resource_->SetName(L"Color_Attachment");
+		IID_PPV_ARGS(&resource_)));
+	resource_->SetName(L"Color_Attachment");
 	dmaAllocation_->SetName(L"Color_Attachment_Allocation_DMA");
 }
 
@@ -492,9 +492,9 @@ void DX12Buffer::CreateDepthAttachment(
 		&clearValue,
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)
-	))
+	));
 
-	ThrowIfFailed(resource_->SetName(L"Depth_Stencil_Resource"))
+	ThrowIfFailed(resource_->SetName(L"Depth_Stencil_Resource"));
 	dmaAllocation_->SetName(L"Depth_Stencil_Allocation_DMA");
 }
 
@@ -536,7 +536,7 @@ void DX12Buffer::CreateImageFromData(
 		state_,
 		nullptr, // pOptimizedClearValue
 		&dmaAllocation_,
-		IID_PPV_ARGS(&resource_)))
+		IID_PPV_ARGS(&resource_)));
 	resource_->SetName(L"Texture");
 	dmaAllocation_->SetName(L"Texture_Allocation_DMA");
 
@@ -590,7 +590,7 @@ void DX12Buffer::CreateImageFromData(
 
 void DX12Buffer::SetAsSwapchainBuffer(DX12Context& ctx, CD3DX12_CPU_DESCRIPTOR_HANDLE& rtvHandle, uint32_t frameIndex)
 {
-	ThrowIfFailed(ctx.GetSwapchain()->GetBuffer(frameIndex, IID_PPV_ARGS(&resource_)))
+	ThrowIfFailed(ctx.GetSwapchain()->GetBuffer(frameIndex, IID_PPV_ARGS(&resource_)));
 	ctx.GetDevice()->CreateRenderTargetView(resource_, nullptr, rtvHandle);
 	state_ = D3D12_RESOURCE_STATE_PRESENT;
 	isSwapchainBuffer_ = true;
@@ -628,7 +628,7 @@ void DX12Buffer::CreateUploadHeap(DX12Context& ctx,
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
 		bufferUploadHeapAllocation,
-		IID_PPV_ARGS(bufferUploadHeap)))
+		IID_PPV_ARGS(bufferUploadHeap)));
 }
 
 void DX12Buffer::UAVBarrier(ID3D12GraphicsCommandList* commandList)
