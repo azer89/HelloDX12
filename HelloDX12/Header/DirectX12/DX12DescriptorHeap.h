@@ -20,6 +20,7 @@ public:
 public:
 	ID3D12DescriptorHeap* descriptorHeap_ = nullptr;
 	std::vector<DX12Descriptor> descriptors_ = {};
+	DX12DescriptorArray descriptorArray_ = {};
 };
 
 #endif

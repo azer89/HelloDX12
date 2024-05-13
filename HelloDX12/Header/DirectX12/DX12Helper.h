@@ -195,7 +195,7 @@ inline Microsoft::WRL::ComPtr<ID3DBlob> CompileShader(
 	{
 		OutputDebugStringA((char*)errors->GetBufferPointer());
 	}
-	ThrowIfFailed(hr)
+	ThrowIfFailed(hr);
 
 	return byteCode;
 }

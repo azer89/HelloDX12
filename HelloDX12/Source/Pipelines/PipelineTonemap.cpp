@@ -47,7 +47,7 @@ void PipelineTonemap::CreateDescriptors(DX12Context& ctx)
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
-	rootSignature_.Create(ctx, samplerDesc, descriptors, 0, rootSignatureFlags);
+	rootSignature_.Create(ctx, samplerDesc, descriptors, {}, 0, rootSignatureFlags);
 }
 
 void PipelineTonemap::CreateShaders(DX12Context& ctx)
@@ -78,7 +78,7 @@ void PipelineTonemap::CreateGraphicsPipeline(DX12Context& ctx)
 	psoDesc.PS.BytecodeLength = fragmentShader_.GetHandle()->GetBufferSize();
 	psoDesc.PS.pShaderBytecode = fragmentShader_.GetHandle()->GetBufferPointer();
 
-	ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)))
+	ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)));
 }
 
 void PipelineTonemap::PopulateCommandList(DX12Context& ctx)

@@ -12,9 +12,4 @@ struct CCamera
 	glm::vec3 cameraPosition;
 };
 
-struct CModel
-{
-	glm::mat4 modelMatrix;
-};
-
 #endif

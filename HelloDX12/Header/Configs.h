@@ -13,6 +13,7 @@ namespace AppConfig
 
 	constexpr uint32_t MSAACount = 4;
 
+	// TODO Set to white as a default
 	constexpr float ClearColor[4] = { 0.0f, 0.1f, 0.4f, 1.0f };
 	
 	const std::string ScreenTitle = "Hello DX12";

@@ -66,32 +66,35 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 		{ // t0
 			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
 			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
-			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
-			.buffer_ = &(scene_->model_.meshes_[0].image_->buffer_),
-			.srvDescription_ = scene_->model_.meshes_[0].image_->buffer_.srvDescription_
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
+			.buffer_ = &(scene_->vertexBuffer_),
+			.srvDescription_ = scene_->vertexBuffer_.srvDescription_
 		},
 		{ // t1
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
+			.buffer_ = &(scene_->indexBuffer_),
+			.srvDescription_ = scene_->indexBuffer_.srvDescription_
+		},
+		{ // t2
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
+			.buffer_ = &(scene_->meshDataBuffer_),
+			.srvDescription_ = scene_->meshDataBuffer_.srvDescription_
+		},
+		{ // t3
 			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
 			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
 			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
 			.buffer_ = &(resourcesLights_->buffer_),
 			.srvDescription_ = resourcesLights_->buffer_.srvDescription_
 		},
-		{ // t2
-			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
-			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
-			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
-			.buffer_ = &(scene_->model_.meshes_[0].vertexBuffer_),
-			.srvDescription_ = scene_->model_.meshes_[0].vertexBuffer_.srvDescription_
-		},
-		{ // t3
-			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
-			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
-			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
-			.buffer_ = &(scene_->model_.meshes_[0].indexBuffer_),
-			.srvDescription_ = scene_->model_.meshes_[0].indexBuffer_.srvDescription_
-		}
 	};
+
+	// t4
+	DX12DescriptorArray descriptorArray =  scene_->GetImageDescriptors(); 
 
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
@@ -102,17 +105,18 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 		descriptors[1].cbvDescription_ = scene_->modelConstBuffs_[i].GetCBVDescription();
 
 		descriptorHeaps_[i].descriptors_ = descriptors;
+		descriptorHeaps_[i].descriptorArray_ = descriptorArray;
 		descriptorHeaps_[i].Create(ctx);
 	}
 
-	D3D12_STATIC_SAMPLER_DESC sampler = scene_->model_.meshes_[0].image_->GetSampler();
+	D3D12_STATIC_SAMPLER_DESC sampler = DX12Image::GetDefaultSampler();
 	constexpr D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
-	rootSignature_.Create(ctx, sampler, descriptors, 0, rootSignatureFlags);
+	rootSignature_.Create(ctx, sampler, descriptors, descriptorArray, 0, rootSignatureFlags);
 }
 
 void PipelineSimple::CreateShaders(DX12Context& ctx)
@@ -144,7 +148,7 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 	psoDesc.PS.BytecodeLength = fragmentShader_.GetHandle()->GetBufferSize();
 	psoDesc.PS.pShaderBytecode = fragmentShader_.GetHandle()->GetBufferPointer();
 
-	ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)))
+	ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)));
 }
 
 void PipelineSimple::Update(DX12Context& ctx)
@@ -179,6 +183,6 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	uint32_t triangleCount = mesh.vertexCount_;
+	uint32_t triangleCount = mesh.indexCount_;
 	commandList->DrawInstanced(triangleCount, 1, 0, 0);
 }

@@ -15,9 +15,9 @@ LPCWSTR GetEntryPoint(ShaderType shaderType)
 
 LPCWSTR GetTarget(ShaderType shaderType)
 {
-	if (shaderType == ShaderType::Vertex) { return L"vs_6_0"; }
-	if (shaderType == ShaderType::Fragment) { return L"ps_6_0"; }
-	if (shaderType == ShaderType::Compute) { return L"cs_6_0"; }
+	if (shaderType == ShaderType::Vertex) { return L"vs_6_6"; }
+	if (shaderType == ShaderType::Fragment) { return L"ps_6_6"; }
+	if (shaderType == ShaderType::Compute) { return L"cs_6_6"; }
 	throw std::runtime_error("Shader type not recognized");
 }
 
@@ -41,11 +41,11 @@ void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderTyp
 		assetPath.c_str(),
 		L"-E", entryPoint,
 		L"-T", target,
-		L"-Zs", // Enable debug information (slim format)
+		L"-Zs", // Enable debug information (slim format),
 		//L"-D", L"MYDEFINE=1", // A single define.
 		//L"-Fo", L"MyShader.bin", // Optional, stored in the pdb
 		//L"-Fd", L"MyShader.pdb", // The file name of the pdb
-		L"-Qstrip_reflect", // Strip reflection into a separate blob
+		//L"-Qstrip_reflect", // Strip reflection into a separate blob
 	};
 
 	ComPtr<IDxcBlobEncoding> pSource = nullptr;

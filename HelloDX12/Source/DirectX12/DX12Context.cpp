@@ -40,7 +40,7 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 #endif
 
 	ComPtr<IDXGIFactory4> factory;
-	ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory)))
+	ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory)));
 	{
 		GetHardwareAdapter(factory.Get(), &adapter_);
 
@@ -48,7 +48,7 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 			adapter_.Get(),
 			D3D_FEATURE_LEVEL_11_0,
 			IID_PPV_ARGS(&device_)
-		))
+		));
 	}
 
 	// Debug callback
@@ -58,7 +58,7 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 	D3D12_COMMAND_QUEUE_DESC queueDesc = {};
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 	queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-	ThrowIfFailed(device_->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&commandQueue_)))
+	ThrowIfFailed(device_->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&commandQueue_)));
 
 	// Describe and create the swap chain.
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc =
@@ -80,26 +80,26 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 		nullptr,
 		nullptr,
 		&swapChain
-	))
+	));
 
 	// This sample does not support fullscreen transitions.
-	ThrowIfFailed(factory->MakeWindowAssociation(Win32Application::GetHwnd(), DXGI_MWA_NO_ALT_ENTER))
+	ThrowIfFailed(factory->MakeWindowAssociation(Win32Application::GetHwnd(), DXGI_MWA_NO_ALT_ENTER));
 
-	ThrowIfFailed(swapChain.As(&swapchain_))
+	ThrowIfFailed(swapChain.As(&swapchain_));
 	frameIndex_ = swapchain_->GetCurrentBackBufferIndex();
 
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
-		ThrowIfFailed(device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocators_[i])))
+		ThrowIfFailed(device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocators_[i])));
 	}
 
 	// Default command list
 	ThrowIfFailed(device_->CreateCommandList(
-		0, 
-		D3D12_COMMAND_LIST_TYPE_DIRECT, 
+		0,
+		D3D12_COMMAND_LIST_TYPE_DIRECT,
 		commandAllocators_[0].Get(), // TODO
-		nullptr, 
-		IID_PPV_ARGS(&commandList_)))
+		nullptr,
+		IID_PPV_ARGS(&commandList_)));
 	commandList_->Close();
 
 	// Memory allocator
@@ -109,7 +109,7 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 			.pAdapter = adapter_.Get(),
 		};
 
-		ThrowIfFailed(D3D12MA::CreateAllocator(&desc, &dmaAllocator_))
+		ThrowIfFailed(D3D12MA::CreateAllocator(&desc, &dmaAllocator_));
 	}
 
 	// MSAA
@@ -128,8 +128,8 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 
 void DX12Context::CreateDXC()
 {
-	ThrowIfFailed(DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils_)))
-	ThrowIfFailed(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler_)))
+	ThrowIfFailed(DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils_)));
+	ThrowIfFailed(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler_)));
 }
 
 // Debug callback
@@ -139,9 +139,9 @@ void DX12Context::SetInfoQueue()
 	ComPtr<ID3D12InfoQueue> infoQueue;
 	if (device_->QueryInterface(IID_PPV_ARGS(infoQueue.GetAddressOf())) >= 0)
 	{
-		ThrowIfFailed(infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true))
-		ThrowIfFailed(infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true))
-		ThrowIfFailed(infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true))
+		ThrowIfFailed(infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true));
+		ThrowIfFailed(infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true));
+		ThrowIfFailed(infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true));
 
 		ComPtr<ID3D12InfoQueue1> infoQueue1;
 		if (infoQueue->QueryInterface(IID_PPV_ARGS(infoQueue1.ReleaseAndGetAddressOf())) >= 0)
@@ -161,7 +161,7 @@ void DX12Context::SetInfoQueue()
 				MessageCallback,
 				D3D12_MESSAGE_CALLBACK_FLAG_NONE,
 				this,
-				&callbackCookie))
+				&callbackCookie));
 		}
 	}
 }
@@ -169,10 +169,10 @@ void DX12Context::SetInfoQueue()
 void DX12Context::WaitForGPU()
 {
 	// Schedule a Signal command in the queue.
-	ThrowIfFailed(commandQueue_->Signal(fence_.Get(), fenceValues_[frameIndex_]))
+	ThrowIfFailed(commandQueue_->Signal(fence_.Get(), fenceValues_[frameIndex_]));
 
 	// Wait until the fence has been processed.
-	ThrowIfFailed(fence_->SetEventOnCompletion(fenceValues_[frameIndex_], fenceCompletionEvent_))
+	ThrowIfFailed(fence_->SetEventOnCompletion(fenceValues_[frameIndex_], fenceCompletionEvent_));
 	WaitForSingleObjectEx(fenceCompletionEvent_, INFINITE, FALSE);
 
 	// Increment the fence value for the current frame.
@@ -181,14 +181,14 @@ void DX12Context::WaitForGPU()
 
 void DX12Context::PresentSwapchain() const
 {
-	ThrowIfFailed(swapchain_->Present(1, 0))
+	ThrowIfFailed(swapchain_->Present(1, 0));
 }
 
 void DX12Context::MoveToNextFrame()
 {
 	// Schedule a Signal command in the queue.
 	const uint64_t currentFenceValue = fenceValues_[frameIndex_];
-	ThrowIfFailed(commandQueue_->Signal(fence_.Get(), currentFenceValue))
+	ThrowIfFailed(commandQueue_->Signal(fence_.Get(), currentFenceValue));
 
 	// Update the frame index.
 	frameIndex_ = swapchain_->GetCurrentBackBufferIndex();
@@ -196,7 +196,7 @@ void DX12Context::MoveToNextFrame()
 	// If the next frame is not ready to be rendered yet, wait until it is ready.
 	if (fence_->GetCompletedValue() < fenceValues_[frameIndex_])
 	{
-		ThrowIfFailed(fence_->SetEventOnCompletion(fenceValues_[frameIndex_], fenceCompletionEvent_))
+		ThrowIfFailed(fence_->SetEventOnCompletion(fenceValues_[frameIndex_], fenceCompletionEvent_));
 		WaitForSingleObjectEx(fenceCompletionEvent_, INFINITE, FALSE);
 	}
 
@@ -206,22 +206,22 @@ void DX12Context::MoveToNextFrame()
 
 void DX12Context::ResetCommandAllocator() const
 {
-	ThrowIfFailed(commandAllocators_[frameIndex_]->Reset())
+	ThrowIfFailed(commandAllocators_[frameIndex_]->Reset());
 }
 
 void DX12Context::ResetCommandList() const
 {
-	ThrowIfFailed(commandList_->Reset(commandAllocators_[frameIndex_].Get(), nullptr))
+	ThrowIfFailed(commandList_->Reset(commandAllocators_[frameIndex_].Get(), nullptr));
 }
 
 void DX12Context::CloseCommandList() const
 {
-	ThrowIfFailed(commandList_->Close())
+	ThrowIfFailed(commandList_->Close());
 }
 
 void DX12Context::SubmitCommandList() const
 {
-	ThrowIfFailed(commandList_->Close())
+	ThrowIfFailed(commandList_->Close());
 	ID3D12CommandList* ppCommandLists[] = { GetCommandList() };
 	commandQueue_->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 }
@@ -234,14 +234,14 @@ void DX12Context::SubmitCommandListAndWaitForGPU()
 
 void DX12Context::CreateFence()
 {
-	ThrowIfFailed(device_->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_)))
+	ThrowIfFailed(device_->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_)));
 	fenceValues_[frameIndex_]++;
 
 	// Create an event handle to use for frame synchronization.
 	fenceCompletionEvent_ = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 	if (fenceCompletionEvent_ == nullptr)
 	{
-		ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()))
+		ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()));
 	}
 }
 
