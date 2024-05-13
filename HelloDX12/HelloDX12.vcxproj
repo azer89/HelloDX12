@@ -27,6 +27,7 @@
     <ClInclude Include="Header\DirectX12\DX12Image.h" />
     <ClInclude Include="Header\DirectX12\DX12RootSignature.h" />
     <ClInclude Include="Header\DirectX12\DX12Shader.h" />
+    <ClInclude Include="Header\IndirectCommand.h" />
     <ClInclude Include="Header\Pipelines\PipelineBase.h" />
     <ClInclude Include="Header\Pipelines\PipelineClear.h" />
     <ClInclude Include="Header\Pipelines\PipelineEquirect2Cube.h" />
