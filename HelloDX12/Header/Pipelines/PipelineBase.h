@@ -5,7 +5,6 @@
 #include "DX12Shader.h"
 #include "DX12RootSignature.h"
 #include "DX12DescriptorHeap.h"
-
 #include "IndirectCommand.h"
 
 class PipelineBase
@@ -20,6 +19,7 @@ public:
 
 protected:
 	void CreateCommandSignature(DX12Context& ctx);
+	void CreateIndirectCommandInternal(DX12Context& ctx, IndirectCommand& indirectCommand);
 
 protected:
 	ID3D12PipelineState* pipelineState_ = nullptr;
@@ -27,6 +27,7 @@ protected:
 	DX12RootSignature rootSignature_ = {};
 
 	ID3D12CommandSignature* commandSignature_ = nullptr;
+	DX12Buffer indirectCommand_;
 
 	DX12Shader vertexShader_ = {};
 	DX12Shader fragmentShader_ = {};

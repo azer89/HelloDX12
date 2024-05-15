@@ -5,7 +5,6 @@
 
 struct IndirectCommand
 {
-	D3D12_GPU_VIRTUAL_ADDRESS cbv;
 	D3D12_DRAW_ARGUMENTS drawArguments;
 };
 

@@ -15,9 +15,11 @@ PipelineSimple::PipelineSimple(
 	resourcesShared_(resourcesShared),
 	resourcesLights_(resourcesLights)
 {
+	CreateIndirectCommand(ctx);
 	CreateConstantBuffer(ctx);
 	CreateShaders(ctx);
 	CreateDescriptors(ctx);
+	CreateCommandSignature(ctx);
 	CreateGraphicsPipeline(ctx);
 }
 
@@ -36,6 +38,21 @@ void PipelineSimple::Destroy()
 	{
 		heap.Destroy();
 	}
+}
+
+void PipelineSimple::CreateIndirectCommand(DX12Context& ctx)
+{
+	// TODO Only one mesh for now
+	const Mesh& mesh = scene_->model_.meshes_[0];
+	uint32_t triangleCount = mesh.indexCount_;
+
+	IndirectCommand indirectCommand = {};
+	indirectCommand.drawArguments.VertexCountPerInstance = triangleCount;
+	indirectCommand.drawArguments.InstanceCount = 1;
+	indirectCommand.drawArguments.StartVertexLocation = 0;
+	indirectCommand.drawArguments.StartInstanceLocation = 0;
+
+	CreateIndirectCommandInternal(ctx, indirectCommand);
 }
 
 void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)

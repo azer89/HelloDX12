@@ -32,6 +32,7 @@ public:
 	void Destroy() override;
 
 private:
+	void CreateIndirectCommand(DX12Context& ctx);
 	void CreateConstantBuffer(DX12Context& ctx);
 	void CreateDescriptors(DX12Context& ctx);
 	void CreateShaders(DX12Context& ctx);
