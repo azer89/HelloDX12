@@ -17,11 +17,10 @@ void Scene::Destroy()
 	meshDataBuffer_.Destroy();
 }
 
-void Scene::Init(DX12Context& ctx)
+void Scene::Init(DX12Context& ctx, const std::string& modelFileName)
 {
-	std::string modelFile = AppConfig::ModelFolder + "Zaku/Zaku.gltf";
-	std::cout << "Load " << modelFile << '\n';
-	model_.Load(ctx, modelFile, sceneData_);
+	std::cout << "Load " << modelFileName << '\n';
+	model_.Load(ctx, modelFileName, sceneData_);
 
 	CreateModelBuffers(ctx);
 	CreateBindlessResources(ctx);
