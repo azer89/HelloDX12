@@ -7,6 +7,8 @@
 #include "DX12DescriptorHeap.h"
 #include "IndirectCommand.h"
 
+#include <span>
+
 class PipelineBase
 {
 public:
@@ -19,7 +21,7 @@ public:
 
 protected:
 	void CreateCommandSignature(DX12Context& ctx);
-	void CreateIndirectCommandInternal(DX12Context& ctx, IndirectCommand& indirectCommand);
+	void CreateIndirectCommandFromArray(DX12Context& ctx, const std::span<IndirectCommand> commandArray);
 
 protected:
 	ID3D12PipelineState* pipelineState_ = nullptr;
