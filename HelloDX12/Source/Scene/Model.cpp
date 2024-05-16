@@ -118,8 +118,8 @@ void Model::ProcessMesh(
 		meshName,
 		prevVertexOffset,
 		prevIndexOffset,
-		vertices.size(),
-		indices.size(),
+		static_cast<uint32_t>(vertices.size()),
+		static_cast<uint32_t>(indices.size()),
 		std::move(textureIndices));
 }
 
