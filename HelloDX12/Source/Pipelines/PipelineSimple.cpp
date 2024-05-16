@@ -15,9 +15,11 @@ PipelineSimple::PipelineSimple(
 	resourcesShared_(resourcesShared),
 	resourcesLights_(resourcesLights)
 {
+	CreateIndirectCommand(ctx);
 	CreateConstantBuffer(ctx);
 	CreateShaders(ctx);
 	CreateDescriptors(ctx);
+	CreateCommandSignature(ctx);
 	CreateGraphicsPipeline(ctx);
 }
 
@@ -36,6 +38,26 @@ void PipelineSimple::Destroy()
 	{
 		heap.Destroy();
 	}
+}
+
+void PipelineSimple::CreateIndirectCommand(DX12Context& ctx)
+{
+	// TODO Only one mesh for now
+	const Mesh& mesh = scene_->model_.meshes_[0];
+	uint32_t triangleCount = mesh.indexCount_;
+
+	IndirectCommand indirectCommand = 
+	{
+		.drawArguments = 
+		{
+			.VertexCountPerInstance = triangleCount,
+			.InstanceCount = 1,
+			.StartVertexLocation = 0,
+			.StartInstanceLocation = 0
+		}
+	};
+	
+	CreateIndirectCommandInternal(ctx, indirectCommand);
 }
 
 void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
@@ -178,11 +200,13 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	constexpr uint32_t renderTargetCount = 1;
 	commandList->OMSetRenderTargets(renderTargetCount, &rtvHandle, FALSE, &dsvHandle);
 
-	// TODO Only one mesh for now
-	const Mesh& mesh = scene_->model_.meshes_[0];
-
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	uint32_t triangleCount = mesh.indexCount_;
-	commandList->DrawInstanced(triangleCount, 1, 0, 0);
+	commandList->ExecuteIndirect(
+		commandSignature_, // pCommandSignature
+		1, // MaxCommandCount
+		indirectCommand_.resource_, // pArgumentBuffer
+		0, // ArgumentBufferOffset
+		nullptr, // pCountBuffer
+		0); // CountBufferOffset
 }
