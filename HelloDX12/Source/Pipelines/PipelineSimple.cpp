@@ -57,7 +57,8 @@ void PipelineSimple::CreateIndirectCommand(DX12Context& ctx)
 		}
 	};
 	
-	CreateIndirectCommandInternal(ctx, indirectCommand);
+	std::vector<IndirectCommand> commandArray = { indirectCommand };
+	CreateIndirectCommandFromArray(ctx, commandArray);
 }
 
 void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)

@@ -16,3 +16,12 @@ A rendering app written using C++ and DirectX 12. The shading is fairly basic as
 ### Build
 * Either use `HelloDX12/HelloDX12.sln` or run CMake.
 * Set absolute paths for assets and shaders in `HelloDX12/Header/Configs.h`.
+* That's it!
+
+Dependencies:
+* Agility SDK
+* assimp
+* D3D12MemoryAllocator
+* DirectXShaderCompiler
+* glm
+* stb
