@@ -24,7 +24,8 @@ Texture2D allTextures[] : register(t4); // Unbounded array
 
 SamplerState defaultSampler : register(s0);
 
-PSInput VSMain(uint vertexID : SV_VertexID)
+PSInput VSMain(uint vertexID : SV_VertexID, 
+               uint instanceID : SV_InstanceID)
 { 
     // Vertex pulling
     uint vertexIndex = indexArray[vertexID];
