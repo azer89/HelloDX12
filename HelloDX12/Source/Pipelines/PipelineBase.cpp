@@ -44,7 +44,6 @@ void PipelineBase::CreateCommandSignature(DX12Context& ctx)
 
 void PipelineBase::CreateIndirectCommandInternal(DX12Context& ctx, IndirectCommand& indirectCommand)
 {
-	// DX12Buffer indirectCommand_;
 	indirectCommand_.CreateDeviceOnlyBuffer(
 		ctx,
 		&indirectCommand,
