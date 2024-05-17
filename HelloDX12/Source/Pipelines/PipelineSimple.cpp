@@ -3,6 +3,8 @@
 
 #include "ConstantDefinitions.h"
 
+constexpr uint32_t ROOT_CONSTANT_COUNT = 1;
+
 PipelineSimple::PipelineSimple(
 	DX12Context& ctx, 
 	Scene* scene, 
@@ -42,22 +44,23 @@ void PipelineSimple::Destroy()
 
 void PipelineSimple::CreateIndirectCommand(DX12Context& ctx)
 {
-	// TODO Only one mesh for now
-	const Mesh& mesh = scene_->model_.meshes_[0];
-	uint32_t triangleCount = mesh.indexCount_;
-
-	IndirectCommand indirectCommand = 
+	uint32_t meshCount = static_cast<uint32_t>(scene_->model_.meshes_.size());
+	std::vector<IndirectCommand> commandArray(meshCount);
+	for (uint32_t i = 0; i < meshCount; ++i)
 	{
-		.drawArguments = 
+		commandArray[i] =
 		{
-			.VertexCountPerInstance = triangleCount,
-			.InstanceCount = 1,
-			.StartVertexLocation = 0,
-			.StartInstanceLocation = 0
-		}
-	};
-	
-	std::vector<IndirectCommand> commandArray = { indirectCommand };
+			.meshIndex = i,
+			.drawArguments =
+			{
+				.VertexCountPerInstance = scene_->model_.meshes_[i].indexCount_,
+				.InstanceCount = 1,
+				.StartVertexLocation = 0,
+				.StartInstanceLocation = 0
+			}
+		};
+	}
+
 	CreateIndirectCommandFromArray(ctx, commandArray);
 }
 
@@ -139,7 +142,7 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
-	rootSignature_.Create(ctx, sampler, descriptors, descriptorArray, 0, rootSignatureFlags);
+	rootSignature_.Create(ctx, sampler, descriptors, descriptorArray, ROOT_CONSTANT_COUNT, rootSignatureFlags);
 }
 
 void PipelineSimple::CreateShaders(DX12Context& ctx)
@@ -194,7 +197,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 
 	// Descriptors
 	descriptorHeaps_[ctx.GetFrameIndex()].BindHeap(commandList);
-	descriptorHeaps_[ctx.GetFrameIndex()].BindDescriptorsGraphics(commandList, 0);
+	descriptorHeaps_[ctx.GetFrameIndex()].BindDescriptorsGraphics(commandList, ROOT_CONSTANT_COUNT);
 
 	const auto rtvHandle = resourcesShared_->GetMultiSampledRTVHandle();
 	const auto dsvHandle = resourcesShared_->GetDSVHandle();
@@ -203,9 +206,10 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+	uint32_t meshCount = static_cast<uint32_t>(scene_->model_.meshes_.size());
 	commandList->ExecuteIndirect(
 		commandSignature_, // pCommandSignature
-		1, // MaxCommandCount
+		meshCount, // MaxCommandCount
 		indirectCommand_.resource_, // pArgumentBuffer
 		0, // ArgumentBufferOffset
 		nullptr, // pCountBuffer
