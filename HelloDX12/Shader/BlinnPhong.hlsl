@@ -7,7 +7,7 @@
 struct VSInput
 {
     uint vertexID : SV_VertexID;
-    uint instanceID : SV_InstanceID;
+    //uint instanceID : SV_InstanceID;
 };
 
 struct PSInput
@@ -36,7 +36,7 @@ SamplerState defaultSampler : register(s0);
 PSInput VSMain(VSInput input)
 { 
     // Vertex pulling
-    MeshData m = meshDataArray[input.instanceID];
+    MeshData m = meshDataArray[meshIndex];
     uint vertexIndex = indexArray[input.vertexID + m.indexOffset] + m.vertexOffset;
     VertexData v = vertexDataArray[vertexIndex];
     
@@ -49,7 +49,7 @@ PSInput VSMain(VSInput input)
     result.normal = mul(v.normal, ((float3x3) modelData.modelMatrix));
     result.uv = v.uv.xy;
     
-    result.instanceID = input.instanceID;
+    result.instanceID = meshIndex;
 
     return result;
 }
@@ -92,19 +92,6 @@ float4 PSMain(PSInput input) : SV_TARGET
         specular *= attenuation;
 
         lighting += diffuse + specular;
-    }
-    
-    if (input.instanceID == 0)
-    {
-        lighting = float3(1.0, 0.0, 0.0);
-    }
-    else if (input.instanceID == 1)
-    {
-        lighting = float3(0.0, 0.0, 0.0);
-    }
-    else if (input.instanceID == 2)
-    {
-        lighting = float3(0.0, 0.0, 1.0);
     }
     
     return float4(lighting, 1.0f);
