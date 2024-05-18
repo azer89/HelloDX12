@@ -44,7 +44,7 @@ void PipelineSimple::Destroy()
 
 void PipelineSimple::CreateIndirectCommand(DX12Context& ctx)
 {
-	uint32_t meshCount = static_cast<uint32_t>(scene_->model_.meshes_.size());
+	uint32_t meshCount = scene_->GetMeshCount();
 	std::vector<IndirectCommand> commandArray(meshCount);
 	for (uint32_t i = 0; i < meshCount; ++i)
 	{
@@ -76,6 +76,8 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 {
 	std::vector<DX12Descriptor> descriptors =
 	{
+		// b0 is root constants
+
 		{ // b1
 			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
 			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
@@ -207,7 +209,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	uint32_t meshCount = static_cast<uint32_t>(scene_->model_.meshes_.size());
+	uint32_t meshCount = scene_->GetMeshCount();
 	commandList->ExecuteIndirect(
 		commandSignature_, // pCommandSignature
 		meshCount, // MaxCommandCount
