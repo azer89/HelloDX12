@@ -56,7 +56,7 @@ public:
 		return reinterpret_cast<T*>(mappedData_);
 	}
 
-	void UploadData(void* data);
+	void UploadData(void* data) const;
 
 	void Destroy();
 
@@ -85,8 +85,8 @@ private:
 		ID3D12Resource** bufferUploadHeap,
 		D3D12MA::Allocation** bufferUploadHeapAllocation);
 
-	D3D12_SHADER_RESOURCE_VIEW_DESC GetSRVDescriptionFromBuffer(uint32_t elementCount, uint32_t stride);
-	D3D12_SHADER_RESOURCE_VIEW_DESC GetSRVDescriptionFromImage(DXGI_FORMAT format, uint32_t layerCount, uint32_t mipmapCount);
+	D3D12_SHADER_RESOURCE_VIEW_DESC GetSRVDescriptionFromBuffer(uint32_t elementCount, uint32_t stride) const;
+	D3D12_SHADER_RESOURCE_VIEW_DESC GetSRVDescriptionFromImage(DXGI_FORMAT format, uint32_t layerCount, uint32_t mipmapCount) const;
 
 	static uint32_t GetConstantBufferByteSize(uint64_t byteSize);
 

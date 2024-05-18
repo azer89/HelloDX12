@@ -18,8 +18,8 @@ struct PSInput
 };
 
 cbuffer RootConstants : register(b0) { uint meshIndex; }
-cbuffer C1 : register(b1) { CameraData camData; };
-cbuffer C2 : register(b2) { ModelData modelData; };
+cbuffer ConstantBuffer1 : register(b1) { CameraData camData; };
+cbuffer ConstantBuffer2 : register(b2) { ModelData modelData; };
 
 StructuredBuffer<VertexData> vertexDataArray : register(t0);
 StructuredBuffer<uint> indexArray : register(t1);
