@@ -41,21 +41,21 @@ void Scene::CreateBindlessResources(DX12Context& ctx)
 	vertexBuffer_.CreateDeviceOnlyBuffer(
 		ctx,
 		sceneData_.vertices_.data(),
-		sceneData_.vertices_.size(),
+		static_cast<uint32_t>(sceneData_.vertices_.size()),
 		vertexBufferSize,
 		sizeof(VertexData));
 
 	indexBuffer_.CreateDeviceOnlyBuffer(
 		ctx,
 		sceneData_.indices_.data(),
-		sceneData_.indices_.size(),
+		static_cast<uint32_t>(sceneData_.indices_.size()),
 		indexBufferSize,
 		sizeof(uint32_t));
 
 	meshDataBuffer_.CreateDeviceOnlyBuffer(
 		ctx,
 		meshDataArray_.data(),
-		meshDataArray_.size(),
+		static_cast<uint32_t>(meshDataArray_.size()),
 		meshDataBufferSize,
 		sizeof(MeshData));
 }
