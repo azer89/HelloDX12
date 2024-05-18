@@ -58,7 +58,7 @@ void PipelineMipmap::CreatePipeline(DX12Context& ctx)
 	// PSO
 	D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc =
 	{
-		.pRootSignature = rootSignature_.rootSignature_,
+		.pRootSignature = rootSignature_.handle_,
 	};
 
 	// Set shader
@@ -113,7 +113,7 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 
 	image->TransitionCommand(commandList, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 
-	commandList->SetComputeRootSignature(rootSignature_.rootSignature_);
+	commandList->SetComputeRootSignature(rootSignature_.handle_);
 	commandList->SetPipelineState(pipelineState_);
 	commandList->SetDescriptorHeaps(1, &descriptorHeap);
 

@@ -44,7 +44,7 @@ void PipelineSimple::Destroy()
 
 void PipelineSimple::CreateIndirectCommand(DX12Context& ctx)
 {
-	uint32_t meshCount = scene_->GetMeshCount();
+	const uint32_t meshCount = scene_->GetMeshCount();
 	std::vector<IndirectCommand> commandArray(meshCount);
 	for (uint32_t i = 0; i < meshCount; ++i)
 	{
@@ -159,7 +159,7 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 	// Describe and create the graphics pipeline state object (PSO).
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc =
 	{
-		.pRootSignature = rootSignature_.rootSignature_,
+		.pRootSignature = rootSignature_.handle_,
 		.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 		.SampleMask = UINT_MAX,
 		.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT),
@@ -195,7 +195,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	commandList->SetPipelineState(pipelineState_);
 	commandList->RSSetViewports(1, &viewport_);
 	commandList->RSSetScissorRects(1, &scissor_);
-	commandList->SetGraphicsRootSignature(rootSignature_.rootSignature_);
+	commandList->SetGraphicsRootSignature(rootSignature_.handle_);
 
 	// Descriptors
 	descriptorHeaps_[ctx.GetFrameIndex()].BindHeap(commandList);
@@ -208,7 +208,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	uint32_t meshCount = scene_->GetMeshCount();
+	const uint32_t meshCount = scene_->GetMeshCount();
 	commandList->ExecuteIndirect(
 		commandSignature_, // pCommandSignature
 		meshCount, // MaxCommandCount

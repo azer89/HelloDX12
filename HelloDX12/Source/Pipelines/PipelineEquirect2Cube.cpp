@@ -75,7 +75,7 @@ void PipelineEquirect2Cube::CreatePipeline(DX12Context& ctx)
 	// PSO
 	D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc =
 	{
-		.pRootSignature = rootSignature_.rootSignature_,
+		.pRootSignature = rootSignature_.handle_,
 	};
 
 	// Set shader
@@ -94,7 +94,7 @@ void PipelineEquirect2Cube::Execute(
 	auto commandList = ctx.GetCommandList();
 
 	commandList->SetPipelineState(pipelineState_);
-	commandList->SetComputeRootSignature(rootSignature_.rootSignature_);
+	commandList->SetComputeRootSignature(rootSignature_.handle_);
 
 	cubemapImage->TransitionCommand(commandList, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 	hdrImage->TransitionCommand(commandList, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);

@@ -96,7 +96,7 @@ void PipelineSkybox::CreatePipeline(DX12Context& ctx)
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc =
 	{
-		.pRootSignature = rootSignature_.rootSignature_,
+		.pRootSignature = rootSignature_.handle_,
 		.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 		.SampleMask = UINT_MAX,
 		.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT),
@@ -135,7 +135,7 @@ void PipelineSkybox::PopulateCommandList(DX12Context& ctx)
 	commandList->SetPipelineState(pipelineState_);
 	commandList->RSSetViewports(1, &viewport_);
 	commandList->RSSetScissorRects(1, &scissor_);
-	commandList->SetGraphicsRootSignature(rootSignature_.rootSignature_);
+	commandList->SetGraphicsRootSignature(rootSignature_.handle_);
 
 	// Descriptors
 	descriptorHeaps_[ctx.GetFrameIndex()].BindHeap(commandList);

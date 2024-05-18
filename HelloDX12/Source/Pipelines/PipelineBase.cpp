@@ -50,7 +50,7 @@ void PipelineBase::CreateCommandSignature(DX12Context& ctx)
 	
 	ThrowIfFailed(ctx.GetDevice()->CreateCommandSignature(
 		&commandSignatureDesc,
-		rootSignature_.rootSignature_,
+		rootSignature_.handle_,
 		IID_PPV_ARGS(&commandSignature_)));
 	commandSignature_->SetName(L"Command_Signature");
 }

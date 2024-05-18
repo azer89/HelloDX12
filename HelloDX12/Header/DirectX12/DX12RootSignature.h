@@ -25,7 +25,7 @@ public:
 		const D3D12_ROOT_SIGNATURE_FLAGS& rootSignatureFlags);
 
 public:
-	ID3D12RootSignature* rootSignature_ = nullptr;
+	ID3D12RootSignature* handle_ = nullptr;
 };
 
 #endif

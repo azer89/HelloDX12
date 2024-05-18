@@ -60,7 +60,7 @@ void PipelineTonemap::CreateGraphicsPipeline(DX12Context& ctx)
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc =
 	{
-		.pRootSignature = rootSignature_.rootSignature_,
+		.pRootSignature = rootSignature_.handle_,
 		.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 		.SampleMask = UINT_MAX,
 		.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT),
@@ -86,11 +86,11 @@ void PipelineTonemap::PopulateCommandList(DX12Context& ctx)
 	commandList->SetPipelineState(pipelineState_);
 	commandList->RSSetViewports(1, &viewport_);
 	commandList->RSSetScissorRects(1, &scissor_);
-	commandList->SetGraphicsRootSignature(rootSignature_.rootSignature_);
+	commandList->SetGraphicsRootSignature(rootSignature_.handle_);
 
 	// Descriptors
 	const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(descriptorHeap_.descriptorHeap_->GetGPUDescriptorHandleForHeapStart(), 0, incrementSize);
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE handle1(descriptorHeap_.handle_->GetGPUDescriptorHandleForHeapStart(), 0, incrementSize);
 
 	descriptorHeap_.BindHeap(commandList);
 	descriptorHeap_.BindDescriptorsGraphics(commandList, 0);
