@@ -22,6 +22,6 @@ Dependencies:
 * Agility SDK
 * assimp
 * D3D12MemoryAllocator
-* DirectXShaderCompiler
+* DirectXShaderCompiler (DXC)
 * glm
 * stb
