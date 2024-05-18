@@ -25,12 +25,21 @@ void PipelineBase::Destroy()
 
 void PipelineBase::CreateCommandSignature(DX12Context& ctx)
 {
-	D3D12_INDIRECT_ARGUMENT_DESC argumentDescs[2] = {};
-	argumentDescs[0].Type = D3D12_INDIRECT_ARGUMENT_TYPE_CONSTANT;
-	argumentDescs[0].Constant.RootParameterIndex = 0;
-	argumentDescs[0].Constant.DestOffsetIn32BitValues = 0;
-	argumentDescs[0].Constant.Num32BitValuesToSet = 1;
-	argumentDescs[1].Type = D3D12_INDIRECT_ARGUMENT_TYPE_DRAW;
+	D3D12_INDIRECT_ARGUMENT_DESC argumentDescs[2] =
+	{
+		{
+			.Type = D3D12_INDIRECT_ARGUMENT_TYPE_CONSTANT,
+			.Constant =
+			{
+				.RootParameterIndex = 0,
+				.DestOffsetIn32BitValues = 0,
+				.Num32BitValuesToSet = 1
+			}
+		},
+		{
+			.Type = D3D12_INDIRECT_ARGUMENT_TYPE_DRAW,
+		}
+	};
 
 	D3D12_COMMAND_SIGNATURE_DESC commandSignatureDesc = 
 	{
