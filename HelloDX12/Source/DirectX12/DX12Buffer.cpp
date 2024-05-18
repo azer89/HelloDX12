@@ -31,7 +31,7 @@ void DX12Buffer::CreateHostVisibleBuffer(DX12Context& ctx, uint32_t elementCount
 		.HeapType = D3D12_HEAP_TYPE_UPLOAD
 	};
 
-	D3D12_RESOURCE_DESC resourceDesc =
+	const D3D12_RESOURCE_DESC resourceDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,
@@ -82,7 +82,7 @@ void DX12Buffer::CreateDeviceOnlyBuffer(
 		.HeapType = D3D12_HEAP_TYPE_DEFAULT
 	};
 
-	D3D12_RESOURCE_DESC resourceDesc =
+	const D3D12_RESOURCE_DESC resourceDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,
@@ -161,7 +161,7 @@ void DX12Buffer::CreateConstantBuffer(DX12Context& ctx, uint64_t bufferSize)
 		.HeapType = D3D12_HEAP_TYPE_UPLOAD
 	};
 
-	D3D12_RESOURCE_DESC constantBufferResourceDesc =
+	const D3D12_RESOURCE_DESC constantBufferResourceDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,
@@ -211,7 +211,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t buffe
 		.HeapType = D3D12_HEAP_TYPE_DEFAULT
 	};
 
-	D3D12_RESOURCE_DESC resourceDesc =
+	const D3D12_RESOURCE_DESC resourceDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,
@@ -302,7 +302,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t buffer
 		.HeapType = D3D12_HEAP_TYPE_DEFAULT
 	};
 
-	D3D12_RESOURCE_DESC resourceDesc =
+	const D3D12_RESOURCE_DESC resourceDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,
@@ -390,7 +390,7 @@ void DX12Buffer::CreateImage(
 	state_ = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 	srvDescription_ = GetSRVDescriptionFromImage(imageFormat, layerCount, mipmapCount);
 
-	D3D12_RESOURCE_DESC textureDesc =
+	const D3D12_RESOURCE_DESC textureDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
 		.Alignment = 0,
@@ -436,7 +436,7 @@ void DX12Buffer::CreateColorAttachment(
 	state_ = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 	srvDescription_ = GetSRVDescriptionFromImage(imageFormat, 1, mipmapCount);
 
-	D3D12_RESOURCE_DESC textureDesc =
+	const D3D12_RESOURCE_DESC textureDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
 		.Alignment = 0,
@@ -501,7 +501,7 @@ void DX12Buffer::CreateDepthAttachment(
 	{
 		.HeapType = D3D12_HEAP_TYPE_DEFAULT
 	};
-	D3D12_RESOURCE_DESC depthStencilResourceDesc =
+	const D3D12_RESOURCE_DESC depthStencilResourceDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
 		.Alignment = 0,
@@ -545,7 +545,7 @@ void DX12Buffer::CreateImageFromData(
 	state_ = D3D12_RESOURCE_STATE_COPY_DEST;
 	srvDescription_ = GetSRVDescriptionFromImage(imageFormat, 1, mipmapCount);
 
-	D3D12_RESOURCE_DESC textureDesc =
+	const D3D12_RESOURCE_DESC textureDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
 		.Alignment = 0,
@@ -644,7 +644,7 @@ void DX12Buffer::CreateUploadHeap(DX12Context& ctx,
 		.HeapType = D3D12_HEAP_TYPE_UPLOAD
 	};
 
-	D3D12_RESOURCE_DESC uploadResourceDesc =
+	const D3D12_RESOURCE_DESC uploadResourceDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,

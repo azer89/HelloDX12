@@ -2,7 +2,6 @@
 #define HELLO_DX12_APP_SIMPLE
 
 #include "AppBase.h"
-#include "DX12Context.h"
 #include "PipelineSimple.h"
 #include "ResourcesShared.h"
 #include "ResourcesLights.h"

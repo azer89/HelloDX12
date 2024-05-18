@@ -53,17 +53,17 @@ private:
 	std::array<CD3DX12_CPU_DESCRIPTOR_HANDLE, AppConfig::FrameCount> swapchainCPUHandles_ = {};
 
 	// Offscreen Multisampled RTV (MSAA)
-	DX12Image multiSampledImage_;
+	DX12Image multiSampledImage_ = {};
 	CD3DX12_CPU_DESCRIPTOR_HANDLE multiSampledRTVHandle_ = {};
 	ID3D12DescriptorHeap* multiSampledRTVHeap_ = nullptr;
 
 	// Resolve target
-	DX12Image singleSampledImage_;
+	DX12Image singleSampledImage_ = {};
 	CD3DX12_CPU_DESCRIPTOR_HANDLE singleSampledRTVHandle_ = {};
 	ID3D12DescriptorHeap* singleSampledRTVHeap_ = nullptr;
 
 	// Depth stencil
-	DX12Image depthImage_;
+	DX12Image depthImage_ = {};
 	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle_;
 	ID3D12DescriptorHeap* dsvHeap_ = nullptr;
 };

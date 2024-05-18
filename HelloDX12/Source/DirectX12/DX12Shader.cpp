@@ -43,7 +43,7 @@ void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderTyp
 		assetPath.c_str(),
 		L"-E", entryPoint,
 		L"-T", target,
-		L"-Zs", // Enable debug information (slim format),
+		L"-Zi", // Enable debug information
 		//L"-D", L"MYDEFINE=1", // A single define.
 		//L"-Fo", L"MyShader.bin", // Optional, stored in the pdb
 		//L"-Fd", L"MyShader.pdb", // The file name of the pdb
