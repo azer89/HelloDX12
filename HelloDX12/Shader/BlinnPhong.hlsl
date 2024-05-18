@@ -7,7 +7,6 @@
 struct VSInput
 {
     uint vertexID : SV_VertexID;
-    //uint instanceID : SV_InstanceID;
 };
 
 struct PSInput
@@ -16,11 +15,9 @@ struct PSInput
     float4 worldPosition : POSITION0;
     float3 normal : NORMAL;
     float2 uv : TEXCOORD;
-    nointerpolation uint instanceID : INSTANCE_ID;
 };
 
-
-cbuffer C0 : register(b0) { int meshIndex; }
+cbuffer RootConstants : register(b0) { uint meshIndex; }
 cbuffer C1 : register(b1) { CameraData camData; };
 cbuffer C2 : register(b2) { ModelData modelData; };
 
@@ -48,29 +45,26 @@ PSInput VSMain(VSInput input)
     result.fragPosition = mul(result.fragPosition, camData.projectionMatrix);
     result.normal = mul(v.normal, ((float3x3) modelData.modelMatrix));
     result.uv = v.uv.xy;
-    
-    result.instanceID = meshIndex;
 
     return result;
 }
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
+    MeshData m = meshDataArray[meshIndex];
+    float4 albedo = allTextures[NonUniformResourceIndex(m.albedo)].Sample(defaultSampler, input.uv);
+    
+    if (albedo.a < 0.5)
+    {
+        discard;
+    }
+    
+    float3 lighting = albedo.xyz * 0.5;
+    float3 viewDir = normalize(camData.cameraPosition - input.worldPosition.xyz);
+    
     uint len;
     uint stride;
     lightDataArray.GetDimensions(len, stride);
-    
-    // TODO Only one mesh for now
-    MeshData m = meshDataArray[input.instanceID];
-    uint texIndex = m.albedo;
-    float4 albedo = allTextures[NonUniformResourceIndex(texIndex)].Sample(defaultSampler, input.uv);
-    
-    
-    
-    // Albedo component
-    float3 lighting = albedo.xyz * 0.05;
-    
-    float3 viewDir = normalize(camData.cameraPosition - input.worldPosition.xyz);
     for (uint i = 0; i < len; ++i)
     {
         LightData light = lightDataArray[i];

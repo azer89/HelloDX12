@@ -76,13 +76,13 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 {
 	std::vector<DX12Descriptor> descriptors =
 	{
-		{ // b0
+		{ // b1
 			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
 			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
 			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
 			.buffer_ = nullptr
 		},
-		{ // b1
+		{ // b2
 
 			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
 			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
@@ -136,6 +136,7 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 	}
 
 	D3D12_STATIC_SAMPLER_DESC sampler = DX12Image::GetDefaultSampler();
+	
 	constexpr D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
