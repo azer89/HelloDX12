@@ -283,9 +283,12 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t buffe
 	bufferUploadHeapAllocation->Release();
 
 	// Create view
-	vertexBufferView_.BufferLocation = resource_->GetGPUVirtualAddress();
-	vertexBufferView_.StrideInBytes = stride;
-	vertexBufferView_.SizeInBytes = static_cast<uint32_t>(bufferSize_);
+	vertexBufferView_ =
+	{
+		.BufferLocation = resource_->GetGPUVirtualAddress(),
+		.SizeInBytes = static_cast<uint32_t>(bufferSize_),
+		.StrideInBytes = stride,
+	};
 }
 
 void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t bufferSize, DXGI_FORMAT format)
@@ -367,9 +370,12 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t buffer
 	bufferUploadHeapAllocation->Release();
 
 	// Create view
-	indexBufferView_.BufferLocation = resource_->GetGPUVirtualAddress();
-	indexBufferView_.Format = format;
-	indexBufferView_.SizeInBytes = static_cast<uint32_t>(bufferSize_);
+	indexBufferView_ =
+	{
+		.BufferLocation = resource_->GetGPUVirtualAddress(),
+		.SizeInBytes = static_cast<uint32_t>(bufferSize_),
+		.Format = format,
+	};
 }
 
 void DX12Buffer::CreateImage(
