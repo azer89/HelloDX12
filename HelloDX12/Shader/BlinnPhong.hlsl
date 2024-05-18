@@ -4,6 +4,11 @@
 #include "MeshData.hlsli"
 #include "CameraData.hlsli"
 
+struct VSInput
+{
+    uint vertexID : SV_VertexID;
+};
+
 struct PSInput
 {
     float4 fragPosition : SV_POSITION;
@@ -12,8 +17,9 @@ struct PSInput
     float2 uv : TEXCOORD;
 };
 
-cbuffer C0 : register(b0) {  CameraData camData; };
-cbuffer C1 : register(b1) {  ModelData modelData; };
+cbuffer RootConstants : register(b0) { uint meshIndex; }
+cbuffer C1 : register(b1) { CameraData camData; };
+cbuffer C2 : register(b2) { ModelData modelData; };
 
 StructuredBuffer<VertexData> vertexDataArray : register(t0);
 StructuredBuffer<uint> indexArray : register(t1);
@@ -24,39 +30,41 @@ Texture2D allTextures[] : register(t4); // Unbounded array
 
 SamplerState defaultSampler : register(s0);
 
-PSInput VSMain(uint vertexID : SV_VertexID)
+PSInput VSMain(VSInput input)
 { 
     // Vertex pulling
-    uint vertexIndex = indexArray[vertexID];
-    VertexData input = vertexDataArray[vertexIndex];
+    MeshData m = meshDataArray[meshIndex];
+    uint vertexIndex = indexArray[input.vertexID + m.indexOffset] + m.vertexOffset;
+    VertexData v = vertexDataArray[vertexIndex];
     
     PSInput result;
     
-    result.fragPosition = mul(float4(input.position, 1.0), modelData.modelMatrix);
+    result.fragPosition = mul(float4(v.position, 1.0), modelData.modelMatrix);
     result.worldPosition = result.fragPosition;
     result.fragPosition = mul(result.fragPosition, camData.viewMatrix);
     result.fragPosition = mul(result.fragPosition, camData.projectionMatrix);
-    result.normal = mul(input.normal, ((float3x3) modelData.modelMatrix));
-    result.uv = input.uv.xy;
+    result.normal = mul(v.normal, ((float3x3) modelData.modelMatrix));
+    result.uv = v.uv.xy;
 
     return result;
 }
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
+    MeshData m = meshDataArray[meshIndex];
+    float4 albedo = allTextures[NonUniformResourceIndex(m.albedo)].Sample(defaultSampler, input.uv);
+    
+    if (albedo.a < 0.5)
+    {
+        discard;
+    }
+    
+    float3 lighting = albedo.xyz * 0.5;
+    float3 viewDir = normalize(camData.cameraPosition - input.worldPosition.xyz);
+    
     uint len;
     uint stride;
     lightDataArray.GetDimensions(len, stride);
-    
-    // TODO Only one mesh for now
-    MeshData m = meshDataArray[0];
-    uint texIndex = m.albedo;
-    float4 albedo = allTextures[NonUniformResourceIndex(texIndex)].Sample(defaultSampler, input.uv);
-    
-    // Albedo component
-    float3 lighting = albedo.xyz * 0.01;
-    
-    float3 viewDir = normalize(camData.cameraPosition - input.worldPosition.xyz);
     for (uint i = 0; i < len; ++i)
     {
         LightData light = lightDataArray[i];

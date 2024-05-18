@@ -57,7 +57,7 @@ void DX12RootSignature::Create(DX12Context& ctx,
 	uint32_t rootConstantCount,
 	const D3D12_ROOT_SIGNATURE_FLAGS& rootSignatureFlags)
 {
-	uint32_t cvbRegister = 0;
+	uint32_t cvbRegister = rootConstantCount;
 	uint32_t srvRegister = 0;
 	uint32_t uavRegister = 0;
 

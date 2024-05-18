@@ -9,8 +9,11 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "assimp/scene.h"
+
+#include "PipelineMipmap.h"
 
 class Model
 {
@@ -52,6 +55,7 @@ public:
 
 private:
 	const aiScene* scene_ = nullptr;
+	std::unique_ptr<PipelineMipmap> pipelineMipmap_ = nullptr;
 };
 
 #endif

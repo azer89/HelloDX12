@@ -5,8 +5,6 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-#include "PipelineMipmap.h"
-
 #include <stdexcept>
 
 static const std::string DEFAULT_BLACK_TEXTURE = "DefaultBlackTexture";
@@ -28,6 +26,11 @@ void Model::Destroy()
 	{
 		t.Destroy();
 	}
+
+	if (pipelineMipmap_)
+	{
+		pipelineMipmap_.reset();
+	}
 }
 
 void Model::Load(
@@ -35,6 +38,8 @@ void Model::Load(
 	const std::string& path,
 	SceneData& sceneData)
 {
+	pipelineMipmap_ = std::make_unique<PipelineMipmap>(ctx);
+
 	filepath_ = path;
 	Assimp::Importer importer;
 	scene_ = importer.ReadFile(
@@ -186,8 +191,7 @@ void Model::AddTexture(DX12Context& ctx, const std::string& textureFilename)
 
 	if (textures_.back().width_ > 1 && textures_.back().height_ > 1)
 	{
-		PipelineMipmap pip(ctx);
-		pip.GenerateMipmap(ctx, &(textures_.back()));
+		pipelineMipmap_->GenerateMipmap(ctx, &(textures_.back()));
 	}
 }
 
@@ -202,8 +206,7 @@ void Model::AddTexture(DX12Context& ctx, const std::string& textureName, void* d
 
 	if (width > 1 && height > 1)
 	{
-		PipelineMipmap pip(ctx);
-		pip.GenerateMipmap(ctx, &(textures_.back()));
+		pipelineMipmap_->GenerateMipmap(ctx, &(textures_.back()));
 	}
 }
 

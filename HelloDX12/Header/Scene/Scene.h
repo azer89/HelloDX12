@@ -9,6 +9,7 @@
 #include "DX12Buffer.h"
 
 #include <array>
+#include <string>
 
 class Scene
 {
@@ -17,7 +18,7 @@ public:
 	~Scene() = default;
 
 	void Destroy();
-	void Init(DX12Context& ctx);
+	void Init(DX12Context& ctx, const std::string& modelFileName);
 
 	// TODO
 	DX12DescriptorArray GetImageDescriptors();

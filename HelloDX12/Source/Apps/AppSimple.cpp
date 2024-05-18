@@ -22,7 +22,7 @@ void AppSimple::OnInit()
 
 	// Scene
 	scene_ = std::make_unique<Scene>();
-	scene_->Init(context_);
+	scene_->Init(context_, AppConfig::ModelFolder + "Sponza/Sponza.gltf");
 
 	// IBL
 	resourcesIBL = AddResources<ResourcesIBL>(context_, AppConfig::TextureFolder + "industrial_sunset_02_puresky_1k.hdr");

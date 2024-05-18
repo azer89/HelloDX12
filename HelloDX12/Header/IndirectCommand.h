@@ -5,6 +5,7 @@
 
 struct IndirectCommand
 {
+	uint32_t meshIndex;
 	D3D12_DRAW_ARGUMENTS drawArguments;
 };
 

@@ -73,20 +73,20 @@ void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderTyp
 	// but its length will be zero if there are no warnings or errors.
 	if (pErrors != nullptr && pErrors->GetStringLength() != 0)
 	{
-		wprintf(L"Warnings and Errors:\n%S\n", pErrors->GetStringPointer());
+		wprintf(L"Warnings and errors:\n%S\n", pErrors->GetStringPointer());
 	}
 
 	HRESULT hr;
 	pResults->GetStatus(&hr);
 	if (FAILED(hr))
 	{
-		throw std::runtime_error("Shader error");
+		throw std::runtime_error("Shader error " + filename);
 	}
 
 	ComPtr<IDxcBlobUtf16> pShaderName = nullptr;
 	pResults->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&handle_), &pShaderName);
-	if (handle_ != nullptr)
+	if (handle_ == nullptr)
 	{
-		std::cout << "Shader compiled " << filename << '\n';
+		throw std::runtime_error("Shader error " + filename);
 	}
 }

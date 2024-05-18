@@ -170,12 +170,15 @@ void DX12Image::CreateDepthAttachment(DX12Context& ctx, uint32_t msaaCount)
 
 D3D12_STATIC_SAMPLER_DESC DX12Image::GetDefaultSampler()
 {
+	constexpr D3D12_TEXTURE_ADDRESS_MODE addressMode = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	constexpr D3D12_FILTER filter = D3D12_FILTER_ANISOTROPIC;
+
 	return
 	{
-		.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT,
-		.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER,
-		.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER,
-		.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER,
+		.Filter = filter,
+		.AddressU = addressMode,
+		.AddressV = addressMode,
+		.AddressW = addressMode,
 		.MipLODBias = 0,
 		.MaxAnisotropy = 0,
 		.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER,
