@@ -3,6 +3,9 @@ A rendering app written using C++ and DirectX 12. The shading is fairly basic as
 
 <img width="600" alt="Zaku" src="https://github.com/azer89/HelloDX12/assets/790432/59e07438-9340-4527-92c6-097df28b6214">
 
+<img width="600" alt="Sponza" src="https://github.com/azer89/HelloDX12/assets/790432/24719851-06e7-4064-a559-0112569956a7">
+
+
 ### Features
 * Blinn-Phong shading.
 * Tonemapping.
