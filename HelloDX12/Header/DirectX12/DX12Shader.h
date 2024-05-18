@@ -10,6 +10,7 @@ enum class ShaderType
 	Vertex,
 	Fragment,
 	Compute,
+	Invalid,
 };
 
 class DX12Shader
@@ -27,7 +28,7 @@ public:
 
 private:
 	IDxcBlob* handle_ = nullptr;
-	ShaderType shaderType_;
+	ShaderType shaderType_ = ShaderType::Invalid;
 };
 
 #endif

@@ -51,7 +51,7 @@ public:
 	uint32_t vertexOffset_ = 0;
 	uint32_t indexOffset_ = 0;
 
-	std::unordered_map<TextureType, uint32_t> textureIndices_;
+	std::unordered_map<TextureType, uint32_t> textureIndices_ = {};
 };
 
 #endif

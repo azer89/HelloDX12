@@ -72,13 +72,16 @@ protected:
 
 	UIData uiData_ = {};
 
-	std::unique_ptr<Camera> camera_;
+	std::unique_ptr<Camera> camera_ = nullptr;
 	std::vector<std::unique_ptr<PipelineBase>> pipelines_ = {};
 	std::vector<std::unique_ptr<ResourcesBase>> resources_ = {};
 
+	DX12Context context_ = {};
+
 private:
+	
 	// Window title.
-	std::wstring title_ = L"";
+	std::wstring title_ = {};
 };
 
 #endif

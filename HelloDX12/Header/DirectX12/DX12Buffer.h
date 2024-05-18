@@ -106,7 +106,7 @@ public:
 	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress_ = 0;
 
 private:
-	D3D12_RESOURCE_STATES state_ = D3D12_RESOURCE_STATE_COMMON;
+	D3D12_RESOURCE_STATES state_ = D3D12_RESOURCE_STATE_COMMON; // TODO currently does not track mipmap levels
 	bool isSwapchainBuffer_ = false;
 };
 

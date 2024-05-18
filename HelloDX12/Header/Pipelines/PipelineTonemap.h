@@ -23,7 +23,7 @@ private:
 	void CreateShaders(DX12Context& ctx);
 
 private:
-	ResourcesShared* resourcesShared_;
+	ResourcesShared* resourcesShared_ = nullptr;
 	DX12DescriptorHeap descriptorHeap_ = {};
 };
 

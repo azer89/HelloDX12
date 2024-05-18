@@ -22,7 +22,6 @@ public:
 	void OnDestroy() override;
 
 private:
-	DX12Context context_;
 	std::unique_ptr<Scene> scene_ = nullptr;
 	PipelineSimple* pipSimple_ = nullptr;
 	ResourcesShared* resourcesShared_ = nullptr;
