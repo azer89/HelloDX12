@@ -78,8 +78,8 @@ void PipelineEquirect2Cube::CreatePipeline(DX12Context& ctx)
 		.pRootSignature = rootSignature_.rootSignature_,
 	};
 
-	psoDesc.CS.BytecodeLength = computeShader_.GetHandle()->GetBufferSize();
-	psoDesc.CS.pShaderBytecode = computeShader_.GetHandle()->GetBufferPointer();
+	// Set shader
+	computeShader_.AddShader(psoDesc);
 
 	ctx.GetDevice()->CreateComputePipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_));
 }

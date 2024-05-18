@@ -28,6 +28,8 @@ void DX12Shader::Destroy()
 
 void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderType shaderType)
 {
+	shaderType_ = shaderType;
+
 	const std::wstring assetPath = Utility::WStringConvert(filename);
 
 	const LPCWSTR entryPoint = GetEntryPoint(shaderType);
@@ -89,4 +91,24 @@ void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderTyp
 	{
 		throw std::runtime_error("Shader error " + filename);
 	}
+}
+
+void DX12Shader::AddShader(D3D12_GRAPHICS_PIPELINE_STATE_DESC& psoDesc) const
+{
+	if (shaderType_ == ShaderType::Vertex)
+	{
+		psoDesc.VS.BytecodeLength = handle_->GetBufferSize();
+		psoDesc.VS.pShaderBytecode = handle_->GetBufferPointer();
+	}
+	else if (shaderType_ == ShaderType::Fragment)
+	{
+		psoDesc.PS.BytecodeLength = handle_->GetBufferSize();
+		psoDesc.PS.pShaderBytecode = handle_->GetBufferPointer();
+	}
+}
+
+void DX12Shader::AddShader(D3D12_COMPUTE_PIPELINE_STATE_DESC& psoDesc) const
+{
+	psoDesc.CS.BytecodeLength = handle_->GetBufferSize();
+	psoDesc.CS.pShaderBytecode = handle_->GetBufferPointer();
 }

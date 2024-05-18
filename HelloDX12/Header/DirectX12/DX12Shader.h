@@ -22,8 +22,12 @@ public:
 	IDxcBlob* GetHandle() const { return handle_; }
 	void Create(DX12Context& ctx, const std::string& filename, ShaderType shaderType);
 
+	void AddShader(D3D12_GRAPHICS_PIPELINE_STATE_DESC& psoDesc) const;
+	void AddShader(D3D12_COMPUTE_PIPELINE_STATE_DESC& psoDesc) const;
+
 private:
 	IDxcBlob* handle_ = nullptr;
+	ShaderType shaderType_;
 };
 
 #endif
