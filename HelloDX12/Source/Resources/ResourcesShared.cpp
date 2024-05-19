@@ -49,7 +49,7 @@ void ResourcesShared::Init(DX12Context& ctx)
 void ResourcesShared::GrabSwapchain(DX12Context& ctx)
 {
 	// RTV
-	const D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
+	constexpr D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
 	{
 		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
 		.NumDescriptors = AppConfig::FrameCount,
@@ -89,7 +89,7 @@ void ResourcesShared::CreateMultiSampledRTV(DX12Context& ctx)
 	}
 
 	// Create RTV
-	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
+	constexpr D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
 	{
 		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
 		.NumDescriptors = 1,
@@ -115,7 +115,7 @@ void ResourcesShared::CreateSingleSampledRTV(DX12Context& ctx)
 	singleSampledImage_.GetResource()->SetName(L"Single_Sampled_Image");
 
 	// RTV
-	const D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
+	constexpr D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
 	{
 		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
 		.NumDescriptors = 1,
@@ -140,7 +140,7 @@ void ResourcesShared::CreateDSV(DX12Context& ctx)
 	depthImage_.GetResource()->SetName(L"Depth_Image");
 
 	// Heap
-	const D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc =
+	constexpr D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc =
 	{
 		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV,
 		.NumDescriptors = 1,
@@ -149,7 +149,7 @@ void ResourcesShared::CreateDSV(DX12Context& ctx)
 	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&dsvHeap_)));
 
 	// DSV
-	const D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc =
+	constexpr D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc =
 	{
 		.Format = DXGI_FORMAT_D32_FLOAT,
 		.ViewDimension = msaaCount == 1 ? D3D12_DSV_DIMENSION_TEXTURE2D : D3D12_DSV_DIMENSION_TEXTURE2DMS,

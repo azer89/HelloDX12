@@ -1,7 +1,7 @@
 # Adapted from github.com/alipbcs/ZetaRay
 
 function(SetupAgilitySDK SDK_DIR_RETURN)
-    set(VER "1.613.2")
+    set(VER "1.614.0")
     set(SDK_DIR "${PROJECT_SOURCE_DIR}/External/D3D12/${VER}")
 
     file(GLOB_RECURSE CORE_DLL_PATH "${SDK_DIR}/*D3D12Core.dll")

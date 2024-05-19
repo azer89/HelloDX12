@@ -2,10 +2,10 @@
 
 void DX12RootSignature::Destroy()
 {
-	if (rootSignature_)
+	if (handle_)
 	{
-		rootSignature_->Release();
-		rootSignature_ = nullptr;
+		handle_->Release();
+		handle_ = nullptr;
 	}
 }
 
@@ -41,7 +41,7 @@ void DX12RootSignature::Create(DX12Context& ctx,
 		0,
 		signature->GetBufferPointer(),
 		signature->GetBufferSize(),
-		IID_PPV_ARGS(&rootSignature_)));
+		IID_PPV_ARGS(&handle_)));
 
 	signature->Release();
 	if (error)
@@ -96,7 +96,7 @@ void DX12RootSignature::Create(DX12Context& ctx,
 		rootParameters.emplace_back().InitAsConstants(rootConstantCount, 0);
 	}
 	
-	for (int i = 0; i < descriptors.size(); ++i)
+	for (uint32_t i = 0; i < descriptors.size(); ++i)
 	{
 		rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + i, descriptors[i].shaderVisibility_);
 	}

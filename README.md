@@ -12,8 +12,9 @@ A rendering app written using C++ and DirectX 12. The shading is fairly basic as
 * MSAA.
 * Mipmap generator using compute shader.
 * Skybox from equirectangular HDR image.
+* Indirect draw.
 * Vertex pulling.
-* Bindless resources using indirect draw, unbounded array of textures, and dynamic indexing.
+* Bindless textures using unbounded array and dynamic indexing.
 * Basic abstraction with simple resource state tracking and easier barrier insertion.
 
 ### Build

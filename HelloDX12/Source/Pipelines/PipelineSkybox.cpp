@@ -96,7 +96,7 @@ void PipelineSkybox::CreatePipeline(DX12Context& ctx)
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc =
 	{
-		.pRootSignature = rootSignature_.rootSignature_,
+		.pRootSignature = rootSignature_.handle_,
 		.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 		.SampleMask = UINT_MAX,
 		.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT),
@@ -112,10 +112,8 @@ void PipelineSkybox::CreatePipeline(DX12Context& ctx)
 	psoDesc.SampleDesc.Count = AppConfig::MSAACount;
 	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 
-	psoDesc.VS.BytecodeLength = vertexShader_.GetHandle()->GetBufferSize();
-	psoDesc.VS.pShaderBytecode = vertexShader_.GetHandle()->GetBufferPointer();
-	psoDesc.PS.BytecodeLength = fragmentShader_.GetHandle()->GetBufferSize();
-	psoDesc.PS.pShaderBytecode = fragmentShader_.GetHandle()->GetBufferPointer();
+	vertexShader_.AddShader(psoDesc);
+	fragmentShader_.AddShader(psoDesc);
 
 	ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)));
 }
@@ -137,7 +135,7 @@ void PipelineSkybox::PopulateCommandList(DX12Context& ctx)
 	commandList->SetPipelineState(pipelineState_);
 	commandList->RSSetViewports(1, &viewport_);
 	commandList->RSSetScissorRects(1, &scissor_);
-	commandList->SetGraphicsRootSignature(rootSignature_.rootSignature_);
+	commandList->SetGraphicsRootSignature(rootSignature_.handle_);
 
 	// Descriptors
 	descriptorHeaps_[ctx.GetFrameIndex()].BindHeap(commandList);

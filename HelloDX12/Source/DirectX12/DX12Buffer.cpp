@@ -26,12 +26,12 @@ void DX12Buffer::CreateHostVisibleBuffer(DX12Context& ctx, uint32_t elementCount
 	state_ = D3D12_RESOURCE_STATE_GENERIC_READ;
 	srvDescription_ = GetSRVDescriptionFromBuffer(elementCount, stride);
 
-	D3D12MA::ALLOCATION_DESC constantBufferUploadAllocDesc =
+	constexpr D3D12MA::ALLOCATION_DESC constantBufferUploadAllocDesc =
 	{
 		.HeapType = D3D12_HEAP_TYPE_UPLOAD
 	};
 
-	D3D12_RESOURCE_DESC resourceDesc =
+	const D3D12_RESOURCE_DESC resourceDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,
@@ -40,11 +40,14 @@ void DX12Buffer::CreateHostVisibleBuffer(DX12Context& ctx, uint32_t elementCount
 		.DepthOrArraySize = 1,
 		.MipLevels = 1,
 		.Format = DXGI_FORMAT_UNKNOWN,
+		.SampleDesc =
+		{
+			.Count = 1,
+			.Quality = 0
+		},
 		.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
 		.Flags = D3D12_RESOURCE_FLAG_NONE
 	};
-	resourceDesc.SampleDesc.Count = 1;
-	resourceDesc.SampleDesc.Quality = 0;
 
 	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&constantBufferUploadAllocDesc,
@@ -79,7 +82,7 @@ void DX12Buffer::CreateDeviceOnlyBuffer(
 		.HeapType = D3D12_HEAP_TYPE_DEFAULT
 	};
 
-	D3D12_RESOURCE_DESC resourceDesc =
+	const D3D12_RESOURCE_DESC resourceDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,
@@ -88,11 +91,14 @@ void DX12Buffer::CreateDeviceOnlyBuffer(
 		.DepthOrArraySize = 1,
 		.MipLevels = 1,
 		.Format = DXGI_FORMAT_UNKNOWN,
+		.SampleDesc =
+		{
+			.Count = 1,
+			.Quality = 0
+		},
 		.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
 		.Flags = D3D12_RESOURCE_FLAG_NONE
 	};
-	resourceDesc.SampleDesc.Count = 1;
-	resourceDesc.SampleDesc.Quality = 0;
 
 	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&allocDesc,
@@ -150,12 +156,12 @@ void DX12Buffer::CreateConstantBuffer(DX12Context& ctx, uint64_t bufferSize)
 	constantBufferSize_ = GetConstantBufferByteSize(bufferSize_);
 	state_ = D3D12_RESOURCE_STATE_GENERIC_READ;
 
-	D3D12MA::ALLOCATION_DESC constantBufferUploadAllocDesc =
+	constexpr D3D12MA::ALLOCATION_DESC constantBufferUploadAllocDesc =
 	{
 		.HeapType = D3D12_HEAP_TYPE_UPLOAD
 	};
 
-	D3D12_RESOURCE_DESC constantBufferResourceDesc =
+	const D3D12_RESOURCE_DESC constantBufferResourceDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,
@@ -164,11 +170,14 @@ void DX12Buffer::CreateConstantBuffer(DX12Context& ctx, uint64_t bufferSize)
 		.DepthOrArraySize = 1,
 		.MipLevels = 1,
 		.Format = DXGI_FORMAT_UNKNOWN,
+		.SampleDesc =
+		{
+			.Count = 1,
+			.Quality = 0
+		},
 		.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
 		.Flags = D3D12_RESOURCE_FLAG_NONE
 	};
-	constantBufferResourceDesc.SampleDesc.Count = 1;
-	constantBufferResourceDesc.SampleDesc.Quality = 0;
 
 	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&constantBufferUploadAllocDesc,
@@ -187,7 +196,7 @@ void DX12Buffer::CreateConstantBuffer(DX12Context& ctx, uint64_t bufferSize)
 	gpuAddress_ = resource_->GetGPUVirtualAddress();
 }
 
-void DX12Buffer::UploadData(void* data)
+void DX12Buffer::UploadData(void* data) const
 {
 	memcpy(mappedData_, data, bufferSize_);
 }
@@ -202,7 +211,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t buffe
 		.HeapType = D3D12_HEAP_TYPE_DEFAULT
 	};
 
-	D3D12_RESOURCE_DESC resourceDesc =
+	const D3D12_RESOURCE_DESC resourceDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,
@@ -211,11 +220,15 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t buffe
 		.DepthOrArraySize = 1,
 		.MipLevels = 1,
 		.Format = DXGI_FORMAT_UNKNOWN,
+		.SampleDesc =
+		{
+			.Count = 1,
+			.Quality = 0
+		},
 		.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
 		.Flags = D3D12_RESOURCE_FLAG_NONE
 	};
-	resourceDesc.SampleDesc.Count = 1;
-	resourceDesc.SampleDesc.Quality = 0;
+	
 
 	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&allocDesc,
@@ -236,7 +249,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t buffe
 	bufferUploadHeapAllocation->SetName(L"Vertex Buffer_Upload_Heap_Allocation_DMA");
 
 	// Store vertex buffer in upload heap
-	D3D12_SUBRESOURCE_DATA subresourceData =
+	const D3D12_SUBRESOURCE_DATA subresourceData =
 	{
 		.pData = reinterpret_cast<BYTE*>(data), // Pointer to our vertex array
 		.RowPitch = static_cast<LONG_PTR>(bufferSize_), // Size of all our triangle vertex data
@@ -258,7 +271,9 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t buffe
 	assert(r);
 
 	// Transition
-	TransitionCommand(ctx.GetCommandList(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+	TransitionCommand(ctx.GetCommandList(),
+		D3D12_RESOURCE_STATE_COPY_DEST,
+		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
 	// End recording
 	ctx.SubmitCommandListAndWaitForGPU();
@@ -268,9 +283,12 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t buffe
 	bufferUploadHeapAllocation->Release();
 
 	// Create view
-	vertexBufferView_.BufferLocation = resource_->GetGPUVirtualAddress();
-	vertexBufferView_.StrideInBytes = stride;
-	vertexBufferView_.SizeInBytes = static_cast<uint32_t>(bufferSize_);
+	vertexBufferView_ =
+	{
+		.BufferLocation = resource_->GetGPUVirtualAddress(),
+		.SizeInBytes = static_cast<uint32_t>(bufferSize_),
+		.StrideInBytes = stride,
+	};
 }
 
 void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t bufferSize, DXGI_FORMAT format)
@@ -284,7 +302,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t buffer
 		.HeapType = D3D12_HEAP_TYPE_DEFAULT
 	};
 
-	D3D12_RESOURCE_DESC resourceDesc =
+	const D3D12_RESOURCE_DESC resourceDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,
@@ -293,11 +311,14 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t buffer
 		.DepthOrArraySize = 1,
 		.MipLevels = 1,
 		.Format = DXGI_FORMAT_UNKNOWN,
+		.SampleDesc =
+		{
+			.Count = 1,
+			.Quality = 0
+		},
 		.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
 		.Flags = D3D12_RESOURCE_FLAG_NONE
 	};
-	resourceDesc.SampleDesc.Count = 1;
-	resourceDesc.SampleDesc.Quality = 0;
 
 	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&allocDesc,
@@ -317,7 +338,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t buffer
 	bufferUploadHeapAllocation->SetName(L"Index_Buffer_Upload_Heap_Allocation");
 
 	// Store index buffer in upload heap
-	D3D12_SUBRESOURCE_DATA subresourceData =
+	const D3D12_SUBRESOURCE_DATA subresourceData =
 	{
 		.pData = data, // Pointer to our index array
 		.RowPitch = static_cast<LONG_PTR>(bufferSize_), // Size of all our index buffer
@@ -349,9 +370,12 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t buffer
 	bufferUploadHeapAllocation->Release();
 
 	// Create view
-	indexBufferView_.BufferLocation = resource_->GetGPUVirtualAddress();
-	indexBufferView_.Format = format;
-	indexBufferView_.SizeInBytes = static_cast<uint32_t>(bufferSize_);
+	indexBufferView_ =
+	{
+		.BufferLocation = resource_->GetGPUVirtualAddress(),
+		.SizeInBytes = static_cast<uint32_t>(bufferSize_),
+		.Format = format,
+	};
 }
 
 void DX12Buffer::CreateImage(
@@ -366,7 +390,7 @@ void DX12Buffer::CreateImage(
 	state_ = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 	srvDescription_ = GetSRVDescriptionFromImage(imageFormat, layerCount, mipmapCount);
 
-	D3D12_RESOURCE_DESC textureDesc =
+	const D3D12_RESOURCE_DESC textureDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
 		.Alignment = 0,
@@ -375,13 +399,16 @@ void DX12Buffer::CreateImage(
 		.DepthOrArraySize = layerCount,
 		.MipLevels = mipmapCount,
 		.Format = imageFormat,
+		.SampleDesc =
+		{
+			.Count = 1,
+			.Quality = 0
+		},
 		.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN,
 		.Flags = flags
 	};
-	textureDesc.SampleDesc.Count = 1;
-	textureDesc.SampleDesc.Quality = 0;
 
-	D3D12MA::ALLOCATION_DESC textureAllocDesc =
+	constexpr D3D12MA::ALLOCATION_DESC textureAllocDesc =
 	{
 		.HeapType = D3D12_HEAP_TYPE_DEFAULT
 	};
@@ -409,7 +436,7 @@ void DX12Buffer::CreateColorAttachment(
 	state_ = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 	srvDescription_ = GetSRVDescriptionFromImage(imageFormat, 1, mipmapCount);
 
-	D3D12_RESOURCE_DESC textureDesc =
+	const D3D12_RESOURCE_DESC textureDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
 		.Alignment = 0,
@@ -418,11 +445,14 @@ void DX12Buffer::CreateColorAttachment(
 		.DepthOrArraySize = 1,
 		.MipLevels = mipmapCount,
 		.Format = imageFormat,
+		.SampleDesc =
+		{
+			.Count = msaaCount,
+			.Quality = 0
+		},
 		.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN,
 		.Flags = flags
 	};
-	textureDesc.SampleDesc.Count = msaaCount;
-	textureDesc.SampleDesc.Quality = 0; // Quality level
 
 	D3D12_CLEAR_VALUE clearValue =
 	{
@@ -435,7 +465,7 @@ void DX12Buffer::CreateColorAttachment(
 			AppConfig::ClearColor[3]}
 	};
 
-	D3D12MA::ALLOCATION_DESC textureAllocDesc =
+	constexpr D3D12MA::ALLOCATION_DESC textureAllocDesc =
 	{
 		.HeapType = D3D12_HEAP_TYPE_DEFAULT
 	};
@@ -467,11 +497,11 @@ void DX12Buffer::CreateDepthAttachment(
 	clearValue.DepthStencil.Depth = 1.0f;
 	clearValue.DepthStencil.Stencil = 0;
 
-	D3D12MA::ALLOCATION_DESC depthStencilAllocDesc =
+	constexpr D3D12MA::ALLOCATION_DESC depthStencilAllocDesc =
 	{
 		.HeapType = D3D12_HEAP_TYPE_DEFAULT
 	};
-	D3D12_RESOURCE_DESC depthStencilResourceDesc =
+	const D3D12_RESOURCE_DESC depthStencilResourceDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
 		.Alignment = 0,
@@ -480,11 +510,15 @@ void DX12Buffer::CreateDepthAttachment(
 		.DepthOrArraySize = 1,
 		.MipLevels = 1,
 		.Format = imageFormat,
+		.SampleDesc =
+		{
+			.Count = msaaCount,
+			.Quality = 0
+		},
 		.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN,
 		.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL
 	};
-	depthStencilResourceDesc.SampleDesc.Count = msaaCount;
-	depthStencilResourceDesc.SampleDesc.Quality = 0;
+
 	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&depthStencilAllocDesc,
 		&depthStencilResourceDesc,
@@ -511,7 +545,7 @@ void DX12Buffer::CreateImageFromData(
 	state_ = D3D12_RESOURCE_STATE_COPY_DEST;
 	srvDescription_ = GetSRVDescriptionFromImage(imageFormat, 1, mipmapCount);
 
-	D3D12_RESOURCE_DESC textureDesc =
+	const D3D12_RESOURCE_DESC textureDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
 		.Alignment = 0,
@@ -520,13 +554,16 @@ void DX12Buffer::CreateImageFromData(
 		.DepthOrArraySize = 1,
 		.MipLevels = mipmapCount,
 		.Format = imageFormat,
+		.SampleDesc =
+		{
+			.Count = 1,
+			.Quality = 0
+		},
 		.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN,
 		.Flags = flags
 	};
-	textureDesc.SampleDesc.Count = 1;
-	textureDesc.SampleDesc.Quality = 0;
 
-	D3D12MA::ALLOCATION_DESC textureAllocDesc =
+	constexpr D3D12MA::ALLOCATION_DESC textureAllocDesc =
 	{
 		.HeapType = D3D12_HEAP_TYPE_DEFAULT
 	};
@@ -558,7 +595,7 @@ void DX12Buffer::CreateImageFromData(
 	bufferUploadHeapAllocation->SetName(L"Image_Upload_Heap_Allocation");
 
 	const uint32_t imageBytesPerRow = width * bytesPerPixel;
-	D3D12_SUBRESOURCE_DATA subresourceData =
+	const D3D12_SUBRESOURCE_DATA subresourceData =
 	{
 		.pData = imageData,
 		.RowPitch = imageBytesPerRow,
@@ -607,7 +644,7 @@ void DX12Buffer::CreateUploadHeap(DX12Context& ctx,
 		.HeapType = D3D12_HEAP_TYPE_UPLOAD
 	};
 
-	D3D12_RESOURCE_DESC uploadResourceDesc =
+	const D3D12_RESOURCE_DESC uploadResourceDesc =
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,
@@ -616,11 +653,14 @@ void DX12Buffer::CreateUploadHeap(DX12Context& ctx,
 		.DepthOrArraySize = 1,
 		.MipLevels = mipLevel,
 		.Format = DXGI_FORMAT_UNKNOWN,
+		.SampleDesc =
+		{
+			.Count = 1,
+			.Quality = 0
+		},
 		.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
 		.Flags = D3D12_RESOURCE_FLAG_NONE
 	};
-	uploadResourceDesc.SampleDesc.Count = 1;
-	uploadResourceDesc.SampleDesc.Quality = 0;
 
 	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&uploadAllocDesc,
@@ -633,8 +673,8 @@ void DX12Buffer::CreateUploadHeap(DX12Context& ctx,
 
 void DX12Buffer::UAVBarrier(ID3D12GraphicsCommandList* commandList)
 {
-	auto barrier2 = CD3DX12_RESOURCE_BARRIER::UAV(resource_);
-	commandList->ResourceBarrier(1, &barrier2);
+	const auto barrier = CD3DX12_RESOURCE_BARRIER::UAV(resource_);
+	commandList->ResourceBarrier(1, &barrier);
 }
 
 void DX12Buffer::TransitionCommand(
@@ -654,7 +694,7 @@ void DX12Buffer::TransitionCommand(
 	D3D12_RESOURCE_STATES beforeState,
 	D3D12_RESOURCE_STATES afterState)
 {
-	auto barrier =
+	const auto barrier =
 		CD3DX12_RESOURCE_BARRIER::Transition(
 			resource_,
 			beforeState,
@@ -665,7 +705,7 @@ void DX12Buffer::TransitionCommand(
 	state_ = afterState;
 }
 
-D3D12_SHADER_RESOURCE_VIEW_DESC DX12Buffer::GetSRVDescriptionFromBuffer(uint32_t elementCount, uint32_t stride)
+D3D12_SHADER_RESOURCE_VIEW_DESC DX12Buffer::GetSRVDescriptionFromBuffer(uint32_t elementCount, uint32_t stride) const
 {
 	// SRV Description
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc =
@@ -674,15 +714,19 @@ D3D12_SHADER_RESOURCE_VIEW_DESC DX12Buffer::GetSRVDescriptionFromBuffer(uint32_t
 		.ViewDimension = D3D12_SRV_DIMENSION_BUFFER,
 		.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
 	};
-	srvDesc.Buffer.FirstElement = 0;
-	srvDesc.Buffer.NumElements = static_cast<UINT>(elementCount);
-	srvDesc.Buffer.StructureByteStride = stride;
-	srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+
+	srvDesc.Buffer =
+	{
+		.FirstElement = 0,
+		.NumElements = static_cast<UINT>(elementCount),
+		.StructureByteStride = stride,
+		.Flags = D3D12_BUFFER_SRV_FLAG_NONE
+	};
 
 	return srvDesc;
 }
 
-D3D12_SHADER_RESOURCE_VIEW_DESC DX12Buffer::GetSRVDescriptionFromImage(DXGI_FORMAT format, uint32_t layerCount, uint32_t mipmapCount)
+D3D12_SHADER_RESOURCE_VIEW_DESC DX12Buffer::GetSRVDescriptionFromImage(DXGI_FORMAT format, uint32_t layerCount, uint32_t mipmapCount) const
 {
 	D3D12_SRV_DIMENSION srvDim;
 	switch (layerCount)

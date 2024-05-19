@@ -44,7 +44,7 @@ void PipelineSimple::Destroy()
 
 void PipelineSimple::CreateIndirectCommand(DX12Context& ctx)
 {
-	uint32_t meshCount = static_cast<uint32_t>(scene_->model_.meshes_.size());
+	const uint32_t meshCount = scene_->GetMeshCount();
 	std::vector<IndirectCommand> commandArray(meshCount);
 	for (uint32_t i = 0; i < meshCount; ++i)
 	{
@@ -76,6 +76,8 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 {
 	std::vector<DX12Descriptor> descriptors =
 	{
+		// b0 is root constants
+
 		{ // b1
 			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
 			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
@@ -157,7 +159,7 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 	// Describe and create the graphics pipeline state object (PSO).
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc =
 	{
-		.pRootSignature = rootSignature_.rootSignature_,
+		.pRootSignature = rootSignature_.handle_,
 		.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT),
 		.SampleMask = UINT_MAX,
 		.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT),
@@ -170,10 +172,9 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 	psoDesc.SampleDesc.Count = AppConfig::MSAACount;
 	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 
-	psoDesc.VS.BytecodeLength = vertexShader_.GetHandle()->GetBufferSize();
-	psoDesc.VS.pShaderBytecode = vertexShader_.GetHandle()->GetBufferPointer();
-	psoDesc.PS.BytecodeLength = fragmentShader_.GetHandle()->GetBufferSize();
-	psoDesc.PS.pShaderBytecode = fragmentShader_.GetHandle()->GetBufferPointer();
+	// Set shader
+	vertexShader_.AddShader(psoDesc);
+	fragmentShader_.AddShader(psoDesc);
 
 	ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)));
 }
@@ -194,7 +195,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	commandList->SetPipelineState(pipelineState_);
 	commandList->RSSetViewports(1, &viewport_);
 	commandList->RSSetScissorRects(1, &scissor_);
-	commandList->SetGraphicsRootSignature(rootSignature_.rootSignature_);
+	commandList->SetGraphicsRootSignature(rootSignature_.handle_);
 
 	// Descriptors
 	descriptorHeaps_[ctx.GetFrameIndex()].BindHeap(commandList);
@@ -207,7 +208,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	uint32_t meshCount = static_cast<uint32_t>(scene_->model_.meshes_.size());
+	const uint32_t meshCount = scene_->GetMeshCount();
 	commandList->ExecuteIndirect(
 		commandSignature_, // pCommandSignature
 		meshCount, // MaxCommandCount

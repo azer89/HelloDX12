@@ -17,7 +17,7 @@ public:
 	void PopulateCommandList(DX12Context& ctx) override;
 
 private:
-	ResourcesShared* resourcesShared_;
+	ResourcesShared* resourcesShared_ = nullptr;
 };
 
 #endif

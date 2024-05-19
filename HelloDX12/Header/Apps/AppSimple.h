@@ -2,7 +2,6 @@
 #define HELLO_DX12_APP_SIMPLE
 
 #include "AppBase.h"
-#include "DX12Context.h"
 #include "PipelineSimple.h"
 #include "ResourcesShared.h"
 #include "ResourcesLights.h"
@@ -22,7 +21,6 @@ public:
 	void OnDestroy() override;
 
 private:
-	DX12Context context_;
 	std::unique_ptr<Scene> scene_ = nullptr;
 	PipelineSimple* pipSimple_ = nullptr;
 	ResourcesShared* resourcesShared_ = nullptr;

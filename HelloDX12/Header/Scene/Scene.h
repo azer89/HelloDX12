@@ -23,6 +23,8 @@ public:
 	// TODO
 	DX12DescriptorArray GetImageDescriptors();
 
+	uint32_t GetMeshCount() const { return static_cast<uint32_t>(model_.meshes_.size()); }
+
 private:
 	void CreateModelBuffers(DX12Context& ctx);
 	void CreateBindlessResources(DX12Context& ctx);

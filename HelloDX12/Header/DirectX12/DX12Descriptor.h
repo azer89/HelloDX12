@@ -43,7 +43,7 @@ public:
 		return static_cast<uint32_t>(buffers_.size());
 	}
 
-	CD3DX12_GPU_DESCRIPTOR_HANDLE GetFirstGPUHandle()
+	CD3DX12_GPU_DESCRIPTOR_HANDLE GetFirstGPUHandle() const
 	{
 		CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle = gpuHandles_.empty() ? CD3DX12_GPU_DESCRIPTOR_HANDLE() : gpuHandles_[0];
 		return gpuHandle;

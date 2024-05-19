@@ -30,9 +30,9 @@ private:
 	void CreateConstantBuffer(DX12Context& ctx);
 
 private:
-	ResourcesIBL* resourcesIBL_;
-	ResourcesShared* resourcesShared_;
-	Camera* camera_;
+	ResourcesIBL* resourcesIBL_ = nullptr;
+	ResourcesShared* resourcesShared_ = nullptr;
+	Camera* camera_ = nullptr;
 
 	std::array<DX12DescriptorHeap, AppConfig::FrameCount> descriptorHeaps_ = {};
 	std::array<DX12Buffer, AppConfig::FrameCount> constBuffCamera_ = {};
