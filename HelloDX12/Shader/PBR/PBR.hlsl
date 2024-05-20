@@ -62,18 +62,37 @@ PSInput VSMain(VSInput input)
     return result;
 }
 
+static const float BASE_REFLECTIVITY = 0.01;
+static const float ALBEDO_MULTIPLIER = 0.1;
+
 float4 PSMain(PSInput input) : SV_TARGET
 {
     MeshData m = meshDataArray[meshIndex];
-    float4 albedo = allTextures[NonUniformResourceIndex(m.albedo)].Sample(defaultSampler, input.uv);
+    float4 albedo4 = allTextures[NonUniformResourceIndex(m.albedo)].Sample(defaultSampler, input.uv);
     
-    if (albedo.a < 0.5)
+    if (albedo4.a < 0.5)
     {
         discard;
     }
     
-    float3 lighting = albedo.xyz * 0.5;
+    // PBR textures
+    float3 albedo = albedo4.xyz;
+    float3 emissive = allTextures[NonUniformResourceIndex(m.emissive)].Sample(defaultSampler, input.uv).rgb;
+    float3 texNormalValue = allTextures[NonUniformResourceIndex(m.normal)].Sample(defaultSampler, input.uv).rgb * 2.0 - 1.0;
+    float metallic = allTextures[NonUniformResourceIndex(m.metalness)].Sample(defaultSampler, input.uv).b;
+    float roughness = allTextures[NonUniformResourceIndex(m.roughness)].Sample(defaultSampler, input.uv).g;
+    float ao = allTextures[NonUniformResourceIndex(m.ao)].Sample(defaultSampler, input.uv).r;
+    
+    // PBR
+    float alphaRoughness = AlphaDirectLighting(roughness);
+    float3 N = NormalTBN(texNormalValue, input.worldPosition.xyz, input.normal, input.uv);
     float3 V = normalize(camData.cameraPosition - input.worldPosition.xyz);
+    float NoV = max(dot(N, V), 0.0);
+    float3 F0 = float3(BASE_REFLECTIVITY, BASE_REFLECTIVITY, BASE_REFLECTIVITY);
+    F0 = lerp(F0, albedo, metallic);
+    float3 Lo = albedo * ALBEDO_MULTIPLIER;
+    
+    float3 lighting = albedo4.xyz * 0.5; // TODO Delete
     
     uint len;
     uint stride;
@@ -81,25 +100,19 @@ float4 PSMain(PSInput input) : SV_TARGET
     for (uint i = 0; i < len; ++i)
     {
         LightData light = lightDataArray[i];
-        float3 lightDir = normalize(light.position - input.worldPosition).xyz;
-        
-        // Diffuse component
-        float3 diffuse = max(dot(input.normal, lightDir), 0.0) * albedo.xyz * light.color.xyz;
-        
-        // Specular component
-        float3 halfwayDir = normalize(lightDir + V);
-        float spec = pow(max(dot(input.normal, halfwayDir), 0.0), 8.0);
-        float3 specular = light.color.xyz * spec * albedo.xyz;
-        
-        // Attenuation
-        float distance = length(light.position - input.worldPosition);
-        float attenuation = 1.0 / pow(distance, 2.0);
-        
-        diffuse *= attenuation;
-        specular *= attenuation;
-
-        lighting += diffuse + specular;
+        Lo += Radiance(
+			albedo,
+			N,
+			V,
+			F0,
+            input.worldPosition.xyz,
+			metallic,
+			roughness,
+			alphaRoughness,
+			NoV,
+			light);
     }
     
-    return float4(lighting, 1.0f);
+    float3 color = emissive + Lo;
+    return float4(color, 1.0f);
 }
