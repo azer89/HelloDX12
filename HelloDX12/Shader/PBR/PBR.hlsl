@@ -101,16 +101,16 @@ float4 PSMain(PSInput input) : SV_TARGET
     {
         LightData light = lightDataArray[i];
         Lo += Radiance(
-			albedo,
-			N,
-			V,
-			F0,
-            input.worldPosition.xyz,
-			metallic,
-			roughness,
-			alphaRoughness,
-			NoV,
-			light);
+        albedo,
+        N,
+        V,
+        F0,
+        input.worldPosition.xyz,
+        metallic,
+        roughness,
+        alphaRoughness,
+        NoV,
+        light);
     }
     
     float3 color = emissive + Lo;

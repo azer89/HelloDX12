@@ -4,10 +4,6 @@
 #include "MeshData.hlsli"
 #include "CameraData.hlsli"
 
-#include "PBR/Header.hlsli"
-#include "PBR/NormalTBN.hlsli"
-#include "PBR/Radiance.hlsli"
-
 struct VSInput
 {
     uint vertexID : SV_VertexID;
