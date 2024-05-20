@@ -92,8 +92,6 @@ float4 PSMain(PSInput input) : SV_TARGET
     F0 = lerp(F0, albedo, metallic);
     float3 Lo = albedo * ALBEDO_MULTIPLIER;
     
-    float3 lighting = albedo4.xyz * 0.5; // TODO Delete
-    
     uint len;
     uint stride;
     lightDataArray.GetDimensions(len, stride);
