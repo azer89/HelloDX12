@@ -1,12 +1,12 @@
-#include "VertexData.hlsli"
-#include "LightData.hlsli"
-#include "ModelData.hlsli"
-#include "MeshData.hlsli"
-#include "CameraData.hlsli"
+#include "../VertexData.hlsli"
+#include "../LightData.hlsli"
+#include "../ModelData.hlsli"
+#include "../MeshData.hlsli"
+#include "../CameraData.hlsli"
 
-#include "PBR/Header.hlsli"
-#include "PBR/NormalTBN.hlsli"
-#include "PBR/Radiance.hlsli"
+#include "Header.hlsli"
+#include "NormalTBN.hlsli"
+#include "Radiance.hlsli"
 
 struct VSInput
 {
@@ -21,9 +21,18 @@ struct PSInput
     float2 uv : TEXCOORD;
 };
 
-cbuffer RootConstants : register(b0) { uint meshIndex; }
-cbuffer ConstantBuffer1 : register(b1) { CameraData camData; };
-cbuffer ConstantBuffer2 : register(b2) { ModelData modelData; };
+cbuffer RootConstants : register(b0)
+{
+    uint meshIndex;
+}
+cbuffer ConstantBuffer1 : register(b1)
+{
+    CameraData camData;
+};
+cbuffer ConstantBuffer2 : register(b2)
+{
+    ModelData modelData;
+};
 
 StructuredBuffer<VertexData> vertexDataArray : register(t0);
 StructuredBuffer<uint> indexArray : register(t1);
@@ -35,7 +44,7 @@ Texture2D allTextures[] : register(t4); // Unbounded array
 SamplerState defaultSampler : register(s0);
 
 PSInput VSMain(VSInput input)
-{ 
+{
     // Vertex pulling
     MeshData m = meshDataArray[meshIndex];
     uint vertexIndex = indexArray[input.vertexID + m.indexOffset] + m.vertexOffset;

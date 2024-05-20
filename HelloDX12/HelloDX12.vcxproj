@@ -92,6 +92,9 @@
       <FileType>Document</FileType>
     </None>
     <None Include="Shader\MeshData.hlsli" />
+    <None Include="Shader\PBR\Header.hlsli" />
+    <None Include="Shader\PBR\NormalTBN.hlsli" />
+    <None Include="Shader\PBR\Radiance.hlsli" />
     <None Include="Shader\VertexData.hlsli" />
   </ItemGroup>
   <ItemGroup>
@@ -118,6 +121,11 @@
       <FileType>Document</FileType>
     </None>
     <None Include="Shader\Skybox.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\PBR\PBR.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
