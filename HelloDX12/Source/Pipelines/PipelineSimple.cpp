@@ -150,8 +150,8 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 
 void PipelineSimple::CreateShaders(DX12Context& ctx)
 {
-	vertexShader_.Create(ctx, AppConfig::ShaderFolder + "BlinnPhong.hlsl", ShaderType::Vertex);
-	fragmentShader_.Create(ctx, AppConfig::ShaderFolder + "BlinnPhong.hlsl", ShaderType::Fragment);
+	vertexShader_.Create(ctx, AppConfig::ShaderFolder + "PBR/PBR.hlsl", ShaderType::Vertex);
+	fragmentShader_.Create(ctx, AppConfig::ShaderFolder + "PBR/PBR.hlsl", ShaderType::Fragment);
 }
 
 void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)

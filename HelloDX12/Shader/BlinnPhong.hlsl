@@ -60,7 +60,7 @@ float4 PSMain(PSInput input) : SV_TARGET
     }
     
     float3 lighting = albedo.xyz * 0.5;
-    float3 viewDir = normalize(camData.cameraPosition - input.worldPosition.xyz);
+    float3 V = normalize(camData.cameraPosition - input.worldPosition.xyz);
     
     uint len;
     uint stride;
@@ -74,7 +74,7 @@ float4 PSMain(PSInput input) : SV_TARGET
         float3 diffuse = max(dot(input.normal, lightDir), 0.0) * albedo.xyz * light.color.xyz;
         
         // Specular component
-        float3 halfwayDir = normalize(lightDir + viewDir);
+        float3 halfwayDir = normalize(lightDir + V);
         float spec = pow(max(dot(input.normal, halfwayDir), 0.0), 8.0);
         float3 specular = light.color.xyz * spec * albedo.xyz;
         

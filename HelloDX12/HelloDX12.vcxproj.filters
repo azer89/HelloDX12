@@ -40,6 +40,9 @@
     <Filter Include="Source\Resources">
       <UniqueIdentifier>{933f8fb1-7a7a-4105-b37b-47a7fbd808fa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\PBR">
+      <UniqueIdentifier>{055bd003-f892-475f-81cd-4fc38b740a4b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\Win32Application.h">
@@ -282,6 +285,18 @@
     </None>
     <None Include="Shader\MeshData.hlsli">
       <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\PBR\Header.hlsli">
+      <Filter>Shader\PBR</Filter>
+    </None>
+    <None Include="Shader\PBR\NormalTBN.hlsli">
+      <Filter>Shader\PBR</Filter>
+    </None>
+    <None Include="Shader\PBR\Radiance.hlsli">
+      <Filter>Shader\PBR</Filter>
+    </None>
+    <None Include="Shader\PBR\PBR.hlsl">
+      <Filter>Shader\PBR</Filter>
     </None>
   </ItemGroup>
 </Project>
