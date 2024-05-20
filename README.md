@@ -1,10 +1,9 @@
 
 A rendering app written using C++ and DirectX 12.
 
-<img width="600" alt="Zaku" src="https://github.com/azer89/HelloDX12/assets/790432/59e07438-9340-4527-92c6-097df28b6214">
+<img width="600" alt="Zaku" src="https://github.com/azer89/HelloDX12/assets/790432/3f08d9fa-c479-44fc-a373-8d14a6ffff27">
 
-<img width="600" alt="Sponza" src="https://github.com/azer89/HelloDX12/assets/790432/24719851-06e7-4064-a559-0112569956a7">
-
+<img width="600" alt="Sponza" src="https://github.com/azer89/HelloDX12/assets/790432/1516325f-11e4-49d1-a159-a4c615fd3fbd">
 
 ### Features
 * PBR.
