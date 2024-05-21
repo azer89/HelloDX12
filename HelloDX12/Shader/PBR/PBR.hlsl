@@ -88,7 +88,7 @@ float4 PSMain(PSInput input) : SV_TARGET
     float3 N = NormalTBN(texNormalValue, input.worldPosition.xyz, input.normal, input.uv);
     float3 V = normalize(camData.cameraPosition - input.worldPosition.xyz);
     float NoV = max(dot(N, V), 0.0);
-    float3 F0 = float3(BASE_REFLECTIVITY, BASE_REFLECTIVITY, BASE_REFLECTIVITY);
+    float3 F0 = BASE_REFLECTIVITY.xxx;
     F0 = lerp(F0, albedo, metallic);
     float3 Lo = albedo * ALBEDO_MULTIPLIER;
     

@@ -50,17 +50,15 @@ float3 FresnelSchlick(float cosTheta, float3 F0)
 
 float3 FresnelSchlickRoughness(float cosTheta, float3 F0, float roughness)
 {
-    float oneMinRoughness = 1.0 - roughness;
-    float3 oneMinRoughness3 = float3(oneMinRoughness, oneMinRoughness, oneMinRoughness);
-    return F0 + (max(oneMinRoughness3, F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+    return F0 + (max((1.0 - roughness).xxx, F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
-float3 ImportanceSampleGGX(float2 Xi, float3 N, float roughness)
+float3 ImportanceSampleGGX(float2 xi, float3 N, float roughness)
 {
     float a = roughness * roughness; // Roughness remapping
 
-    float phi = 2.0 * PI * Xi.x;
-    float cosTheta = sqrt((1.0 - Xi.y) / (1.0 + (a * a - 1.0) * Xi.y));
+    float phi = 2.0 * PI * xi.x;
+    float cosTheta = sqrt((1.0 - xi.y) / (1.0 + (a * a - 1.0) * xi.y));
     float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
 
 	// From spherical coordinates to cartesian coordinates - halfway vector

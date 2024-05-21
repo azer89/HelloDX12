@@ -46,7 +46,7 @@ float3 Radiance(
 	// For energy conservation, the diffuse and specular light can't
 	// be above 1.0 (unless the surface emits light); to preserve this
 	// relationship the diffuse component (kD) should equal 1.0 - kS.
-    float3 kD = float3(1.0, 1.0, 1.0) - kS;
+    float3 kD = 1.0.xxx - kS;
 	// Multiply kD by the inverse metalness such that only non-metals 
 	// have diffuse lighting, or a linear blend if partly metal (pure metals
 	// have no diffuse light).
