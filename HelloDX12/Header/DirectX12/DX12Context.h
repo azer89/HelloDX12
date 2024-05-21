@@ -3,14 +3,11 @@
 
 #include <d3d12.h>
 #include <dxgi1_6.h>
-#include <d3dcompiler.h>
 #include <windows.h>
 #include <wrl.h>
-#include <shellapi.h>
 
 #include "d3dx12.h" // Agility SDK
 #include "dxcapi.h" // DXC
-
 #include "D3D12MemAlloc.h"
 
 #include "Configs.h"
