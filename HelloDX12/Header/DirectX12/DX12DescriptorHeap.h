@@ -13,9 +13,9 @@ public:
 	void Create(DX12Context& ctx, uint32_t descriptorCount);
 	void Create(DX12Context& ctx);
 
-	void BindHeap(ID3D12GraphicsCommandList* commandList);
-	void BindDescriptorsGraphics(ID3D12GraphicsCommandList* commandList, uint32_t startRootParamIndex);
-	void BindDescriptorsCompute(ID3D12GraphicsCommandList* commandList, uint32_t startRootParamIndex);
+	void BindHeap(ID3D12GraphicsCommandList* commandList) const;
+	void BindDescriptorsGraphics(ID3D12GraphicsCommandList* commandList, uint32_t startRootParamIndex) const;
+	void BindDescriptorsCompute(ID3D12GraphicsCommandList* commandList, uint32_t startRootParamIndex) const;
 
 public:
 	ID3D12DescriptorHeap* handle_ = nullptr;
