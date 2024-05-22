@@ -202,6 +202,11 @@ void DX12Image::TransitionCommand(
 	buffer_.TransitionCommand(commandList, afterState);
 }
 
+void DX12Image::SetName(const std::string& objectName) const
+{
+	buffer_.SetName(objectName);
+}
+
 // Generate a simple black and white checkerboard texture.
 std::vector<uint8_t> DX12Image::GenerateCheckerboard(uint32_t width, uint32_t height, uint32_t pixelSize)
 {

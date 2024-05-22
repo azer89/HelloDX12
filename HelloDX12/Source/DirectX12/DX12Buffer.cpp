@@ -1,8 +1,10 @@
 #include "DX12Buffer.h"
 #include "DX12Exception.h"
-#include <cassert>
+#include "Utility.h"
 
 #include "d3dx12_resource_helpers.h"
+
+#include <cassert>
 
 void DX12Buffer::Destroy()
 {
@@ -56,8 +58,7 @@ void DX12Buffer::CreateHostVisibleBuffer(DX12Context& ctx, uint32_t elementCount
 		nullptr,
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)));
-	resource_->SetName(L"Buffer");
-	dmaAllocation_->SetName(L"Buffer_Allocation_DMA");
+	SetName("Host_Visible_Buffer");
 
 	// Mapping
 	ThrowIfFailed(resource_->Map(0, nullptr, reinterpret_cast<void**>(&mappedData_)));
@@ -107,18 +108,14 @@ void DX12Buffer::CreateDeviceOnlyBuffer(
 		nullptr,
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)));
-
-	resource_->SetName(L"Device_Only_Resource");
-	dmaAllocation_->SetName(L"Device_Only_Allocation_DMA");
+	SetName("Device_Only_Buffer");
 
 	// Upload heap
 	ID3D12Resource* bufferUploadHeap;
 	D3D12MA::Allocation* bufferUploadHeapAllocation;
 	CreateUploadHeap(ctx, static_cast<uint64_t>(bufferSize_), 1, &bufferUploadHeap, &bufferUploadHeapAllocation);
-	bufferUploadHeap->SetName(L"Device_Only_Buffer_Upload_Heap");
-	bufferUploadHeapAllocation->SetName(L"Device_Only_Buffer_Upload_Heap_Allocation_DMA");
 
-	D3D12_SUBRESOURCE_DATA subresourceData =
+	const D3D12_SUBRESOURCE_DATA subresourceData =
 	{
 		.pData = reinterpret_cast<BYTE*>(data), // Pointer to our vertex array
 		.RowPitch = static_cast<LONG_PTR>(bufferSize_), // Size of all our triangle vertex data
@@ -186,8 +183,7 @@ void DX12Buffer::CreateConstantBuffer(DX12Context& ctx, uint64_t bufferSize)
 		nullptr,
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)));
-	resource_->SetName(L"Constant_Buffer");
-	dmaAllocation_->SetName(L"Constant_Buffer_Allocation_DMA");
+	SetName("Constant_Buffer");
 
 	// Mapping
 	ThrowIfFailed(resource_->Map(0, nullptr, reinterpret_cast<void**>(&mappedData_)));
@@ -237,16 +233,12 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t buffe
 		nullptr,
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)));
-
-	resource_->SetName(L"Vertex_Buffer_Resource");
-	dmaAllocation_->SetName(L"Vertex_Buffer_Allocation_DMA");
+	SetName("Vertex_Buffer");
 
 	// Upload heap
 	ID3D12Resource* bufferUploadHeap;
 	D3D12MA::Allocation* bufferUploadHeapAllocation;
 	CreateUploadHeap(ctx, static_cast<uint64_t>(bufferSize_), 1, &bufferUploadHeap, &bufferUploadHeapAllocation);
-	bufferUploadHeap->SetName(L"Vertex_Buffer_Upload_Heap");
-	bufferUploadHeapAllocation->SetName(L"Vertex Buffer_Upload_Heap_Allocation_DMA");
 
 	// Store vertex buffer in upload heap
 	const D3D12_SUBRESOURCE_DATA subresourceData =
@@ -327,15 +319,12 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t buffer
 		nullptr,
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)));
-	resource_->SetName(L"Index_Buffer_Resource");
-	dmaAllocation_->SetName(L"Index_Buffer_Allocation_DMA");
+	SetName("Index_Buffer");
 
 	// Upload heap
 	ID3D12Resource* bufferUploadHeap;
 	D3D12MA::Allocation* bufferUploadHeapAllocation;
 	CreateUploadHeap(ctx, static_cast<uint64_t>(bufferSize_), 1, &bufferUploadHeap, &bufferUploadHeapAllocation);
-	bufferUploadHeap->SetName(L"Index_Buffer_Upload_Heap");
-	bufferUploadHeapAllocation->SetName(L"Index_Buffer_Upload_Heap_Allocation");
 
 	// Store index buffer in upload heap
 	const D3D12_SUBRESOURCE_DATA subresourceData =
@@ -349,7 +338,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t buffer
 	ctx.ResetCommandList();
 
 	// Copy data
-	uint64_t r = UpdateSubresources(
+	const uint64_t r = UpdateSubresources(
 		ctx.GetCommandList(),
 		resource_,
 		bufferUploadHeap,
@@ -382,8 +371,8 @@ void DX12Buffer::CreateImage(
 	DX12Context& ctx,
 	uint32_t width,
 	uint32_t height,
-	uint16_t mipmapCount,
-	uint16_t layerCount,
+	uint32_t mipmapCount,
+	uint32_t layerCount,
 	DXGI_FORMAT imageFormat,
 	D3D12_RESOURCE_FLAGS flags)
 {
@@ -396,8 +385,8 @@ void DX12Buffer::CreateImage(
 		.Alignment = 0,
 		.Width = width,
 		.Height = height,
-		.DepthOrArraySize = layerCount,
-		.MipLevels = mipmapCount,
+		.DepthOrArraySize = static_cast<uint16_t>(layerCount),
+		.MipLevels = static_cast<uint16_t>(mipmapCount),
 		.Format = imageFormat,
 		.SampleDesc =
 		{
@@ -419,15 +408,14 @@ void DX12Buffer::CreateImage(
 		nullptr, // pOptimizedClearValue
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)));
-	resource_->SetName(L"Texture");
-	dmaAllocation_->SetName(L"Texture_Allocation_DMA");
+	SetName("Image");
 }
 
 void DX12Buffer::CreateColorAttachment(
 	DX12Context& ctx,
 	uint32_t width,
 	uint32_t height,
-	uint16_t mipmapCount,
+	uint32_t mipmapCount,
 	uint32_t bytesPerPixel,
 	uint32_t msaaCount,
 	DXGI_FORMAT imageFormat,
@@ -443,7 +431,7 @@ void DX12Buffer::CreateColorAttachment(
 		.Width = width,
 		.Height = height,
 		.DepthOrArraySize = 1,
-		.MipLevels = mipmapCount,
+		.MipLevels = static_cast<uint16_t>(mipmapCount),
 		.Format = imageFormat,
 		.SampleDesc =
 		{
@@ -454,7 +442,7 @@ void DX12Buffer::CreateColorAttachment(
 		.Flags = flags
 	};
 
-	D3D12_CLEAR_VALUE clearValue =
+	const D3D12_CLEAR_VALUE clearValue =
 	{
 		.Format = imageFormat,
 		// TODO
@@ -476,8 +464,7 @@ void DX12Buffer::CreateColorAttachment(
 		&clearValue, // pOptimizedClearValue
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)));
-	resource_->SetName(L"Color_Attachment");
-	dmaAllocation_->SetName(L"Color_Attachment_Allocation_DMA");
+	SetName("Color_Attachment");
 }
 
 void DX12Buffer::CreateDepthAttachment(
@@ -527,17 +514,15 @@ void DX12Buffer::CreateDepthAttachment(
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)
 	));
-
-	ThrowIfFailed(resource_->SetName(L"Depth_Stencil_Resource"));
-	dmaAllocation_->SetName(L"Depth_Stencil_Allocation_DMA");
+	SetName("Depth_Stencil_Attachment");
 }
 
 void DX12Buffer::CreateImageFromData(
-	DX12Context& ctx,
+DX12Context& ctx,
 	void* imageData,
 	uint32_t width,
 	uint32_t height,
-	uint16_t mipmapCount,
+	uint32_t mipmapCount,
 	uint32_t bytesPerPixel,
 	DXGI_FORMAT imageFormat,
 	D3D12_RESOURCE_FLAGS flags)
@@ -552,7 +537,7 @@ void DX12Buffer::CreateImageFromData(
 		.Width = width,
 		.Height = height,
 		.DepthOrArraySize = 1,
-		.MipLevels = mipmapCount,
+		.MipLevels = static_cast<uint16_t>(mipmapCount),
 		.Format = imageFormat,
 		.SampleDesc =
 		{
@@ -574,8 +559,7 @@ void DX12Buffer::CreateImageFromData(
 		nullptr, // pOptimizedClearValue
 		&dmaAllocation_,
 		IID_PPV_ARGS(&resource_)));
-	resource_->SetName(L"Texture");
-	dmaAllocation_->SetName(L"Texture_Allocation_DMA");
+	SetName("Image_From_Data");
 
 	ctx.GetDevice()->GetCopyableFootprints(
 		&textureDesc,
@@ -591,8 +575,6 @@ void DX12Buffer::CreateImageFromData(
 	ID3D12Resource* bufferUploadHeap;
 	D3D12MA::Allocation* bufferUploadHeapAllocation;
 	CreateUploadHeap(ctx, bufferSize_, 1, &bufferUploadHeap, &bufferUploadHeapAllocation);
-	bufferUploadHeap->SetName(L"Image_Upload_Heap");
-	bufferUploadHeapAllocation->SetName(L"Image_Upload_Heap_Allocation");
 
 	const uint32_t imageBytesPerRow = width * bytesPerPixel;
 	const D3D12_SUBRESOURCE_DATA subresourceData =
@@ -635,7 +617,7 @@ void DX12Buffer::SetAsSwapchainBuffer(DX12Context& ctx, CD3DX12_CPU_DESCRIPTOR_H
 
 void DX12Buffer::CreateUploadHeap(DX12Context& ctx,
 	uint64_t bufferSize,
-	uint16_t mipLevel,
+	uint32_t mipLevel,
 	ID3D12Resource** bufferUploadHeap,
 	D3D12MA::Allocation** bufferUploadHeapAllocation)
 {
@@ -651,7 +633,7 @@ void DX12Buffer::CreateUploadHeap(DX12Context& ctx,
 		.Width = bufferSize,
 		.Height = 1,
 		.DepthOrArraySize = 1,
-		.MipLevels = mipLevel,
+		.MipLevels = static_cast<uint16_t>(mipLevel),
 		.Format = DXGI_FORMAT_UNKNOWN,
 		.SampleDesc =
 		{
@@ -745,6 +727,19 @@ D3D12_SHADER_RESOURCE_VIEW_DESC DX12Buffer::GetSRVDescriptionFromImage(DXGI_FORM
 	srvDesc.Texture2D.MipLevels = mipmapCount;
 
 	return srvDesc;
+}
+
+void DX12Buffer::SetName(const std::string& objectName) const
+{
+	if (resource_ == nullptr)
+	{
+		return;
+	}
+
+	ThrowIfFailed(resource_->SetName(Utility::WStringConvert(objectName).c_str()));
+
+	const std::string dmaName = objectName + "_Allocation_DMA";
+	dmaAllocation_->SetName(Utility::WStringConvert(dmaName).c_str());
 }
 
 uint32_t DX12Buffer::GetConstantBufferByteSize(uint64_t byteSize)

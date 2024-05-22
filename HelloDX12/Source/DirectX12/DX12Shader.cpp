@@ -1,6 +1,6 @@
 #include "DX12Shader.h"
-#include "Utility.h"
 #include "DX12Exception.h"
+#include "Utility.h"
 
 #include <stdexcept>
 #include <iostream>
@@ -47,7 +47,7 @@ void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderTyp
 		//L"-D", L"MYDEFINE=1", // A single define.
 		//L"-Fo", L"MyShader.bin", // Optional, stored in the pdb
 		//L"-Fd", L"MyShader.pdb", // The file name of the pdb
-		//L"-Qstrip_reflect", // Strip reflection into a separate blob
+		//L"-Qstrip_reflect", // Strip reflection
 	};
 
 	ComPtr<IDxcBlobEncoding> pSource = nullptr;

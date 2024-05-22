@@ -16,8 +16,8 @@ public:
 		DX12Context& ctx,
 		uint32_t width,
 		uint32_t height,
-		uint16_t mipmapCount,
-		uint16_t layerCount,
+		uint32_t mipmapCount,
+		uint32_t layerCount,
 		DXGI_FORMAT imageFormat,
 		D3D12_RESOURCE_FLAGS flags);
 	void CreateImageFromData(
@@ -25,7 +25,7 @@ public:
 		void* imageData,
 		uint32_t width,
 		uint32_t height,
-		uint16_t mipmapCount,
+		uint32_t mipmapCount,
 		uint32_t bytesPerPixel,
 		DXGI_FORMAT imageFormat,
 		D3D12_RESOURCE_FLAGS flags);
@@ -33,7 +33,7 @@ public:
 		DX12Context& ctx,
 		uint32_t width,
 		uint32_t height,
-		uint16_t mipmapCount,
+		uint32_t mipmapCount,
 		uint32_t bytesPerPixel,
 		uint32_t msaaCount,
 		DXGI_FORMAT imageFormat,
@@ -77,11 +77,13 @@ public:
 		ID3D12GraphicsCommandList* commandList,
 		D3D12_RESOURCE_STATES beforeState,
 		D3D12_RESOURCE_STATES afterState);
+
+	void SetName(const std::string& objectName) const;
 	
 private:
 	void CreateUploadHeap(DX12Context& ctx,
 		uint64_t bufferSize,
-		uint16_t mipLevel,
+		uint32_t mipLevel,
 		ID3D12Resource** bufferUploadHeap,
 		D3D12MA::Allocation** bufferUploadHeapAllocation);
 

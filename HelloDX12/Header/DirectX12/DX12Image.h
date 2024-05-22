@@ -29,6 +29,8 @@ public:
 		uint32_t height,
 		uint32_t pixelSize);
 
+	void SetName(const std::string& objectName) const;
+
 public:
 	uint32_t width_ = 0;
 	uint32_t height_ = 0;

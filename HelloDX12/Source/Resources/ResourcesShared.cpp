@@ -79,7 +79,7 @@ void ResourcesShared::CreateMultiSampledRTV(DX12Context& ctx)
 	// Create Image
 	constexpr uint32_t msaaCount = AppConfig::MSAACount;
 	multiSampledImage_.CreateColorAttachment(ctx, msaaCount);
-	multiSampledImage_.GetResource()->SetName(L"Multi_Sampled_Image");
+	multiSampledImage_.SetName("Multi_Sampled_Image");
 
 	// Barrier
 	{
@@ -112,7 +112,7 @@ void ResourcesShared::CreateSingleSampledRTV(DX12Context& ctx)
 	// Create Image
 	constexpr uint32_t msaaCount = 1;
 	singleSampledImage_.CreateColorAttachment(ctx, msaaCount);
-	singleSampledImage_.GetResource()->SetName(L"Single_Sampled_Image");
+	singleSampledImage_.SetName("Single_Sampled_Image");
 
 	// RTV
 	constexpr D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
@@ -137,7 +137,7 @@ void ResourcesShared::CreateDSV(DX12Context& ctx)
 {
 	constexpr uint32_t msaaCount = AppConfig::MSAACount;
 	depthImage_.CreateDepthAttachment(ctx, msaaCount);
-	depthImage_.GetResource()->SetName(L"Depth_Image");
+	depthImage_.SetName("Depth_Image");
 
 	// Heap
 	constexpr D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc =
