@@ -12,8 +12,6 @@
 
 #include "Configs.h"
 
-using Microsoft::WRL::ComPtr;
-
 class DX12Context
 {
 public:
@@ -70,25 +68,25 @@ private:
 	DXGI_FORMAT swapchainFormat_ = DXGI_FORMAT_R8G8B8A8_UNORM; 
 	
 	// Pipeline objects.
-	ComPtr<IDXGISwapChain3> swapchain_ = nullptr;
-	ComPtr<ID3D12Device> device_ = nullptr;
-	ComPtr<IDXGIAdapter1> adapter_ = nullptr;
-	ComPtr<ID3D12CommandAllocator> commandAllocators_[AppConfig::FrameCount] = {};
-	ComPtr<ID3D12CommandQueue> commandQueue_ = nullptr;
-	ComPtr<ID3D12GraphicsCommandList> commandList_ = nullptr;
+	Microsoft::WRL::ComPtr<IDXGISwapChain3> swapchain_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Device> device_ = nullptr;
+	Microsoft::WRL::ComPtr<IDXGIAdapter1> adapter_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocators_[AppConfig::FrameCount] = {};
+	Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList_ = nullptr;
 
 	// Synchronization objects.
 	uint32_t frameIndex_ = 0;
 	HANDLE fenceCompletionEvent_ = nullptr;
-	ComPtr<ID3D12Fence> fence_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Fence> fence_ = nullptr;
 	uint64_t fenceValues_[AppConfig::FrameCount] = {};
 
 	// D12 Memory Allocator
 	D3D12MA::Allocator* dmaAllocator_ = nullptr;
 
 	// DXC
-	ComPtr<IDxcUtils> dxcUtils_ = nullptr;
-	ComPtr<IDxcCompiler3> dxcCompiler_ = nullptr;
+	Microsoft::WRL::ComPtr<IDxcUtils> dxcUtils_ = nullptr;
+	Microsoft::WRL::ComPtr<IDxcCompiler3> dxcCompiler_ = nullptr;
 };
 
 #endif

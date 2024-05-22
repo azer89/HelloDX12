@@ -5,6 +5,8 @@
 
 #include <iostream>
 
+using Microsoft::WRL::ComPtr;
+
 void DX12Context::Destroy()
 {
 	if (dmaAllocator_ != nullptr)
@@ -39,10 +41,10 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 	}
 #endif
 
-	ComPtr<IDXGIFactory4> factory;
+	IDXGIFactory4* factory;
 	ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory)));
 	{
-		GetHardwareAdapter(factory.Get(), &adapter_);
+		GetHardwareAdapter(factory, &adapter_);
 
 		ThrowIfFailed(D3D12CreateDevice(
 			adapter_.Get(),
@@ -124,6 +126,9 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 
 	// Shader compiler
 	CreateDXC();
+
+	// Release
+	factory->Release();
 }
 
 void DX12Context::CreateDXC()
@@ -256,8 +261,8 @@ void DX12Context::GetHardwareAdapter(
 	*ppAdapter = nullptr;
 
 	ComPtr<IDXGIAdapter1> adapter;
-
 	ComPtr<IDXGIFactory6> factory6;
+
 	if (SUCCEEDED(pFactory->QueryInterface(IID_PPV_ARGS(&factory6))))
 	{
 		for (
