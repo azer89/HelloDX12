@@ -62,7 +62,7 @@ void DX12RootSignature::Create(DX12Context& ctx,
 	uint32_t uavRegister = 0;
 
 	std::vector<CD3DX12_DESCRIPTOR_RANGE1> ranges = {};
-	for (int i = 0; i < descriptors.size(); ++i)
+	for (uint32_t i = 0; i < descriptors.size(); ++i)
 	{
 		if (descriptors[i].type_ == D3D12_DESCRIPTOR_RANGE_TYPE_CBV)
 		{

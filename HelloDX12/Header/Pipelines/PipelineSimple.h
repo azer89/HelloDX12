@@ -2,7 +2,6 @@
 #define HELLO_DX12_PIPELINE_SIMPLE
 
 #include "DX12Context.h"
-#include "DX12Shader.h"
 #include "DX12Buffer.h"
 #include "PipelineBase.h"
 #include "ResourcesShared.h"
@@ -10,8 +9,6 @@
 #include "Scene.h"
 #include "Camera.h"
 #include "Configs.h"
-
-#include "glm/glm.hpp"
 
 #include <array>
 

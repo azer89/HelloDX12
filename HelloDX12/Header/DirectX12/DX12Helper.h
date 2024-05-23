@@ -15,8 +15,6 @@
 
 #include "DX12Exception.h"
 
-using Microsoft::WRL::ComPtr;
-
 inline std::string HrToString(HRESULT hr)
 {
 	char s_str[64] = {};

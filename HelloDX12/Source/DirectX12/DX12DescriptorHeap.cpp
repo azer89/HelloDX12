@@ -75,13 +75,13 @@ void DX12DescriptorHeap::Create(DX12Context& ctx)
 	}
 }
 
-void DX12DescriptorHeap::BindHeap(ID3D12GraphicsCommandList* commandList)
+void DX12DescriptorHeap::BindHeap(ID3D12GraphicsCommandList* commandList) const
 {
 	ID3D12DescriptorHeap* ppHeaps[] = { handle_ };
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 }
 
-void DX12DescriptorHeap::BindDescriptorsGraphics(ID3D12GraphicsCommandList* commandList, uint32_t startRootParamIndex)
+void DX12DescriptorHeap::BindDescriptorsGraphics(ID3D12GraphicsCommandList* commandList, uint32_t startRootParamIndex) const
 {
 	uint32_t rootParamIndex = startRootParamIndex;
 	for (uint32_t i = 0; i < descriptors_.size(); ++i)
@@ -95,7 +95,7 @@ void DX12DescriptorHeap::BindDescriptorsGraphics(ID3D12GraphicsCommandList* comm
 	}
 }
 
-void DX12DescriptorHeap::BindDescriptorsCompute(ID3D12GraphicsCommandList* commandList, uint32_t startRootParamIndex)
+void DX12DescriptorHeap::BindDescriptorsCompute(ID3D12GraphicsCommandList* commandList, uint32_t startRootParamIndex) const
 {
 	uint32_t rootParamIndex = startRootParamIndex;
 	for (uint32_t i = 0; i < descriptors_.size(); ++i)

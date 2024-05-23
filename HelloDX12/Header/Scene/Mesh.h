@@ -2,10 +2,7 @@
 #define HELLO_DX12_MESH
 
 #include "DX12Context.h"
-#include "DX12Image.h"
-#include "DX12Buffer.h"
 #include "TextureMapper.h"
-#include "VertexData.h"
 #include "ScenePODs.h"
 
 #include <vector>

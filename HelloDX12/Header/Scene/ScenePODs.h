@@ -2,6 +2,9 @@
 #define HELLO_SCENE_PODS
 
 #include <cstdint>
+#include <vector>
+
+#include "VertexData.h"
 
 struct ModelMatrix
 {

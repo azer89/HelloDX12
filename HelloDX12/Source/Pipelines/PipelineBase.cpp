@@ -52,7 +52,7 @@ void PipelineBase::CreateCommandSignature(DX12Context& ctx)
 		&commandSignatureDesc,
 		rootSignature_.handle_,
 		IID_PPV_ARGS(&commandSignature_)));
-	commandSignature_->SetName(L"Command_Signature");
+	ThrowIfFailed(commandSignature_->SetName(L"Command_Signature"));
 }
 
 void PipelineBase::CreateIndirectCommandFromArray(DX12Context& ctx, const std::span<IndirectCommand> commandArray)

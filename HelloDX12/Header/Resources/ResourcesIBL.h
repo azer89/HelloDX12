@@ -5,8 +5,6 @@
 #include "DX12Context.h"
 #include "DX12Image.h"
 
-#include "glm/glm.hpp"
-
 #include <string>
 
 class ResourcesIBL final : public ResourcesBase
