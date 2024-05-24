@@ -56,7 +56,6 @@ void AppSimple::OnInit()
 	AddPipeline<PipelinePresent>(context_, resourcesShared_);
 }
 
-// Update frame-based values.
 void AppSimple::OnUpdate()
 {
 	OnKeyboardInput();
