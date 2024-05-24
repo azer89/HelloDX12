@@ -189,7 +189,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;GLM_FORCE_DEPTH_ZERO_TO_ONE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>Header;Header\Apps;Header\DirectX12;Header\Pipelines;Header\Scene;Header\Resources;..\External\stb;..\External\assimp\include;..\External\glm;..\External\Binaries\assimp\include;..\External\D3D12MemoryAllocator\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Header;Header\Apps;Header\DirectX12;Header\Pipelines;Header\Scene;Header\Resources;..\External\stb;..\External\assimp\include;..\External\glm;..\External\Binaries\assimp\include;..\External\D3D12MemoryAllocator\include;..\External\imgui;..\External\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>false</CompileAsWinRT>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -197,9 +197,9 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d12.lib;dxgi.lib;d3dcompiler.lib;dxguid.lib;assimp-vc143-mtd.lib;D3D12MAd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d12.lib;dxgi.lib;d3dcompiler.lib;dxguid.lib;assimp-vc143-mtd.lib;D3D12MAd.lib;imgui.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>d3d12.dll</DelayLoadDLLs>
-      <AdditionalLibraryDirectories>..\External\Binaries\assimp\lib\$(Configuration);..\External\Binaries\D3D12MemoryAllocator;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\External\Binaries\assimp\lib\$(Configuration);..\External\Binaries\imgui\$(Configuration);..\External\Binaries\D3D12MemoryAllocator;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
       <TreatOutputAsContent>true</TreatOutputAsContent>
@@ -223,7 +223,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;GLM_FORCE_DEPTH_ZERO_TO_ONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>Header;Header\Apps;Header\DirectX12;Header\Pipelines;Header\Scene;Header\Resources;..\External\stb;..\External\assimp\include;..\External\glm;..\External\Binaries\assimp\include;..\External\D3D12MemoryAllocator\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Header;Header\Apps;Header\DirectX12;Header\Pipelines;Header\Scene;Header\Resources;..\External\stb;..\External\assimp\include;..\External\glm;..\External\Binaries\assimp\include;..\External\D3D12MemoryAllocator\include;..\External\imgui;..\External\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>false</CompileAsWinRT>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -233,9 +233,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d12.lib;dxgi.lib;d3dcompiler.lib;dxguid.lib;assimp-vc143-mt.lib;D3D12MA.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d12.lib;dxgi.lib;d3dcompiler.lib;dxguid.lib;assimp-vc143-mt.lib;D3D12MA.lib;imgui.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>d3d12.dll</DelayLoadDLLs>
-      <AdditionalLibraryDirectories>..\External\Binaries\assimp\lib\$(Configuration);..\External\Binaries\D3D12MemoryAllocator;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\External\Binaries\assimp\lib\$(Configuration);..\External\Binaries\imgui\$(Configuration);..\External\Binaries\D3D12MemoryAllocator;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
       <TreatOutputAsContent>true</TreatOutputAsContent>
