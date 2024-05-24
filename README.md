@@ -24,8 +24,8 @@ A rendering app written using C++ and DirectX 12.
 
 Dependencies:
 * Agility SDK
-* assimp
-* D3D12MemoryAllocator
-* DXC
-* glm
-* stb
+* [assimp](https://github.com/assimp/assimp)
+* [D3D12MemoryAllocator](https://github.com/GPUOpen-LibrariesAndSDKs/D3D12MemoryAllocator)
+* [DXC](https://github.com/microsoft/DirectXShaderCompiler)
+* [glm](https://github.com/g-truc/glm)
+* [stb](https://github.com/nothings/stb)
