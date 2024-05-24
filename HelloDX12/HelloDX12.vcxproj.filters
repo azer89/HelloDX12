@@ -162,6 +162,9 @@
     <ClInclude Include="Header\IndirectCommand.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Header\Pipelines\PipelineImGui.h">
+      <Filter>Header\Pipelines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -250,6 +253,9 @@
     </ClCompile>
     <ClCompile Include="Source\DirectX12\DX12DescriptorHeap.cpp">
       <Filter>Source\DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Pipelines\PipelineImGui.cpp">
+      <Filter>Source\Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

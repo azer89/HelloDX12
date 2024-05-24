@@ -4,6 +4,7 @@
 #include "PipelineTonemap.h"
 #include "PipelineResolve.h"
 #include "PipelineSkybox.h"
+#include "PipelineImGui.h"
 
 #include <iostream>
 
@@ -52,6 +53,7 @@ void AppSimple::OnInit()
 		resourcesLights_);
 	AddPipeline<PipelineResolve>(context_, resourcesShared_);
 	AddPipeline<PipelineTonemap>(context_, resourcesShared_);
+	AddPipeline<PipelineImGui>(context_, resourcesShared_);
 	AddPipeline<PipelinePresent>(context_, resourcesShared_);
 }
 
