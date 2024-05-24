@@ -18,6 +18,11 @@ public:
 	void Update(DX12Context& ctx) override {}
 	void PopulateCommandList(DX12Context& ctx) override;
 
+	void ImGuiStart();
+	void ImGuiSetWindow(const char* title, int width, int height, float fontSize = 1.0f);
+	void ImGuiEnd();
+	void ImGuiDrawEmpty();
+
 private:
 	ResourcesShared* resourcesShared_ = nullptr;
 

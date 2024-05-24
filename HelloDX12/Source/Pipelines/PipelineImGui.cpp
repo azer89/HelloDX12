@@ -51,11 +51,47 @@ void PipelineImGui::Destroy()
 	{
 		descriptorHeap_->Release();
 	}
+
+	ImGui_ImplDX12_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
 }
 
 void PipelineImGui::PopulateCommandList(DX12Context& ctx)
 {
-	ID3D12GraphicsCommandList* commandList = ctx.GetCommandList();
-	commandList->SetDescriptorHeaps(1, &descriptorHeap_);
-	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
+	ImDrawData* drawData = ImGui::GetDrawData();
+	if (drawData)
+	{
+		ID3D12GraphicsCommandList* commandList = ctx.GetCommandList();
+		commandList->SetDescriptorHeaps(1, &descriptorHeap_);
+		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
+	}
+}
+
+void PipelineImGui::ImGuiStart()
+{
+	ImGui_ImplDX12_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+}
+
+void PipelineImGui::ImGuiSetWindow(const char* title, int width, int height, float fontSize)
+{
+	ImGui::SetWindowSize(ImVec2(static_cast<float>(width), static_cast<float>(height)));
+	ImGui::Begin(title);
+	ImGui::SetWindowFontScale(fontSize);
+}
+
+void PipelineImGui::ImGuiEnd()
+{
+	ImGui::End();
+	ImGui::Render();
+}
+
+void PipelineImGui::ImGuiDrawEmpty()
+{
+	ImGui_ImplDX12_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+	ImGui::Render();
 }
