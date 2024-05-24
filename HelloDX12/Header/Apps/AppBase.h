@@ -36,6 +36,7 @@ public:
 	[[nodiscard]] const WCHAR* GetTitle() const { return title_.c_str(); }
 
 	void ParseCommandLineArgs(_In_reads_(argc) WCHAR* argv[], int argc);
+	LRESULT WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 protected:
 	void SetCustomWindowText(LPCWSTR text) const;
