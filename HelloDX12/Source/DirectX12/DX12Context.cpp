@@ -108,28 +108,31 @@ void DX12Context::CreateSwapchain(IDXGIFactory4* factory, uint32_t swapchainWidt
 {
 	swapchainWidth_ = swapchainWidth;
 	swapchainHeight_ = swapchainHeight;
-	DXGI_SWAP_CHAIN_DESC1 swapChainDesc =
-	{
-		.Width = swapchainWidth_,
-		.Height = swapchainHeight_,
-		.Format = swapchainFormat_,
-		.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
-		.BufferCount = AppConfig::FrameCount,
-		.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD
-	};
-	swapChainDesc.SampleDesc.Count = 1;
 
-	ComPtr<IDXGISwapChain1> swapChain;
-	ThrowIfFailed(factory->CreateSwapChainForHwnd(
-		commandQueue_.Get(), // Swap chain needs the queue so that it can force a flush on it.
-		Win32Application::GetHwnd(),
-		&swapChainDesc,
-		nullptr,
-		nullptr,
-		&swapChain
+	DXGI_SWAP_CHAIN_DESC swapchainDesc = {};
+	swapchainDesc.BufferCount = AppConfig::FrameCount;
+	swapchainDesc.BufferDesc.Width = swapchainWidth_;
+	swapchainDesc.BufferDesc.Height = swapchainHeight_;
+	swapchainDesc.BufferDesc.Format = swapchainFormat_;
+	swapchainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swapchainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+	swapchainDesc.OutputWindow = Win32Application::GetHwnd();
+	swapchainDesc.SampleDesc.Count = 1;
+	swapchainDesc.Windowed = TRUE;
+	swapchainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH |
+		DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING |
+		DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
+
+	IDXGISwapChain* tempSwapchain;
+	ThrowIfFailed(factory->CreateSwapChain(
+		commandQueue_.Get(), 
+		&swapchainDesc,
+		&tempSwapchain
 	));
 
-	ThrowIfFailed(swapChain.As(&swapchain_));
+	//ThrowIfFailed(swapChain.As(&swapchain_));
+	ThrowIfFailed(tempSwapchain->QueryInterface(IID_PPV_ARGS(&swapchain_)));
+	
 	frameIndex_ = swapchain_->GetCurrentBackBufferIndex();
 
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
@@ -137,8 +140,7 @@ void DX12Context::CreateSwapchain(IDXGIFactory4* factory, uint32_t swapchainWidt
 		ThrowIfFailed(swapchain_->GetBuffer(i, IID_PPV_ARGS(&swapchainResources_[i])));
 	}
 
-	// This sample does not support fullscreen transitions.
-	ThrowIfFailed(factory->MakeWindowAssociation(Win32Application::GetHwnd(), DXGI_MWA_NO_ALT_ENTER));
+	tempSwapchain->Release();
 }
 
 void DX12Context::ResizeSwapchain(uint32_t swapchainWidth, uint32_t swapchainHeight)
@@ -236,7 +238,7 @@ void DX12Context::MoveToNextFrame()
 	if (fence_->GetCompletedValue() < fenceValues_[frameIndex_])
 	{
 		ThrowIfFailed(fence_->SetEventOnCompletion(fenceValues_[frameIndex_], fenceCompletionEvent_));
-		WaitForSingleObjectEx(fenceCompletionEvent_, INFINITE, FALSE);
+		WaitForSingleObject(fenceCompletionEvent_, INFINITE);
 	}
 
 	// Set the fence value for the next frame.

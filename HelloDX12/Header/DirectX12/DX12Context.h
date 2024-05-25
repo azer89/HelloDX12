@@ -75,7 +75,7 @@ private:
 	std::array<ID3D12Resource*, AppConfig::FrameCount> swapchainResources_ = { nullptr };
 	
 	// Pipeline objects.
-	Microsoft::WRL::ComPtr<IDXGISwapChain3> swapchain_ = nullptr;
+	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapchain_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12Device> device_ = nullptr;
 	Microsoft::WRL::ComPtr<IDXGIAdapter1> adapter_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocators_[AppConfig::FrameCount] = {};
