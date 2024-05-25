@@ -17,6 +17,11 @@ public:
 	void Update(DX12Context& ctx) override {}
 	void PopulateCommandList(DX12Context& ctx) override;
 
+	void OnWindowResize(DX12Context& ctx, uint32_t width, uint32_t height) override
+	{
+		descriptorHeap_.SetupHandles(ctx);
+	}
+
 private:
 	void CreateDescriptors(DX12Context& ctx);
 	void CreateGraphicsPipeline(DX12Context& ctx);

@@ -15,9 +15,13 @@ public:
 	explicit PipelineBase(DX12Context& ctx);
 	virtual ~PipelineBase();
 
-	virtual void Destroy();
+	virtual void Destroy(); // TODO Kinda weird because it will always be called even it is overridden
 	virtual void Update(DX12Context& ctx) = 0;
 	virtual void PopulateCommandList(DX12Context& ctx) = 0;
+
+	virtual void OnWindowResize(DX12Context& ctx, uint32_t width, uint32_t height)
+	{
+	}
 
 protected:
 	void CreateCommandSignature(DX12Context& ctx);

@@ -26,6 +26,7 @@ public:
 private:
 	ResourcesShared* resourcesShared_ = nullptr;
 
+	// TODO Use DX12DescriptorHeap
 	ID3D12DescriptorHeap* descriptorHeap_ = nullptr;
 };
 
