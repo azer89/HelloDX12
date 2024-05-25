@@ -46,6 +46,7 @@ void AppBase::OnWindowResize(uint32_t width, uint32_t height)
 		return;
 	}
 
+	windowResize_ = true;
 	std::cout << "window resize " << width << ", " << height << "\n";
 }
 
@@ -117,4 +118,17 @@ void AppBase::ConsoleShow()
 		freopen_s(&fp, "CONOUT$", "w", stdout);
 		freopen_s(&fp, "CONOUT$", "w", stderr);
 	}
+}
+
+void AppBase::BeginRender()
+{
+	context_.ResetCommandAllocator();
+	context_.ResetCommandList();
+}
+
+void AppBase::EndRender()
+{
+	context_.SubmitCommandList();
+	context_.PresentSwapchain();
+	context_.MoveToNextFrame();
 }

@@ -73,17 +73,14 @@ void AppSimple::OnUpdate()
 // Render the scene.
 void AppSimple::OnRender()
 {
-	context_.ResetCommandAllocator();
-	context_.ResetCommandList();
+	BeginRender();
 
 	for (auto& pip : pipelines_)
 	{
 		pip->PopulateCommandList(context_);
 	}
 
-	context_.SubmitCommandList();
-	context_.PresentSwapchain();
-	context_.MoveToNextFrame();
+	EndRender();
 }
 
 void AppSimple::OnDestroy()

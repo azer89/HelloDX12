@@ -136,6 +136,18 @@ void DX12Context::CreateSwapchain(IDXGIFactory4* factory, uint32_t swapchainWidt
 	ThrowIfFailed(factory->MakeWindowAssociation(Win32Application::GetHwnd(), DXGI_MWA_NO_ALT_ENTER));
 }
 
+void DX12Context::ResizeSwapchain(uint32_t swapchainWidth, uint32_t swapchainHeight)
+{
+	ThrowIfFailed(swapchain_->ResizeBuffers(
+		AppConfig::FrameCount,
+		swapchainWidth,
+		swapchainHeight,
+		swapchainFormat_,
+		DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH |
+		DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING |
+		DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT));
+}
+
 void DX12Context::CreateDXC()
 {
 	ThrowIfFailed(DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils_)));

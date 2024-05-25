@@ -24,6 +24,9 @@ public:
 	virtual void OnRender() = 0;
 	virtual void OnDestroy() = 0;
 
+	void BeginRender();
+	void EndRender();
+
 	void OnKeyDown(uint8_t key);
 	void OnKeyUp(uint8_t key);
 	void OnMouseMove(int mousePositionX, int mousePositionY);
@@ -71,6 +74,8 @@ private:
 protected:
 	uint32_t windowWidth_ = 0;
 	uint32_t windowHeight_ = 0;
+	bool windowResize_ = false;
+
 	float windowAspectRatio_ = 0;
 
 	UIData uiData_ = {};
