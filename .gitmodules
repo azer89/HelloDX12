@@ -10,3 +10,6 @@
 [submodule "External/D3D12MemoryAllocator"]
 	path = External/D3D12MemoryAllocator
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/D3D12MemoryAllocator
+[submodule "External/imgui"]
+	path = External/imgui
+	url = https://github.com/ocornut/imgui

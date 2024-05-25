@@ -2,11 +2,16 @@
 #include "Configs.h"
 #include "Utility.h"
 
+#include "imgui.h"
+#include "imgui_impl_win32.h"
+
 #include <windows.h>
 #include <fcntl.h>
 #include <iostream>
 
 using namespace Microsoft::WRL;
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 AppBase::AppBase() :
 	windowWidth_(AppConfig::InitialScreenWidth),
@@ -27,6 +32,11 @@ void AppBase::SetCustomWindowText(LPCWSTR text) const
 {
 	std::wstring windowText = title_ + L": " + text;
 	SetWindowText(Win32Application::GetHwnd(), windowText.c_str());
+}
+
+LRESULT AppBase::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	return ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam);
 }
 
 // Helper function for parsing any supplied command line args.
@@ -57,7 +67,7 @@ void AppBase::OnMouseMove(int mousePositionX, int mousePositionY)
 		return;
 	}
 
-	if (uiData_.mouseLeftPressed_ || uiData_.mouseLeftHold_)
+	if (!ImGui::GetIO().WantCaptureMouse && (uiData_.mouseLeftPressed_ || uiData_.mouseLeftHold_))
 	{
 		const float xOffset = static_cast<float>(mousePositionX) - uiData_.mousePositionX_;
 		const float yOffset = uiData_.mousePositionY_ - static_cast<float>(mousePositionY); // Reversed since y-coordinates go from bottom to top

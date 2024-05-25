@@ -3,6 +3,7 @@
 
 #include "AppBase.h"
 #include "PipelineSimple.h"
+#include "PipelineImGui.h"
 #include "ResourcesShared.h"
 #include "ResourcesLights.h"
 #include "ResourcesIBL.h"
@@ -23,6 +24,7 @@ public:
 private:
 	std::unique_ptr<Scene> scene_ = nullptr;
 	PipelineSimple* pipSimple_ = nullptr;
+	PipelineImGui* imguiPtr_ = nullptr;
 	ResourcesShared* resourcesShared_ = nullptr;
 	ResourcesLights* resourcesLights_ = nullptr;
 	ResourcesIBL* resourcesIBL = nullptr;

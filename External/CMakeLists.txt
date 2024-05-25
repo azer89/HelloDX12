@@ -12,7 +12,28 @@ add_subdirectory(assimp)
 # D3D12MA
 add_subdirectory(D3D12MemoryAllocator)
 
+# ImGui
+add_library(imgui STATIC)
+target_include_directories(imgui PRIVATE
+    "${CMAKE_CURRENT_LIST_DIR}/imgui"
+    "${CMAKE_CURRENT_LIST_DIR}/imgui/backends"
+)
+target_sources(imgui PRIVATE 
+    "${CMAKE_CURRENT_LIST_DIR}/imgui/imgui.h"
+    "${CMAKE_CURRENT_LIST_DIR}/imgui/backends/imgui_impl_dx12.h"
+    "${CMAKE_CURRENT_LIST_DIR}/imgui/backends/imgui_impl_win32.h"
+
+    "${CMAKE_CURRENT_LIST_DIR}/imgui/imgui.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_demo.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_draw.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_tables.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_widgets.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/imgui/backends/imgui_impl_dx12.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/imgui/backends/imgui_impl_win32.cpp"
+)
+
 # Group libraries into a folder
+set_property(TARGET imgui PROPERTY FOLDER "External")
 set_property(TARGET assimp PROPERTY FOLDER "External")
 set_property(TARGET zlibstatic PROPERTY FOLDER "External")
 set_property(TARGET D3D12MemoryAllocator PROPERTY FOLDER "External")

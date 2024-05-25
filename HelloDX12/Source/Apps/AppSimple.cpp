@@ -52,13 +52,17 @@ void AppSimple::OnInit()
 		resourcesLights_);
 	AddPipeline<PipelineResolve>(context_, resourcesShared_);
 	AddPipeline<PipelineTonemap>(context_, resourcesShared_);
+	imguiPtr_ = AddPipeline<PipelineImGui>(context_, resourcesShared_);
 	AddPipeline<PipelinePresent>(context_, resourcesShared_);
 }
 
-// Update frame-based values.
 void AppSimple::OnUpdate()
 {
 	OnKeyboardInput();
+
+	imguiPtr_->ImGuiStart();
+	imguiPtr_->ImGuiSetWindow("Simple Renderer", 450, 750);
+	imguiPtr_->ImGuiEnd();
 
 	for (auto& pip : pipelines_)
 	{

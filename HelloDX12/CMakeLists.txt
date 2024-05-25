@@ -76,12 +76,14 @@ target_include_directories(HelloDX12 PRIVATE
     "${AGILITY_DIRECTORY}/d3dx12"
     "${PROJECT_SOURCE_DIR}/External/stb"
     "${PROJECT_SOURCE_DIR}/External/glm"
+    "${PROJECT_SOURCE_DIR}/External/imgui"
+    "${PROJECT_SOURCE_DIR}/External/imgui/backends"
     "${PROJECT_SOURCE_DIR}/External/assimp/include"
     "${PROJECT_SOURCE_DIR}/External/Binaries/assimp/include"
     "${PROJECT_SOURCE_DIR}/External/D3D12MemoryAllocator/include"
 )
 
 # Set dependencies
-target_link_libraries(HelloDX12 PRIVATE assimp D3D12MemoryAllocator)
+target_link_libraries(HelloDX12 PRIVATE assimp imgui D3D12MemoryAllocator)
 target_link_libraries(HelloDX12 PRIVATE d3d12.lib dxgi.lib d3dcompiler.lib dxguid.lib)
 target_link_libraries(HelloDX12 PRIVATE "${DXC_DIRECTORY}/lib/x64/dxcompiler.lib")

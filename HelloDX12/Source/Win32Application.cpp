@@ -80,6 +80,12 @@ int Win32Application::Run(AppBase* pSample, HINSTANCE hInstance, int nCmdShow)
 LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	AppBase* app = reinterpret_cast<AppBase*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+
+	// TODO ImGui
+	if (app->WindowProc(hWnd, message, wParam, lParam))
+	{
+	}
+
 	LPPOINT mousePos = {};
 
 	switch (message)
