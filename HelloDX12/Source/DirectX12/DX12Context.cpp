@@ -143,6 +143,11 @@ void DX12Context::CreateSwapchain(IDXGIFactory4* factory, uint32_t swapchainWidt
 
 void DX12Context::ResizeSwapchain(uint32_t swapchainWidth, uint32_t swapchainHeight)
 {
+	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
+	{
+		swapchainResources_[i]->Release();
+	}
+
 	ThrowIfFailed(swapchain_->ResizeBuffers(
 		AppConfig::FrameCount,
 		swapchainWidth,
@@ -151,6 +156,11 @@ void DX12Context::ResizeSwapchain(uint32_t swapchainWidth, uint32_t swapchainHei
 		DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH |
 		DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING |
 		DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT));
+
+	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
+	{
+		ThrowIfFailed(swapchain_->GetBuffer(i, IID_PPV_ARGS(&swapchainResources_[i])));
+	}
 
 	std::cout << "resize swapchain\n";
 }
