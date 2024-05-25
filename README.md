@@ -22,10 +22,4 @@ A rendering app written using C++ and DirectX 12.
 * Set absolute paths for assets and shaders in `HelloDX12/Header/Configs.h`
 * That's it!
 
-Dependencies:
-* Agility SDK
-* [assimp](https://github.com/assimp/assimp)
-* [D3D12MemoryAllocator](https://github.com/GPUOpen-LibrariesAndSDKs/D3D12MemoryAllocator)
-* [DXC](https://github.com/microsoft/DirectXShaderCompiler)
-* [glm](https://github.com/g-truc/glm)
-* [stb](https://github.com/nothings/stb)
+Dependencies: Agility SDK, [assimp](https://github.com/assimp/assimp), [D3D12MemoryAllocator](https://github.com/GPUOpen-LibrariesAndSDKs/D3D12MemoryAllocator), [DXC](https://github.com/microsoft/DirectXShaderCompiler), [glm](https://github.com/g-truc/glm), [imgui](https://github.com/ocornut/imgui), [stb](https://github.com/nothings/stb)
