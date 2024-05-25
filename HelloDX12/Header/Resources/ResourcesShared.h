@@ -38,6 +38,8 @@ public:
 	[[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetDSVHandle() const { return dsvHandle_; }
 
 private:
+	void CreateDescriptorHeaps(DX12Context& ctx);
+
 	// Render target
 	void GrabSwapchain(DX12Context& ctx);
 	void CreateSingleSampledRTV(DX12Context& ctx);
