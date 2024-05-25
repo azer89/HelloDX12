@@ -16,6 +16,8 @@ public:
 
 	void Init(DX12Context& ctx);
 	void Destroy() override;
+
+	void OnWindowResize(uint32_t width, uint32_t height) override;
 	
 	// Color attachment (MSAA)
 	[[nodiscard]] DX12Buffer* GetMultiSampledBuffer() { return &(multiSampledImage_.buffer_); }

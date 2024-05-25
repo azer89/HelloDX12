@@ -46,6 +46,10 @@ void ResourcesShared::Init(DX12Context& ctx)
 	CreateDSV(ctx);
 }
 
+void ResourcesShared::OnWindowResize(uint32_t width, uint32_t height)
+{
+}
+
 void ResourcesShared::GrabSwapchain(DX12Context& ctx)
 {
 	// RTV
