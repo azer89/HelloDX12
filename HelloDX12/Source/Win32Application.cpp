@@ -143,6 +143,20 @@ LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wP
 		}
 		return 0;
 
+
+	case WM_SIZE:
+		if (wParam != SIZE_MINIMIZED)
+		{
+			RECT rect;
+			if (!::GetClientRect(hWnd, &rect))
+			{
+				throw std::runtime_error("Cannot get window rectangle");
+			}
+
+			app->OnWindowResize(rect.right, rect.bottom);
+		}
+		return 0;
+
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;

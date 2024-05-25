@@ -31,6 +31,8 @@ public:
 	void OnMouseLeftRelease();
 	void OnKeyboardInput();
 
+	void OnWindowResize(uint32_t width, uint32_t height);
+
 	[[nodiscard]] uint32_t GetWidth() const { return windowWidth_; }
 	[[nodiscard]] uint32_t GetHeight() const { return windowHeight_; }
 	[[nodiscard]] const WCHAR* GetTitle() const { return title_.c_str(); }

@@ -39,6 +39,16 @@ LRESULT AppBase::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 	return ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam);
 }
 
+void AppBase::OnWindowResize(uint32_t width, uint32_t height)
+{
+	if (width == windowWidth_ && height == windowHeight_)
+	{
+		return;
+	}
+
+	std::cout << "window resize " << width << ", " << height << "\n";
+}
+
 // Helper function for parsing any supplied command line args.
 _Use_decl_annotations_
 void AppBase::ParseCommandLineArgs(WCHAR* argv[], int argc)
