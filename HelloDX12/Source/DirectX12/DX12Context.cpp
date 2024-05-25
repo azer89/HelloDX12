@@ -132,6 +132,11 @@ void DX12Context::CreateSwapchain(IDXGIFactory4* factory, uint32_t swapchainWidt
 	ThrowIfFailed(swapChain.As(&swapchain_));
 	frameIndex_ = swapchain_->GetCurrentBackBufferIndex();
 
+	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
+	{
+		ThrowIfFailed(swapchain_->GetBuffer(i, IID_PPV_ARGS(&swapchainResources_[i])));
+	}
+
 	// This sample does not support fullscreen transitions.
 	ThrowIfFailed(factory->MakeWindowAssociation(Win32Application::GetHwnd(), DXGI_MWA_NO_ALT_ENTER));
 }
@@ -146,6 +151,8 @@ void DX12Context::ResizeSwapchain(uint32_t swapchainWidth, uint32_t swapchainHei
 		DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH |
 		DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING |
 		DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT));
+
+	std::cout << "resize swapchain\n";
 }
 
 void DX12Context::CreateDXC()

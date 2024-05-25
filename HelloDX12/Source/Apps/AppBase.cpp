@@ -131,4 +131,10 @@ void AppBase::EndRender()
 	context_.SubmitCommandList();
 	context_.PresentSwapchain();
 	context_.MoveToNextFrame();
+
+	if (windowResize_)
+	{
+		context_.ResizeSwapchain(windowWidth_, windowHeight_);
+		windowResize_ = false;
+	}
 }
