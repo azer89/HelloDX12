@@ -115,6 +115,8 @@ void ResourcesShared::GrabSwapchain(DX12Context& ctx)
 
 void ResourcesShared::CreateMultiSampledRTV(DX12Context& ctx)
 {
+	multiSampledImage_.Destroy();
+
 	// Create Image
 	constexpr uint32_t msaaCount = AppConfig::MSAACount;
 	multiSampledImage_.CreateColorAttachment(ctx, msaaCount);
@@ -139,6 +141,9 @@ void ResourcesShared::CreateMultiSampledRTV(DX12Context& ctx)
 
 void ResourcesShared::CreateSingleSampledRTV(DX12Context& ctx)
 {
+	// Destroy first
+	singleSampledImage_.Destroy();
+
 	// Create Image
 	constexpr uint32_t msaaCount = 1;
 	singleSampledImage_.CreateColorAttachment(ctx, msaaCount);
@@ -156,6 +161,8 @@ void ResourcesShared::CreateSingleSampledRTV(DX12Context& ctx)
 
 void ResourcesShared::CreateDSV(DX12Context& ctx)
 {
+	depthImage_.Destroy();
+
 	constexpr uint32_t msaaCount = AppConfig::MSAACount;
 	depthImage_.CreateDepthAttachment(ctx, msaaCount);
 	depthImage_.SetName("Depth_Image");

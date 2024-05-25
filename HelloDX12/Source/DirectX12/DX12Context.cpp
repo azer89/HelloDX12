@@ -19,8 +19,6 @@ void DX12Context::Destroy()
 
 void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 {
-	swapchainWidth_ = swapchainWidth;
-	swapchainHeight_ = swapchainHeight;
 	frameIndex_ = 0;
 
 	uint32_t dxgiFactoryFlags = 0;
@@ -62,40 +60,15 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 	queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 	ThrowIfFailed(device_->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&commandQueue_)));
 
-	// Describe and create the swap chain.
-	DXGI_SWAP_CHAIN_DESC1 swapChainDesc =
-	{
-		.Width = swapchainWidth_,
-		.Height = swapchainHeight_,
-		.Format = swapchainFormat_,
-		.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
-		.BufferCount = AppConfig::FrameCount,
-		.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD
-	};
-	swapChainDesc.SampleDesc.Count = 1;
+	// Swapchain
+	CreateSwapchain(factory, swapchainWidth, swapchainHeight);
 
-	ComPtr<IDXGISwapChain1> swapChain;
-	ThrowIfFailed(factory->CreateSwapChainForHwnd(
-		commandQueue_.Get(), // Swap chain needs the queue so that it can force a flush on it.
-		Win32Application::GetHwnd(),
-		&swapChainDesc,
-		nullptr,
-		nullptr,
-		&swapChain
-	));
-
-	// This sample does not support fullscreen transitions.
-	ThrowIfFailed(factory->MakeWindowAssociation(Win32Application::GetHwnd(), DXGI_MWA_NO_ALT_ENTER));
-
-	ThrowIfFailed(swapChain.As(&swapchain_));
-	frameIndex_ = swapchain_->GetCurrentBackBufferIndex();
-
+	// Command buffer
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
 		ThrowIfFailed(device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocators_[i])));
 	}
 
-	// Default command list
 	ThrowIfFailed(device_->CreateCommandList(
 		0,
 		D3D12_COMMAND_LIST_TYPE_DIRECT,
@@ -129,6 +102,38 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 
 	// Release
 	factory->Release();
+}
+
+void DX12Context::CreateSwapchain(IDXGIFactory4* factory, uint32_t swapchainWidth, uint32_t swapchainHeight)
+{
+	swapchainWidth_ = swapchainWidth;
+	swapchainHeight_ = swapchainHeight;
+	DXGI_SWAP_CHAIN_DESC1 swapChainDesc =
+	{
+		.Width = swapchainWidth_,
+		.Height = swapchainHeight_,
+		.Format = swapchainFormat_,
+		.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
+		.BufferCount = AppConfig::FrameCount,
+		.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD
+	};
+	swapChainDesc.SampleDesc.Count = 1;
+
+	ComPtr<IDXGISwapChain1> swapChain;
+	ThrowIfFailed(factory->CreateSwapChainForHwnd(
+		commandQueue_.Get(), // Swap chain needs the queue so that it can force a flush on it.
+		Win32Application::GetHwnd(),
+		&swapChainDesc,
+		nullptr,
+		nullptr,
+		&swapChain
+	));
+
+	ThrowIfFailed(swapChain.As(&swapchain_));
+	frameIndex_ = swapchain_->GetCurrentBackBufferIndex();
+
+	// This sample does not support fullscreen transitions.
+	ThrowIfFailed(factory->MakeWindowAssociation(Win32Application::GetHwnd(), DXGI_MWA_NO_ALT_ENTER));
 }
 
 void DX12Context::CreateDXC()

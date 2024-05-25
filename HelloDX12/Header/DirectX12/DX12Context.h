@@ -25,6 +25,7 @@ public:
 	DX12Context& operator=(DX12Context&&) = delete;
 
 	void Init(uint32_t swapchainWidth, uint32_t swapchainHeight);
+	void CreateSwapchain(IDXGIFactory4* factory, uint32_t swapchainWidth, uint32_t swapchainHeight);
 	void Destroy();
 
 	[[nodiscard]] uint32_t GetFrameIndex() const { return frameIndex_; }
