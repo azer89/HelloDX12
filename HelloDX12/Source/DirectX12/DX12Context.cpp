@@ -120,7 +120,8 @@ void DX12Context::CreateSwapchain(IDXGIFactory4* factory, uint32_t swapchainWidt
 	swapchainDesc.OutputWindow = Win32Application::GetHwnd();
 	swapchainDesc.SampleDesc.Count = 1;
 	swapchainDesc.Windowed = TRUE;
-	swapchainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH |
+	swapchainDesc.Flags = 
+		DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH |
 		DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING |
 		DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
 
