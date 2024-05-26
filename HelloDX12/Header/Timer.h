@@ -10,6 +10,7 @@ public:
 	void Update();
 
 	[[nodiscard]] float GetDelta() const { return deltaSecondsFloat_; }
+	[[nodiscard]] float GetFPS() const { return fpsCurr_; }
 
 private:
 	int64_t startTime_;
@@ -20,6 +21,8 @@ private:
 
 	int64_t frequency_;
 	float frequencyFloat_;
+
+	float fpsCurr_;
 };
 
 #endif

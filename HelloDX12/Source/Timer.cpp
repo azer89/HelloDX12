@@ -35,4 +35,5 @@ void Timer::Update()
 	delta_ = currentTime - elapsed_;
 	deltaSecondsFloat_ = delta_ / frequencyFloat_;
 	elapsed_ = currentTime;
+	fpsCurr_ = 1.0f / deltaSecondsFloat_;
 }
