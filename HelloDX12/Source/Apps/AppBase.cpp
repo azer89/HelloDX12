@@ -16,9 +16,9 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 AppBase::AppBase() :
 	windowWidth_(AppConfig::InitialScreenWidth),
 	windowHeight_(AppConfig::InitialScreenHeight),
-	title_(Utility::WStringConvert(AppConfig::ScreenTitle)),
 	windowAspectRatio_(static_cast<float>(AppConfig::InitialScreenWidth) / static_cast<float>(AppConfig::InitialScreenHeight)),
-	camera_(std::make_unique<Camera>(glm::vec3(0.0f)))
+	camera_(std::make_unique<Camera>(glm::vec3(0.0f))),
+	title_(Utility::WStringConvert(AppConfig::ScreenTitle))
 {
 	ConsoleShow();
 }
@@ -37,6 +37,18 @@ void AppBase::SetCustomWindowText(LPCWSTR text) const
 LRESULT AppBase::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	return ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam);
+}
+
+void AppBase::OnWindowResize(uint32_t width, uint32_t height)
+{
+	if (width == windowWidth_ && height == windowHeight_)
+	{
+		return;
+	}
+
+	windowResize_ = true;
+	targetWindowWidth_ = width;
+	targetWindowHeight_ = height;
 }
 
 // Helper function for parsing any supplied command line args.
@@ -104,7 +116,51 @@ void AppBase::ConsoleShow()
 	if (AllocConsole())
 	{
 		FILE* fp;
-		freopen_s(&fp, "CONOUT$", "w", stdout);
-		freopen_s(&fp, "CONOUT$", "w", stderr);
+		if(freopen_s(&fp, "CONOUT$", "w", stdout) != 0)
+		{
+			std::cerr << "Cannot open stdout\n";
+		}
+		if (freopen_s(&fp, "CONOUT$", "w", stderr) != 0)
+		{
+			std::cerr << "Cannot open stderr\n";
+		}
+	}
+}
+
+void AppBase::BeginRender()
+{
+	context_.ResetCommandAllocator();
+	context_.ResetCommandList();
+}
+
+void AppBase::EndRender()
+{
+	context_.SubmitCommandList();
+	context_.PresentSwapchain();
+	
+	if (windowResize_)
+	{
+		context_.WaitForAllFrames();
+		context_.ResizeSwapchain(targetWindowWidth_, targetWindowHeight_);
+		camera_->SetScreenSize(static_cast<float>(targetWindowWidth_), static_cast<float>(targetWindowHeight_));
+
+		for (auto& res : resources_)
+		{
+			res->OnWindowResize(context_, targetWindowWidth_, targetWindowHeight_);
+		}
+
+		for (auto& pip : pipelines_)
+		{
+			pip->SetupViewportAndScissor(context_);
+			pip->OnWindowResize(context_, targetWindowWidth_, targetWindowHeight_);
+		}
+
+		windowWidth_ = targetWindowWidth_;
+		windowHeight_ = targetWindowHeight_;
+		windowResize_ = false;
+	}
+	else
+	{
+		context_.MoveToNextFrame();
 	}
 }

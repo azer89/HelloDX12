@@ -40,23 +40,66 @@ void ResourcesShared::Destroy()
 void ResourcesShared::Init(DX12Context& ctx)
 {
 	rtvIncrementSize_ = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	CreateDescriptorHeaps(ctx);
 	GrabSwapchain(ctx);
 	CreateSingleSampledRTV(ctx);
 	CreateMultiSampledRTV(ctx);
 	CreateDSV(ctx);
 }
 
+void ResourcesShared::OnWindowResize(DX12Context& ctx, uint32_t width, uint32_t height)
+{
+	GrabSwapchain(ctx);
+	CreateSingleSampledRTV(ctx);
+	CreateMultiSampledRTV(ctx);
+	CreateDSV(ctx);
+}
+
+void ResourcesShared::CreateDescriptorHeaps(DX12Context& ctx)
+{
+	{
+		constexpr D3D12_DESCRIPTOR_HEAP_DESC desc =
+		{
+			.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
+			.NumDescriptors = AppConfig::FrameCount,
+			.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
+		};
+		ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&swapchainRTVHeap_)));
+	}
+
+	{
+		constexpr D3D12_DESCRIPTOR_HEAP_DESC desc =
+		{
+			.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
+			.NumDescriptors = 1,
+			.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
+		};
+		ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&multiSampledRTVHeap_)));
+	}
+
+	{
+		constexpr D3D12_DESCRIPTOR_HEAP_DESC desc =
+		{
+			.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
+			.NumDescriptors = 1,
+			.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
+		};
+		ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&singleSampledRTVHeap_)));
+	}
+
+	{
+		constexpr D3D12_DESCRIPTOR_HEAP_DESC desc =
+		{
+			.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV,
+			.NumDescriptors = 1,
+			.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
+		};
+		ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&dsvHeap_)));
+	}
+}
+
 void ResourcesShared::GrabSwapchain(DX12Context& ctx)
 {
-	// RTV
-	constexpr D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
-	{
-		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
-		.NumDescriptors = AppConfig::FrameCount,
-		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
-	};
-	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&swapchainRTVHeap_)));
-
 	// Handle
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(swapchainRTVHeap_->GetCPUDescriptorHandleForHeapStart());
 	for (uint32_t i = 0; i < AppConfig::FrameCount; i++)
@@ -76,6 +119,8 @@ void ResourcesShared::GrabSwapchain(DX12Context& ctx)
 
 void ResourcesShared::CreateMultiSampledRTV(DX12Context& ctx)
 {
+	multiSampledImage_.Destroy();
+
 	// Create Image
 	constexpr uint32_t msaaCount = AppConfig::MSAACount;
 	multiSampledImage_.CreateColorAttachment(ctx, msaaCount);
@@ -87,15 +132,6 @@ void ResourcesShared::CreateMultiSampledRTV(DX12Context& ctx)
 		multiSampledImage_.TransitionCommand(ctx.GetCommandList(), D3D12_RESOURCE_STATE_RENDER_TARGET);
 		ctx.SubmitCommandListAndWaitForGPU();
 	}
-
-	// Create RTV
-	constexpr D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
-	{
-		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
-		.NumDescriptors = 1,
-		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
-	};
-	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&multiSampledRTVHeap_)));
 
 	// Handle
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(multiSampledRTVHeap_->GetCPUDescriptorHandleForHeapStart());
@@ -109,19 +145,13 @@ void ResourcesShared::CreateMultiSampledRTV(DX12Context& ctx)
 
 void ResourcesShared::CreateSingleSampledRTV(DX12Context& ctx)
 {
+	// Destroy first
+	singleSampledImage_.Destroy();
+
 	// Create Image
 	constexpr uint32_t msaaCount = 1;
 	singleSampledImage_.CreateColorAttachment(ctx, msaaCount);
 	singleSampledImage_.SetName("Single_Sampled_Image");
-
-	// RTV
-	constexpr D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc =
-	{
-		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
-		.NumDescriptors = 1,
-		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
-	};
-	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&singleSampledRTVHeap_)));
 
 	// Handle
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(singleSampledRTVHeap_->GetCPUDescriptorHandleForHeapStart());
@@ -135,18 +165,11 @@ void ResourcesShared::CreateSingleSampledRTV(DX12Context& ctx)
 
 void ResourcesShared::CreateDSV(DX12Context& ctx)
 {
+	depthImage_.Destroy();
+
 	constexpr uint32_t msaaCount = AppConfig::MSAACount;
 	depthImage_.CreateDepthAttachment(ctx, msaaCount);
 	depthImage_.SetName("Depth_Image");
-
-	// Heap
-	constexpr D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc =
-	{
-		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV,
-		.NumDescriptors = 1,
-		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
-	};
-	ThrowIfFailed(ctx.GetDevice()->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&dsvHeap_)));
 
 	// DSV
 	constexpr D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc =

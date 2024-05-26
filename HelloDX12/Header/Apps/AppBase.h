@@ -24,12 +24,17 @@ public:
 	virtual void OnRender() = 0;
 	virtual void OnDestroy() = 0;
 
+	void BeginRender();
+	void EndRender();
+
 	void OnKeyDown(uint8_t key);
 	void OnKeyUp(uint8_t key);
 	void OnMouseMove(int mousePositionX, int mousePositionY);
 	void OnMouseLeftPressed();
 	void OnMouseLeftRelease();
 	void OnKeyboardInput();
+
+	void OnWindowResize(uint32_t width, uint32_t height);
 
 	[[nodiscard]] uint32_t GetWidth() const { return windowWidth_; }
 	[[nodiscard]] uint32_t GetHeight() const { return windowHeight_; }
@@ -69,6 +74,10 @@ private:
 protected:
 	uint32_t windowWidth_ = 0;
 	uint32_t windowHeight_ = 0;
+	uint32_t targetWindowWidth_ = 0;
+	uint32_t targetWindowHeight_ = 0;
+	bool windowResize_ = false;
+
 	float windowAspectRatio_ = 0;
 
 	UIData uiData_ = {};

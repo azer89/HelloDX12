@@ -6,6 +6,8 @@
 #include <windows.h>
 #include <wrl.h>
 
+#include <array>
+
 #include "d3dx12.h" // Agility SDK
 #include "dxcapi.h" // DXC
 #include "D3D12MemAlloc.h"
@@ -25,22 +27,27 @@ public:
 	DX12Context& operator=(DX12Context&&) = delete;
 
 	void Init(uint32_t swapchainWidth, uint32_t swapchainHeight);
+	void CreateSwapchain(IDXGIFactory4* factory, uint32_t swapchainWidth, uint32_t swapchainHeight);
+	void ResizeSwapchain(uint32_t swapchainWidth, uint32_t swapchainHeight);
 	void Destroy();
 
 	[[nodiscard]] uint32_t GetFrameIndex() const { return frameIndex_; }
 	[[nodiscard]] ID3D12Device* GetDevice() const { return device_.Get(); }
-	[[nodiscard]] uint32_t GetSwapchainWidth() const { return swapchainWidth_; }
-	[[nodiscard]] uint32_t GetSwapchainHeight() const { return swapchainHeight_; }
-	[[nodiscard]] DXGI_FORMAT GetSwapchainFormat() const { return swapchainFormat_; }
-	[[nodiscard]] IDXGISwapChain3* GetSwapchain() const { return swapchain_.Get(); }
 	[[nodiscard]] D3D12MA::Allocator* GetDMAAllocator() const { return dmaAllocator_; }
 	[[nodiscard]] IDxcUtils* GetDXCUtils() const { return dxcUtils_.Get(); }
 	[[nodiscard]] IDxcCompiler3* GetDXCCompiler() const { return dxcCompiler_.Get(); }
 	[[nodiscard]] ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
+
+	[[nodiscard]] uint32_t GetSwapchainWidth() const { return swapchainWidth_; }
+	[[nodiscard]] uint32_t GetSwapchainHeight() const { return swapchainHeight_; }
+	[[nodiscard]] DXGI_FORMAT GetSwapchainFormat() const { return swapchainFormat_; }
+	[[nodiscard]] IDXGISwapChain3* GetSwapchain() const { return swapchain_.Get(); }
+	[[nodiscard]] ID3D12Resource* GetSwapchainResource(uint32_t frameIndex) const { return swapchainResources_[frameIndex]; }
 	
 	void CreateFence();
 	void WaitForGPU();
 	void MoveToNextFrame();
+	void WaitForAllFrames();
 	void PresentSwapchain() const;
 	
 	void ResetCommandList() const;
@@ -62,13 +69,17 @@ private:
 
 	void CreateDXC();
 
+	void ObtainSwapchainResources();
+	void ReleaseSwapchainResources();
+
 private:
 	uint32_t swapchainWidth_ = 0;
 	uint32_t swapchainHeight_ = 0;
-	DXGI_FORMAT swapchainFormat_ = DXGI_FORMAT_R8G8B8A8_UNORM; 
+	DXGI_FORMAT swapchainFormat_ = DXGI_FORMAT_R8G8B8A8_UNORM;
+	std::array<ID3D12Resource*, AppConfig::FrameCount> swapchainResources_ = { nullptr };
 	
 	// Pipeline objects.
-	Microsoft::WRL::ComPtr<IDXGISwapChain3> swapchain_ = nullptr;
+	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapchain_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12Device> device_ = nullptr;
 	Microsoft::WRL::ComPtr<IDXGIAdapter1> adapter_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocators_[AppConfig::FrameCount] = {};

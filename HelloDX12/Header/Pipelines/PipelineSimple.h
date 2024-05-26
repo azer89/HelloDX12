@@ -28,6 +28,14 @@ public:
 
 	void Destroy() override;
 
+	void OnWindowResize(DX12Context& ctx, uint32_t width, uint32_t height) override
+	{
+		for (auto& dHeap : descriptorHeaps_)
+		{
+			dHeap.SetupHandles(ctx);
+		}
+	}
+
 private:
 	void CreateIndirectCommand(DX12Context& ctx);
 	void CreateConstantBuffer(DX12Context& ctx);

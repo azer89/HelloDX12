@@ -4,6 +4,7 @@
 #include "Configs.h"
 
 #include <iostream>
+#include <sstream>
 
 using Microsoft::WRL::ComPtr;
 
@@ -19,8 +20,6 @@ void DX12Context::Destroy()
 
 void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 {
-	swapchainWidth_ = swapchainWidth;
-	swapchainHeight_ = swapchainHeight;
 	frameIndex_ = 0;
 
 	uint32_t dxgiFactoryFlags = 0;
@@ -62,40 +61,15 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 	queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 	ThrowIfFailed(device_->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&commandQueue_)));
 
-	// Describe and create the swap chain.
-	DXGI_SWAP_CHAIN_DESC1 swapChainDesc =
-	{
-		.Width = swapchainWidth_,
-		.Height = swapchainHeight_,
-		.Format = swapchainFormat_,
-		.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
-		.BufferCount = AppConfig::FrameCount,
-		.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD
-	};
-	swapChainDesc.SampleDesc.Count = 1;
+	// Swapchain
+	CreateSwapchain(factory, swapchainWidth, swapchainHeight);
 
-	ComPtr<IDXGISwapChain1> swapChain;
-	ThrowIfFailed(factory->CreateSwapChainForHwnd(
-		commandQueue_.Get(), // Swap chain needs the queue so that it can force a flush on it.
-		Win32Application::GetHwnd(),
-		&swapChainDesc,
-		nullptr,
-		nullptr,
-		&swapChain
-	));
-
-	// This sample does not support fullscreen transitions.
-	ThrowIfFailed(factory->MakeWindowAssociation(Win32Application::GetHwnd(), DXGI_MWA_NO_ALT_ENTER));
-
-	ThrowIfFailed(swapChain.As(&swapchain_));
-	frameIndex_ = swapchain_->GetCurrentBackBufferIndex();
-
+	// Command buffer
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
 		ThrowIfFailed(device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocators_[i])));
 	}
 
-	// Default command list
 	ThrowIfFailed(device_->CreateCommandList(
 		0,
 		D3D12_COMMAND_LIST_TYPE_DIRECT,
@@ -106,7 +80,7 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 
 	// Memory allocator
 	{
-		D3D12MA::ALLOCATOR_DESC desc = {
+		const D3D12MA::ALLOCATOR_DESC desc = {
 			.pDevice = device_.Get(),
 			.pAdapter = adapter_.Get(),
 		};
@@ -131,6 +105,82 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 	factory->Release();
 }
 
+void DX12Context::CreateSwapchain(IDXGIFactory4* factory, uint32_t swapchainWidth, uint32_t swapchainHeight)
+{
+	swapchainWidth_ = swapchainWidth;
+	swapchainHeight_ = swapchainHeight;
+
+	DXGI_SWAP_CHAIN_DESC swapchainDesc = {};
+	swapchainDesc.BufferCount = AppConfig::FrameCount;
+	swapchainDesc.BufferDesc.Width = swapchainWidth_;
+	swapchainDesc.BufferDesc.Height = swapchainHeight_;
+	swapchainDesc.BufferDesc.Format = swapchainFormat_;
+	swapchainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swapchainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+	swapchainDesc.OutputWindow = Win32Application::GetHwnd();
+	swapchainDesc.SampleDesc.Count = 1;
+	swapchainDesc.Windowed = TRUE;
+	swapchainDesc.Flags = 
+		DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH |
+		DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING |
+		DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
+
+	IDXGISwapChain* tempSwapchain;
+	ThrowIfFailed(factory->CreateSwapChain(
+		commandQueue_.Get(), 
+		&swapchainDesc,
+		&tempSwapchain
+	));
+
+	ThrowIfFailed(tempSwapchain->QueryInterface(IID_PPV_ARGS(&swapchain_)));
+	
+	frameIndex_ = swapchain_->GetCurrentBackBufferIndex();
+
+	ObtainSwapchainResources();
+
+	tempSwapchain->Release();
+}
+
+void DX12Context::ResizeSwapchain(uint32_t swapchainWidth, uint32_t swapchainHeight)
+{
+	swapchainWidth_ = swapchainWidth;
+	swapchainHeight_ = swapchainHeight;
+
+	ReleaseSwapchainResources();
+
+	ThrowIfFailed(swapchain_->ResizeBuffers(
+		AppConfig::FrameCount,
+		swapchainWidth_,
+		swapchainHeight_,
+		swapchainFormat_,
+		DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH |
+		DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING |
+		DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT));
+
+	ObtainSwapchainResources();
+}
+
+void DX12Context::ObtainSwapchainResources()
+{
+	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
+	{
+		ThrowIfFailed(swapchain_->GetBuffer(i, IID_PPV_ARGS(&swapchainResources_[i])));
+		std::wostringstream wss;
+		wss << L"Swapchain_Buffer_" << i;
+		swapchainResources_[i]->SetName(wss.str().c_str());
+	}
+}
+
+void DX12Context::ReleaseSwapchainResources()
+{
+	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
+	{
+		swapchainResources_[i]->Release();
+		swapchainResources_[i] = nullptr;
+	}
+}
+
+// TODO Rename to InitDXC
 void DX12Context::CreateDXC()
 {
 	ThrowIfFailed(DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils_)));
@@ -178,7 +228,7 @@ void DX12Context::WaitForGPU()
 
 	// Wait until the fence has been processed.
 	ThrowIfFailed(fence_->SetEventOnCompletion(fenceValues_[frameIndex_], fenceCompletionEvent_));
-	WaitForSingleObjectEx(fenceCompletionEvent_, INFINITE, FALSE);
+	WaitForSingleObject(fenceCompletionEvent_, INFINITE);
 
 	// Increment the fence value for the current frame.
 	fenceValues_[frameIndex_]++;
@@ -202,11 +252,32 @@ void DX12Context::MoveToNextFrame()
 	if (fence_->GetCompletedValue() < fenceValues_[frameIndex_])
 	{
 		ThrowIfFailed(fence_->SetEventOnCompletion(fenceValues_[frameIndex_], fenceCompletionEvent_));
-		WaitForSingleObjectEx(fenceCompletionEvent_, INFINITE, FALSE);
+		WaitForSingleObject(fenceCompletionEvent_, INFINITE);
 	}
 
 	// Set the fence value for the next frame.
 	fenceValues_[frameIndex_] = currentFenceValue + 1;
+}
+
+void DX12Context::WaitForAllFrames()
+{
+	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
+	{
+		const uint64_t currentFenceValue = fenceValues_[i];
+		ThrowIfFailed(commandQueue_->Signal(fence_.Get(), currentFenceValue));
+
+		// If the next frame is not ready to be rendered yet, wait until it is ready.
+		if (fence_->GetCompletedValue() < fenceValues_[i])
+		{
+			ThrowIfFailed(fence_->SetEventOnCompletion(fenceValues_[i], fenceCompletionEvent_));
+			WaitForSingleObject(fenceCompletionEvent_, INFINITE);
+		}
+
+		// Set the fence value for the next frame.
+		fenceValues_[i] = currentFenceValue + 1;
+	}
+
+	frameIndex_ = 0;
 }
 
 void DX12Context::ResetCommandAllocator() const

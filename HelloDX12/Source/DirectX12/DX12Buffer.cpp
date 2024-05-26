@@ -609,7 +609,7 @@ DX12Context& ctx,
 
 void DX12Buffer::SetAsSwapchainBuffer(DX12Context& ctx, CD3DX12_CPU_DESCRIPTOR_HANDLE& rtvHandle, uint32_t frameIndex)
 {
-	ThrowIfFailed(ctx.GetSwapchain()->GetBuffer(frameIndex, IID_PPV_ARGS(&resource_)));
+	resource_ = ctx.GetSwapchainResource(frameIndex);
 	ctx.GetDevice()->CreateRenderTargetView(resource_, nullptr, rtvHandle);
 	state_ = D3D12_RESOURCE_STATE_PRESENT;
 	isSwapchainBuffer_ = true;

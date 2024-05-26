@@ -3,8 +3,7 @@
 
 PipelineBase::PipelineBase(DX12Context& ctx)
 {
-	viewport_ = ctx.GetViewport();
-	scissor_ = ctx.GetScissor();
+	SetupViewportAndScissor(ctx);
 }
 
 PipelineBase::~PipelineBase()
@@ -23,9 +22,15 @@ void PipelineBase::Destroy()
 	if (commandSignature_) { commandSignature_->Release(); }
 }
 
+void PipelineBase::SetupViewportAndScissor(DX12Context& ctx)
+{
+	viewport_ = ctx.GetViewport();
+	scissor_ = ctx.GetScissor();
+}
+
 void PipelineBase::CreateCommandSignature(DX12Context& ctx)
 {
-	D3D12_INDIRECT_ARGUMENT_DESC argumentDescs[2] =
+	constexpr D3D12_INDIRECT_ARGUMENT_DESC argumentDescs[2] =
 	{
 		{
 			.Type = D3D12_INDIRECT_ARGUMENT_TYPE_CONSTANT,
@@ -41,7 +46,7 @@ void PipelineBase::CreateCommandSignature(DX12Context& ctx)
 		}
 	};
 
-	D3D12_COMMAND_SIGNATURE_DESC commandSignatureDesc = 
+	const D3D12_COMMAND_SIGNATURE_DESC commandSignatureDesc = 
 	{
 		.ByteStride = sizeof(IndirectCommand),
 		.NumArgumentDescs = _countof(argumentDescs),
@@ -59,7 +64,7 @@ void PipelineBase::CreateIndirectCommandFromArray(DX12Context& ctx, const std::s
 {
 	const uint32_t elementCount = static_cast<uint32_t>(commandArray.size());
 	const uint32_t stride = sizeof(IndirectCommand);
-	const uint64_t bufferSize = elementCount * stride;
+	const uint64_t bufferSize = static_cast<uint64_t>(elementCount * stride);
 	indirectCommand_.CreateDeviceOnlyBuffer(
 		ctx,
 		commandArray.data(),

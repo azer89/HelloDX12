@@ -31,7 +31,11 @@ void DX12DescriptorHeap::Create(DX12Context& ctx)
 	};
 	ctx.GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&handle_));
 
-	// Populate handles
+	SetupHandles(ctx);
+}
+
+void DX12DescriptorHeap::SetupHandles(DX12Context& ctx)
+{
 	uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	for (uint32_t i = 0; i < descriptors_.size(); ++i)
 	{

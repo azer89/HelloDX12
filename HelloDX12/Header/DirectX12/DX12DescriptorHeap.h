@@ -12,6 +12,7 @@ public:
 	void Destroy();
 	void Create(DX12Context& ctx, uint32_t descriptorCount);
 	void Create(DX12Context& ctx);
+	void SetupHandles(DX12Context& ctx);
 
 	void BindHeap(ID3D12GraphicsCommandList* commandList) const;
 	void BindDescriptorsGraphics(ID3D12GraphicsCommandList* commandList, uint32_t startRootParamIndex) const;

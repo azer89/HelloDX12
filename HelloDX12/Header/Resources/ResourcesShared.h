@@ -16,6 +16,8 @@ public:
 
 	void Init(DX12Context& ctx);
 	void Destroy() override;
+
+	void OnWindowResize(DX12Context& ctx, uint32_t width, uint32_t height) override;
 	
 	// Color attachment (MSAA)
 	[[nodiscard]] DX12Buffer* GetMultiSampledBuffer() { return &(multiSampledImage_.buffer_); }
@@ -36,6 +38,8 @@ public:
 	[[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetDSVHandle() const { return dsvHandle_; }
 
 private:
+	void CreateDescriptorHeaps(DX12Context& ctx);
+
 	// Render target
 	void GrabSwapchain(DX12Context& ctx);
 	void CreateSingleSampledRTV(DX12Context& ctx);
