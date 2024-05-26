@@ -4,6 +4,7 @@
 #include "DX12Context.h"
 #include "PipelineBase.h"
 #include "ResourcesShared.h"
+#include "Timer.h"
 
 class PipelineImGui final : public PipelineBase
 {
@@ -22,6 +23,8 @@ public:
 	void ImGuiSetWindow(const char* title, int width, int height, float fontSize = 1.0f);
 	void ImGuiEnd();
 	void ImGuiDrawEmpty();
+
+	void ImGuiShowFrameData(Timer* timer);
 
 private:
 	ResourcesShared* resourcesShared_ = nullptr;

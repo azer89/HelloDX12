@@ -89,3 +89,19 @@ void PipelineImGui::ImGuiDrawEmpty()
 	ImGui::NewFrame();
 	ImGui::Render();
 }
+
+void PipelineImGui::ImGuiShowFrameData(Timer* timer)
+{
+	ImVec2 wSize = ImGui::GetWindowSize();
+
+	ImGui::Text("FPS: %.0f", timer->GetFPSDelayed());
+	ImGui::Text("Delta: %.0f ms", timer->GetDeltaDelayed());
+	ImGui::PlotLines("",
+		timer->GetGraph(),
+		timer->GetGraphLength(),
+		0,
+		nullptr,
+		FLT_MAX,
+		FLT_MAX,
+		ImVec2(static_cast<float>(wSize.x - 15), 50));
+}
