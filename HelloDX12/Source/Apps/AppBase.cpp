@@ -21,6 +21,7 @@ AppBase::AppBase() :
 	title_(Utility::WStringConvert(AppConfig::ScreenTitle))
 {
 	ConsoleShow();
+	timer_.Init();
 }
 
 AppBase::~AppBase()
@@ -102,6 +103,8 @@ void AppBase::OnMouseLeftRelease()
 
 void AppBase::OnKeyboardInput()
 {
+	std::cout << timer_.GetDelta() << '\n';
+
 	// TODO
 	float fpsTemp = 0.01f;
 
@@ -125,6 +128,11 @@ void AppBase::ConsoleShow()
 			std::cerr << "Cannot open stderr\n";
 		}
 	}
+}
+
+void AppBase::OnUpdateInternal()
+{
+	timer_.Update();
 }
 
 void AppBase::BeginRender()
