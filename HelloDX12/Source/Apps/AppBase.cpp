@@ -145,7 +145,7 @@ void AppBase::EndRender()
 
 		for (auto& pip : pipelines_)
 		{
-			pip->SetUpViewportAndScissor(context_);
+			pip->SetupViewportAndScissor(context_);
 			pip->OnWindowResize(context_, targetWindowWidth_, targetWindowHeight_);
 		}
 

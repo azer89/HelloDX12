@@ -23,7 +23,7 @@ public:
 	{
 	}
 
-	void SetUpViewportAndScissor(DX12Context& ctx);
+	void SetupViewportAndScissor(DX12Context& ctx);
 
 protected:
 	void CreateCommandSignature(DX12Context& ctx);
