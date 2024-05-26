@@ -74,6 +74,8 @@ private:
 protected:
 	uint32_t windowWidth_ = 0;
 	uint32_t windowHeight_ = 0;
+	uint32_t targetWindowWidth_ = 0;
+	uint32_t targetWindowHeight_ = 0;
 	bool windowResize_ = false;
 
 	float windowAspectRatio_ = 0;

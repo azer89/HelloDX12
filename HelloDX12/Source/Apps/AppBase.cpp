@@ -46,10 +46,9 @@ void AppBase::OnWindowResize(uint32_t width, uint32_t height)
 		return;
 	}
 
-	// TODO Add targetWindowWidth_ and targetWindowHeight_
 	windowResize_ = true;
-	windowWidth_ = width;
-	windowHeight_ = height;
+	targetWindowWidth_ = width;
+	targetWindowHeight_ = height;
 }
 
 // Helper function for parsing any supplied command line args.
@@ -136,21 +135,22 @@ void AppBase::EndRender()
 	if (windowResize_)
 	{
 		context_.WaitForAllFrames();
-		context_.ResizeSwapchain(windowWidth_, windowHeight_);
-
-		camera_->SetScreenSize(windowWidth_, windowHeight_);
+		context_.ResizeSwapchain(targetWindowWidth_, targetWindowHeight_);
+		camera_->SetScreenSize(targetWindowWidth_, targetWindowHeight_);
 
 		for (auto& res : resources_)
 		{
-			res->OnWindowResize(context_, windowWidth_, windowHeight_);
+			res->OnWindowResize(context_, targetWindowWidth_, targetWindowHeight_);
 		}
 
 		for (auto& pip : pipelines_)
 		{
 			pip->SetUpViewportAndScissor(context_);
-			pip->OnWindowResize(context_, windowWidth_, windowHeight_);
+			pip->OnWindowResize(context_, targetWindowWidth_, targetWindowHeight_);
 		}
 
+		windowWidth_ = targetWindowWidth_;
+		windowHeight_ = targetWindowHeight_;
 		windowResize_ = false;
 	}
 	else

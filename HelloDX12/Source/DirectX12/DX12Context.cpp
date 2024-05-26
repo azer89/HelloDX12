@@ -131,7 +131,6 @@ void DX12Context::CreateSwapchain(IDXGIFactory4* factory, uint32_t swapchainWidt
 		&tempSwapchain
 	));
 
-	//ThrowIfFailed(swapChain.As(&swapchain_));
 	ThrowIfFailed(tempSwapchain->QueryInterface(IID_PPV_ARGS(&swapchain_)));
 	
 	frameIndex_ = swapchain_->GetCurrentBackBufferIndex();
@@ -145,8 +144,6 @@ void DX12Context::ResizeSwapchain(uint32_t swapchainWidth, uint32_t swapchainHei
 {
 	swapchainWidth_ = swapchainWidth;
 	swapchainHeight_ = swapchainHeight;
-
-	std::cout << "swapchain " << swapchainWidth_ << ", " << swapchainHeight_ << "\n";
 
 	ReleaseSwapchainResources();
 
