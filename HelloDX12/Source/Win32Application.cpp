@@ -138,6 +138,7 @@ LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wP
 	case WM_PAINT:
 		if (app)
 		{
+			app->OnUpdateInternal();
 			app->OnUpdate();
 			app->OnRender();
 		}

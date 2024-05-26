@@ -50,6 +50,7 @@
     <ClInclude Include="Header\Scene\ShapeGenerator.h" />
     <ClInclude Include="Header\Scene\TextureMapper.h" />
     <ClInclude Include="Header\Scene\VertexData.h" />
+    <ClInclude Include="Header\Timer.h" />
     <ClInclude Include="Header\UIData.h" />
     <ClInclude Include="Header\Utility.h" />
     <ClInclude Include="Header\Win32Application.h" />
@@ -82,6 +83,7 @@
     <ClCompile Include="Source\Scene\Model.cpp" />
     <ClCompile Include="Source\Scene\Scene.cpp" />
     <ClCompile Include="Source\Scene\ShapeGenerator.cpp" />
+    <ClCompile Include="Source\Timer.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Win32Application.cpp" />

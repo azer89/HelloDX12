@@ -165,6 +165,9 @@
     <ClInclude Include="Header\Pipelines\PipelineImGui.h">
       <Filter>Header\Pipelines</Filter>
     </ClInclude>
+    <ClInclude Include="Header\Timer.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -256,6 +259,9 @@
     </ClCompile>
     <ClCompile Include="Source\Pipelines\PipelineImGui.cpp">
       <Filter>Source\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Timer.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

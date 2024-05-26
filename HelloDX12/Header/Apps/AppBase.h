@@ -5,6 +5,7 @@
 #include "Win32Application.h"
 #include "PipelineBase.h"
 #include "ResourcesBase.h"
+#include "Timer.h"
 #include "Camera.h"
 #include "UIData.h"
 
@@ -24,6 +25,7 @@ public:
 	virtual void OnRender() = 0;
 	virtual void OnDestroy() = 0;
 
+	void OnUpdateInternal();
 	void BeginRender();
 	void EndRender();
 
@@ -81,6 +83,7 @@ protected:
 	float windowAspectRatio_ = 0;
 
 	UIData uiData_ = {};
+	Timer timer_;
 
 	std::unique_ptr<Camera> camera_ = nullptr;
 	std::vector<std::unique_ptr<PipelineBase>> pipelines_ = {};

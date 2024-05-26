@@ -21,6 +21,7 @@ AppBase::AppBase() :
 	title_(Utility::WStringConvert(AppConfig::ScreenTitle))
 {
 	ConsoleShow();
+	timer_.Init();
 }
 
 AppBase::~AppBase()
@@ -102,13 +103,12 @@ void AppBase::OnMouseLeftRelease()
 
 void AppBase::OnKeyboardInput()
 {
-	// TODO
-	float fpsTemp = 0.01f;
+	float delta = timer_.GetDelta();
 
-	if (GetAsyncKeyState('W') & 0x8000) { camera_->ProcessKeyboard(CameraMovement::Forward, fpsTemp); }
-	if (GetAsyncKeyState('S') & 0x8000) { camera_->ProcessKeyboard(CameraMovement::Backward, fpsTemp); }
-	if (GetAsyncKeyState('A') & 0x8000) { camera_->ProcessKeyboard(CameraMovement::Left, fpsTemp); }
-	if (GetAsyncKeyState('D') & 0x8000) { camera_->ProcessKeyboard(CameraMovement::Right, fpsTemp); }
+	if (GetAsyncKeyState('W') & 0x8000) { camera_->ProcessKeyboard(CameraMovement::Forward, delta); }
+	if (GetAsyncKeyState('S') & 0x8000) { camera_->ProcessKeyboard(CameraMovement::Backward, delta); }
+	if (GetAsyncKeyState('A') & 0x8000) { camera_->ProcessKeyboard(CameraMovement::Left, delta); }
+	if (GetAsyncKeyState('D') & 0x8000) { camera_->ProcessKeyboard(CameraMovement::Right, delta); }
 }
 
 void AppBase::ConsoleShow()
@@ -125,6 +125,11 @@ void AppBase::ConsoleShow()
 			std::cerr << "Cannot open stderr\n";
 		}
 	}
+}
+
+void AppBase::OnUpdateInternal()
+{
+	timer_.Update();
 }
 
 void AppBase::BeginRender()
