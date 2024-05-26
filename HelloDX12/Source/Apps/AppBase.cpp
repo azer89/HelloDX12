@@ -16,9 +16,9 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 AppBase::AppBase() :
 	windowWidth_(AppConfig::InitialScreenWidth),
 	windowHeight_(AppConfig::InitialScreenHeight),
-	title_(Utility::WStringConvert(AppConfig::ScreenTitle)),
 	windowAspectRatio_(static_cast<float>(AppConfig::InitialScreenWidth) / static_cast<float>(AppConfig::InitialScreenHeight)),
-	camera_(std::make_unique<Camera>(glm::vec3(0.0f)))
+	camera_(std::make_unique<Camera>(glm::vec3(0.0f))),
+	title_(Utility::WStringConvert(AppConfig::ScreenTitle))
 {
 	ConsoleShow();
 }
@@ -116,8 +116,14 @@ void AppBase::ConsoleShow()
 	if (AllocConsole())
 	{
 		FILE* fp;
-		freopen_s(&fp, "CONOUT$", "w", stdout);
-		freopen_s(&fp, "CONOUT$", "w", stderr);
+		if(freopen_s(&fp, "CONOUT$", "w", stdout) != 0)
+		{
+			std::cerr << "Cannot open stdout\n";
+		}
+		if (freopen_s(&fp, "CONOUT$", "w", stderr) != 0)
+		{
+			std::cerr << "Cannot open stderr\n";
+		}
 	}
 }
 
@@ -136,7 +142,7 @@ void AppBase::EndRender()
 	{
 		context_.WaitForAllFrames();
 		context_.ResizeSwapchain(targetWindowWidth_, targetWindowHeight_);
-		camera_->SetScreenSize(targetWindowWidth_, targetWindowHeight_);
+		camera_->SetScreenSize(static_cast<float>(targetWindowWidth_), static_cast<float>(targetWindowHeight_));
 
 		for (auto& res : resources_)
 		{

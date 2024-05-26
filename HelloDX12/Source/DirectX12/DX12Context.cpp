@@ -80,7 +80,7 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 
 	// Memory allocator
 	{
-		D3D12MA::ALLOCATOR_DESC desc = {
+		const D3D12MA::ALLOCATOR_DESC desc = {
 			.pDevice = device_.Get(),
 			.pAdapter = adapter_.Get(),
 		};

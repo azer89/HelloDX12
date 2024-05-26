@@ -19,9 +19,7 @@ public:
 	virtual void Update(DX12Context& ctx) = 0;
 	virtual void PopulateCommandList(DX12Context& ctx) = 0;
 
-	virtual void OnWindowResize(DX12Context& ctx, uint32_t width, uint32_t height)
-	{
-	}
+	virtual void OnWindowResize(DX12Context& ctx, uint32_t width, uint32_t height) {}
 
 	void SetupViewportAndScissor(DX12Context& ctx);
 

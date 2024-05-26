@@ -9,9 +9,7 @@ public:
 	explicit ResourcesBase() = default;
 	virtual ~ResourcesBase() = default;
 
-	virtual void OnWindowResize(DX12Context& ctx, uint32_t width, uint32_t height)
-	{
-	}
+	virtual void OnWindowResize(DX12Context& ctx, uint32_t width, uint32_t height) {}
 
 public:
 	virtual void Destroy() = 0;
