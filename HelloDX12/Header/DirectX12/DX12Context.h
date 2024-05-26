@@ -47,6 +47,7 @@ public:
 	void CreateFence();
 	void WaitForGPU();
 	void MoveToNextFrame();
+	void WaitForAllFrames();
 	void PresentSwapchain() const;
 	
 	void ResetCommandList() const;
@@ -67,6 +68,9 @@ private:
 		bool requestHighPerformanceAdapter = false);
 
 	void CreateDXC();
+
+	void ObtainSwapchainResources();
+	void ReleaseSwapchainResources();
 
 private:
 	uint32_t swapchainWidth_ = 0;

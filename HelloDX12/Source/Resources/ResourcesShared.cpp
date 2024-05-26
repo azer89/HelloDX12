@@ -47,8 +47,12 @@ void ResourcesShared::Init(DX12Context& ctx)
 	CreateDSV(ctx);
 }
 
-void ResourcesShared::OnWindowResize(uint32_t width, uint32_t height)
+void ResourcesShared::OnWindowResize(DX12Context& ctx, uint32_t width, uint32_t height)
 {
+	GrabSwapchain(ctx);
+	CreateSingleSampledRTV(ctx);
+	CreateMultiSampledRTV(ctx);
+	CreateDSV(ctx);
 }
 
 void ResourcesShared::CreateDescriptorHeaps(DX12Context& ctx)

@@ -3,8 +3,7 @@
 
 PipelineBase::PipelineBase(DX12Context& ctx)
 {
-	viewport_ = ctx.GetViewport();
-	scissor_ = ctx.GetScissor();
+	SetUpViewportAndScissor(ctx);
 }
 
 PipelineBase::~PipelineBase()
@@ -21,6 +20,12 @@ void PipelineBase::Destroy()
 	indirectCommand_.Destroy();
 	if (pipelineState_) { pipelineState_->Release(); }
 	if (commandSignature_) { commandSignature_->Release(); }
+}
+
+void PipelineBase::SetUpViewportAndScissor(DX12Context& ctx)
+{
+	viewport_ = ctx.GetViewport();
+	scissor_ = ctx.GetScissor();
 }
 
 void PipelineBase::CreateCommandSignature(DX12Context& ctx)

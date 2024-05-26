@@ -23,6 +23,8 @@ public:
 	{
 	}
 
+	void SetUpViewportAndScissor(DX12Context& ctx);
+
 protected:
 	void CreateCommandSignature(DX12Context& ctx);
 	void CreateIndirectCommandFromArray(DX12Context& ctx, const std::span<IndirectCommand> commandArray);

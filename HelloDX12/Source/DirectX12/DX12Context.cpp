@@ -4,6 +4,7 @@
 #include "Configs.h"
 
 #include <iostream>
+#include <sstream>
 
 using Microsoft::WRL::ComPtr;
 
@@ -135,38 +136,53 @@ void DX12Context::CreateSwapchain(IDXGIFactory4* factory, uint32_t swapchainWidt
 	
 	frameIndex_ = swapchain_->GetCurrentBackBufferIndex();
 
-	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
-	{
-		ThrowIfFailed(swapchain_->GetBuffer(i, IID_PPV_ARGS(&swapchainResources_[i])));
-	}
+	ObtainSwapchainResources();
 
 	tempSwapchain->Release();
 }
 
 void DX12Context::ResizeSwapchain(uint32_t swapchainWidth, uint32_t swapchainHeight)
 {
-	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
-	{
-		swapchainResources_[i]->Release();
-	}
+	swapchainWidth_ = swapchainWidth;
+	swapchainHeight_ = swapchainHeight;
+
+	std::cout << "swapchain " << swapchainWidth_ << ", " << swapchainHeight_ << "\n";
+
+	ReleaseSwapchainResources();
 
 	ThrowIfFailed(swapchain_->ResizeBuffers(
 		AppConfig::FrameCount,
-		swapchainWidth,
-		swapchainHeight,
+		swapchainWidth_,
+		swapchainHeight_,
 		swapchainFormat_,
 		DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH |
 		DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING |
 		DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT));
 
+	ObtainSwapchainResources();
+}
+
+void DX12Context::ObtainSwapchainResources()
+{
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
 		ThrowIfFailed(swapchain_->GetBuffer(i, IID_PPV_ARGS(&swapchainResources_[i])));
+		std::wostringstream wss;
+		wss << L"Swapchain_Buffer_" << i;
+		swapchainResources_[i]->SetName(wss.str().c_str());
 	}
-
-	std::cout << "resize swapchain\n";
 }
 
+void DX12Context::ReleaseSwapchainResources()
+{
+	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
+	{
+		swapchainResources_[i]->Release();
+		swapchainResources_[i] = nullptr;
+	}
+}
+
+// TODO Rename to InitDXC
 void DX12Context::CreateDXC()
 {
 	ThrowIfFailed(DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils_)));
@@ -214,7 +230,7 @@ void DX12Context::WaitForGPU()
 
 	// Wait until the fence has been processed.
 	ThrowIfFailed(fence_->SetEventOnCompletion(fenceValues_[frameIndex_], fenceCompletionEvent_));
-	WaitForSingleObjectEx(fenceCompletionEvent_, INFINITE, FALSE);
+	WaitForSingleObject(fenceCompletionEvent_, INFINITE);
 
 	// Increment the fence value for the current frame.
 	fenceValues_[frameIndex_]++;
@@ -243,6 +259,27 @@ void DX12Context::MoveToNextFrame()
 
 	// Set the fence value for the next frame.
 	fenceValues_[frameIndex_] = currentFenceValue + 1;
+}
+
+void DX12Context::WaitForAllFrames()
+{
+	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
+	{
+		const uint64_t currentFenceValue = fenceValues_[i];
+		ThrowIfFailed(commandQueue_->Signal(fence_.Get(), currentFenceValue));
+
+		// If the next frame is not ready to be rendered yet, wait until it is ready.
+		if (fence_->GetCompletedValue() < fenceValues_[i])
+		{
+			ThrowIfFailed(fence_->SetEventOnCompletion(fenceValues_[i], fenceCompletionEvent_));
+			WaitForSingleObject(fenceCompletionEvent_, INFINITE);
+		}
+
+		// Set the fence value for the next frame.
+		fenceValues_[i] = currentFenceValue + 1;
+	}
+
+	frameIndex_ = 0;
 }
 
 void DX12Context::ResetCommandAllocator() const

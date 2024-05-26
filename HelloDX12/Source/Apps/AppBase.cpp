@@ -46,8 +46,10 @@ void AppBase::OnWindowResize(uint32_t width, uint32_t height)
 		return;
 	}
 
+	// TODO Add targetWindowWidth_ and targetWindowHeight_
 	windowResize_ = true;
-	std::cout << "window resize " << width << ", " << height << "\n";
+	windowWidth_ = width;
+	windowHeight_ = height;
 }
 
 // Helper function for parsing any supplied command line args.
@@ -130,11 +132,29 @@ void AppBase::EndRender()
 {
 	context_.SubmitCommandList();
 	context_.PresentSwapchain();
-	context_.MoveToNextFrame();
-
+	
 	if (windowResize_)
 	{
+		context_.WaitForAllFrames();
 		context_.ResizeSwapchain(windowWidth_, windowHeight_);
+
+		camera_->SetScreenSize(windowWidth_, windowHeight_);
+
+		for (auto& res : resources_)
+		{
+			res->OnWindowResize(context_, windowWidth_, windowHeight_);
+		}
+
+		for (auto& pip : pipelines_)
+		{
+			pip->SetUpViewportAndScissor(context_);
+			pip->OnWindowResize(context_, windowWidth_, windowHeight_);
+		}
+
 		windowResize_ = false;
+	}
+	else
+	{
+		context_.MoveToNextFrame();
 	}
 }
