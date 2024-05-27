@@ -18,7 +18,7 @@ PipelineSimple::PipelineSimple(
 	resourcesLights_(resourcesLights)
 {
 	CreateIndirectCommand(ctx);
-	CreateConstantBuffer(ctx);
+	CreateConstantBuffers(ctx);
 	CreateShaders(ctx);
 	CreateDescriptors(ctx);
 	CreateCommandSignature(ctx);
@@ -36,6 +36,12 @@ void PipelineSimple::Destroy()
 	{
 		buff.Destroy();
 	}
+
+	for (auto& buff : constBuffPBR_)
+	{
+		buff.Destroy();
+	}
+
 	for (auto& heap : descriptorHeaps_)
 	{
 		heap.Destroy();
@@ -64,11 +70,16 @@ void PipelineSimple::CreateIndirectCommand(DX12Context& ctx)
 	CreateIndirectCommandFromArray(ctx, commandArray);
 }
 
-void PipelineSimple::CreateConstantBuffer(DX12Context& ctx)
+void PipelineSimple::CreateConstantBuffers(DX12Context& ctx)
 {
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
 		constBuffCamera_[i].CreateConstantBuffer(ctx, sizeof(CCamera));
+	}
+
+	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
+	{
+		constBuffPBR_[i].CreateConstantBuffer(ctx, sizeof(CPBR));
 	}
 }
 
@@ -89,6 +100,13 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
 			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
 			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_VERTEX,
+			.buffer_ = nullptr
+		},
+		{ // b3
+
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
 			.buffer_ = nullptr
 		},
 		{ // t0
@@ -131,6 +149,9 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 
 		descriptors[1].buffer_ = &(scene_->modelConstBuffs_[i]);
 		descriptors[1].cbvDescription_ = scene_->modelConstBuffs_[i].GetCBVDescription();
+
+		descriptors[2].buffer_ = &(constBuffPBR_[i]);
+		descriptors[2].cbvDescription_ = constBuffPBR_[i].GetCBVDescription();
 
 		descriptorHeaps_[i].descriptors_ = descriptors;
 		descriptorHeaps_[i].descriptorArray_ = descriptorArray;
@@ -181,11 +202,19 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 
 void PipelineSimple::Update(DX12Context& ctx, UIData& uiData)
 {
+	uint32_t frameIndex = ctx.GetFrameIndex();
+
 	// TODO find a way without transpose
-	CCamera* ptr = constBuffCamera_[ctx.GetFrameIndex()].As<CCamera>();
-	ptr->viewMatrix = glm::transpose(camera_->GetViewMatrix());
-	ptr->projectionMatrix = glm::transpose(camera_->GetProjectionMatrix());
-	ptr->cameraPosition = camera_->Position();
+	CCamera* pCamera = constBuffCamera_[frameIndex].As<CCamera>();
+	pCamera->viewMatrix = glm::transpose(camera_->GetViewMatrix());
+	pCamera->projectionMatrix = glm::transpose(camera_->GetProjectionMatrix());
+	pCamera->cameraPosition = camera_->Position();
+
+	CPBR* pPBR = constBuffPBR_[frameIndex].As<CPBR>();
+	pPBR->albedoMultipler = uiData.constBufferPBR_.albedoMultipler;
+	pPBR->baseReflectivity = uiData.constBufferPBR_.baseReflectivity;
+	pPBR->lightFalloff = uiData.constBufferPBR_.lightFalloff;
+	pPBR->lightIntensity = uiData.constBufferPBR_.lightIntensity;
 }
 
 void PipelineSimple::PopulateCommandList(DX12Context& ctx)

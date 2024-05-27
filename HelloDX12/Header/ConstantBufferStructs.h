@@ -3,6 +3,7 @@
 
 #include "glm/glm.hpp"
 
+// Rename to CBCamera
 struct CCamera
 {
 	glm::mat4 viewMatrix;
@@ -10,6 +11,7 @@ struct CCamera
 	glm::vec3 cameraPosition;
 };
 
+// Rename to CBPBR
 struct CPBR
 {
 	float lightIntensity;

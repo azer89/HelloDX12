@@ -38,7 +38,7 @@ public:
 
 private:
 	void CreateIndirectCommand(DX12Context& ctx);
-	void CreateConstantBuffer(DX12Context& ctx);
+	void CreateConstantBuffers(DX12Context& ctx);
 	void CreateDescriptors(DX12Context& ctx);
 	void CreateShaders(DX12Context& ctx);
 	void CreateGraphicsPipeline(DX12Context& ctx);
