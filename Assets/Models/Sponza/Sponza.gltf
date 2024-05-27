@@ -540,7 +540,7 @@
 		},
 		{
 			"mesh":25,
-			"name":"Floor_Specular",
+			"name":"Floor",
 			"rotation":[
 				0,
 				0.7071066498756409,
@@ -1417,7 +1417,7 @@
 			]
 		},
 		{
-			"name":"Floor_Specular",
+			"name":"Floor",
 			"primitives":[
 				{
 					"attributes":{
