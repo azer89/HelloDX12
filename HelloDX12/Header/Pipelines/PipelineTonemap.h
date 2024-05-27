@@ -14,7 +14,7 @@ public:
 	~PipelineTonemap();
 	void Destroy();
 
-	void Update(DX12Context& ctx) override {}
+	void Update(DX12Context& ctx, UIData& uiData) override {}
 	void PopulateCommandList(DX12Context& ctx) override;
 
 	void OnWindowResize(DX12Context& ctx, uint32_t width, uint32_t height) override

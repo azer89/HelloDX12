@@ -20,7 +20,7 @@ public:
 		DX12Image* cubemapImage,
 		const D3D12_UNORDERED_ACCESS_VIEW_DESC& cubemapUAVDesc);
 
-	void Update(DX12Context& ctx) override {};
+	void Update(DX12Context& ctx, UIData& uiData) override {};
 	void PopulateCommandList(DX12Context& ctx) override {};
 
 private:

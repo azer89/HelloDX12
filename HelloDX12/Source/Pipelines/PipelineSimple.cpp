@@ -1,7 +1,7 @@
 #include "PipelineSimple.h"
 #include "DX12Exception.h"
 
-#include "ConstantDefinitions.h"
+#include "ConstantBufferStructs.h"
 
 constexpr uint32_t ROOT_CONSTANT_COUNT = 1;
 
@@ -179,7 +179,7 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 	ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)));
 }
 
-void PipelineSimple::Update(DX12Context& ctx)
+void PipelineSimple::Update(DX12Context& ctx, UIData& uiData)
 {
 	// TODO find a way without transpose
 	CCamera* ptr = constBuffCamera_[ctx.GetFrameIndex()].As<CCamera>();

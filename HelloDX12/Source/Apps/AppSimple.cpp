@@ -67,7 +67,7 @@ void AppSimple::OnUpdate()
 
 	for (auto& pip : pipelines_)
 	{
-		pip->Update(context_);
+		pip->Update(context_, uiData_);
 	}
 }
 

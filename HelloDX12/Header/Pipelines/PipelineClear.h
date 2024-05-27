@@ -13,7 +13,7 @@ public:
 		ResourcesShared* resourcesShared);
 	~PipelineClear() = default;
 
-	void Update(DX12Context& ctx) override {}
+	void Update(DX12Context& ctx, UIData& uiData) override {}
 	void PopulateCommandList(DX12Context& ctx) override;
 
 private:

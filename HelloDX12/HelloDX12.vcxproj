@@ -17,7 +17,7 @@
     <ClInclude Include="Header\Apps\AppSimple.h" />
     <ClInclude Include="Header\Camera.h" />
     <ClInclude Include="Header\Configs.h" />
-    <ClInclude Include="Header\ConstantDefinitions.h" />
+    <ClInclude Include="Header\ConstantBufferStructs.h" />
     <ClInclude Include="Header\DirectX12\DX12Buffer.h" />
     <ClInclude Include="Header\DirectX12\DX12Context.h" />
     <ClInclude Include="Header\DirectX12\DX12Descriptor.h" />

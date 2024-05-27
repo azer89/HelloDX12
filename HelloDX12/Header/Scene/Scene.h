@@ -3,7 +3,7 @@
 
 #include "Model.h"
 #include "Configs.h"
-#include "ConstantDefinitions.h"
+#include "ConstantBufferStructs.h"
 #include "ScenePODs.h"
 #include "DX12Descriptor.h"
 #include "DX12Buffer.h"
