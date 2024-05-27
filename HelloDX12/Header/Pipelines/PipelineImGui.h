@@ -22,8 +22,8 @@ public:
 	void ImGuiStart();
 	void ImGuiSetWindow(const char* title, int width, int height, float fontSize = 1.0f);
 	void ImGuiEnd();
-	void ImGuiDrawEmpty();
 
+	void ImGuiDrawEmpty();
 	void ImGuiShowFrameData(Timer* timer);
 	void ImGuiShowPBRConfig(CPBR* constBuffPBR);
 

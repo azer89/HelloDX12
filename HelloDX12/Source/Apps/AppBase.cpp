@@ -109,6 +109,7 @@ void AppBase::OnKeyboardInput()
 	if (GetAsyncKeyState('S') & 0x8000) { camera_->ProcessKeyboard(CameraMovement::Backward, delta); }
 	if (GetAsyncKeyState('A') & 0x8000) { camera_->ProcessKeyboard(CameraMovement::Left, delta); }
 	if (GetAsyncKeyState('D') & 0x8000) { camera_->ProcessKeyboard(CameraMovement::Right, delta); }
+	if (GetAsyncKeyState('I') & 0x8000) { uiData_.imguiShow_ = !uiData_.imguiShow_; }
 }
 
 void AppBase::ConsoleShow()

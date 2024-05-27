@@ -6,6 +6,8 @@
 struct UIData
 {
 public:
+	bool imguiShow_ = true;
+
 	// Mouse-related
 	bool mouseFirstUse_ = true;
 	bool mouseLeftPressed_ = false; // Left button pressed
