@@ -110,6 +110,8 @@ float4 PSMain(PSInput input) : SV_TARGET
             roughness,
             alphaRoughness,
             NoV,
+            cPBR.lightIntensity,
+            cPBR.lightFalloff,
             light);
     }
     

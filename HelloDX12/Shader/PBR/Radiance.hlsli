@@ -1,7 +1,4 @@
 
-static const float LIGHT_INTENSITY = 1.75;
-static const float LIGHT_FALLOFF = 0.1;
-
 // Non-clustered version
 float3 Radiance(
 	float3 albedo,
@@ -13,6 +10,8 @@ float3 Radiance(
 	float roughness,
 	float alphaRoughness,
 	float NoV,
+    float lightIntensity,
+    float lightFalloff,
 	LightData light)
 {
     float3 Lo = float3(0.0, 0.0, 0.0);
@@ -23,14 +22,11 @@ float3 Radiance(
 	float NoL = max(dot(N, L), 0.0);
 	float HoV = max(dot(H, V), 0.0);
     float distance = length(light.position.xyz - worldPosition);
-
-	// Physically correct attenuation
-	//float attenuation = 1.0 / (distance * distance);
-
+    
 	// Hacky attenuation
-    float attenuation = 1.0 / pow(distance, LIGHT_FALLOFF);
+    float attenuation = 1.0 / pow(distance, lightFalloff);
 
-    float3 radiance = light.color.xyz * attenuation * LIGHT_INTENSITY;
+    float3 radiance = light.color.xyz * attenuation * lightIntensity;
 
 	// Cook-Torrance BRDF
 	float D = DistributionGGX(NoH, roughness);
