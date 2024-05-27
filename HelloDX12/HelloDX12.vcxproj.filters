@@ -310,5 +310,8 @@
     <None Include="Shader\PBR\PBR.hlsl">
       <Filter>Shader\PBR</Filter>
     </None>
+    <None Include="Shader\PBR\CPBR.hlsli">
+      <Filter>Shader\PBR</Filter>
+    </None>
   </ItemGroup>
 </Project>

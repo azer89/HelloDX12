@@ -7,6 +7,7 @@
 #include "Header.hlsli"
 #include "NormalTBN.hlsli"
 #include "Radiance.hlsli"
+#include "CPBR.hlsli"
 
 struct VSInput
 {

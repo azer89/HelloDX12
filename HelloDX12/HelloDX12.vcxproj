@@ -96,6 +96,7 @@
       <FileType>Document</FileType>
     </None>
     <None Include="Shader\MeshData.hlsli" />
+    <None Include="Shader\PBR\CPBR.hlsli" />
     <None Include="Shader\PBR\Header.hlsli" />
     <None Include="Shader\PBR\NormalTBN.hlsli" />
     <None Include="Shader\PBR\Radiance.hlsli" />
