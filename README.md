@@ -1,5 +1,5 @@
 
-A rendering app written using C++ and DirectX 12.
+A graphics renderer developed using C++ and DirectX 12.
 
 <img width="700" alt="Sponza" src="https://github.com/azer89/HelloDX12/assets/790432/3eef4702-ca89-447f-afc9-0e2bd98b0cf9">
 
@@ -19,7 +19,7 @@ A rendering app written using C++ and DirectX 12.
 * Basic abstraction with simple resource state tracking and easier barrier insertion
 
 ### Build
-* Either use `HelloDX12/HelloDX12.sln` or run CMake
+* Run CMake
 * Set absolute paths for assets and shaders in `HelloDX12/Header/Configs.h`
 * That's it!
 
