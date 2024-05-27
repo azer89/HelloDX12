@@ -63,6 +63,7 @@ void AppSimple::OnUpdate()
 	imguiPtr_->ImGuiStart();
 	imguiPtr_->ImGuiSetWindow("Simple Renderer", 450, 750);
 	imguiPtr_->ImGuiShowFrameData(&timer_);
+	imguiPtr_->ImGuiShowPBRConfig(&(uiData_.constBufferPBR_));
 	imguiPtr_->ImGuiEnd();
 
 	for (auto& pip : pipelines_)

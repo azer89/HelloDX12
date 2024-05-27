@@ -25,6 +25,7 @@ public:
 	void ImGuiDrawEmpty();
 
 	void ImGuiShowFrameData(Timer* timer);
+	void ImGuiShowPBRConfig(CPBR* constBuffPBR);
 
 private:
 	ResourcesShared* resourcesShared_ = nullptr;
