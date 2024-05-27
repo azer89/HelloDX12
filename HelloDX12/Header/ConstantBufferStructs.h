@@ -12,11 +12,11 @@ struct CCamera
 
 struct CPBR
 {
-	float lightIntensity = 1.f;
-	float baseReflectivity = 0.04f;
-	float maxReflectionLod = 4.f;
-	float lightFalloff = 1.0f; // Small --> slower falloff, Big --> faster falloff
-	float albedoMultipler = 0.0f; // Show albedo color if the scene is too dark, default value should be zero
+	float lightIntensity;
+	float baseReflectivity;
+	//float maxReflectionLod; // TODO Implement IBL
+	float lightFalloff; // Small --> slower falloff, Big --> faster falloff
+	float albedoMultipler; // Show albedo color if the scene is too dark, default value should be zero
 };
 
 #endif

@@ -1,6 +1,8 @@
 #ifndef HELLO_DX12_USER_INPUT_DATA
 #define HELLO_DX12_USER_INPUT_DATA
 
+#include "ConstantBufferStructs.h"
+
 struct UIData
 {
 public:
@@ -16,6 +18,14 @@ public:
 	// Mouse position only when clicked
 	float mousePressX_ = 0;
 	float mousePressY_ = 0;
+
+	CPBR constBufferPBR_ =
+	{
+		.lightIntensity = 1.75f,
+		.baseReflectivity = 0.01f,
+		.lightFalloff = 0.1f,
+		.albedoMultipler = 0.1f
+	};
 };
 
 #endif
