@@ -60,14 +60,21 @@ void AppSimple::OnUpdate()
 {
 	OnKeyboardInput();
 
+	if (!uiData_.imguiShow_)
+	{
+		imguiPtr_->ImGuiDrawEmpty();
+		return;
+	}
+
 	imguiPtr_->ImGuiStart();
 	imguiPtr_->ImGuiSetWindow("Simple Renderer", 450, 750);
 	imguiPtr_->ImGuiShowFrameData(&timer_);
+	imguiPtr_->ImGuiShowPBRConfig(&(uiData_.constBufferPBR_));
 	imguiPtr_->ImGuiEnd();
 
 	for (auto& pip : pipelines_)
 	{
-		pip->Update(context_);
+		pip->Update(context_, uiData_);
 	}
 }
 

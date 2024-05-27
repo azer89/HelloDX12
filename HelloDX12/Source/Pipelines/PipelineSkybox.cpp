@@ -1,6 +1,5 @@
 #include "PipelineSkybox.h"
-
-#include "ConstantDefinitions.h"
+#include "ConstantBufferStructs.h"
 
 PipelineSkybox::PipelineSkybox(
 	DX12Context& ctx,
@@ -118,7 +117,7 @@ void PipelineSkybox::CreatePipeline(DX12Context& ctx)
 	ThrowIfFailed(ctx.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_)));
 }
 
-void PipelineSkybox::Update(DX12Context& ctx)
+void PipelineSkybox::Update(DX12Context& ctx, UIData& uiData)
 {
 	CCamera cb = {
 		.viewMatrix = glm::transpose(glm::mat4(glm::mat3(camera_->GetViewMatrix()))),

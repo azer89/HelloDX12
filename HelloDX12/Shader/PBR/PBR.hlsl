@@ -7,6 +7,7 @@
 #include "Header.hlsli"
 #include "NormalTBN.hlsli"
 #include "Radiance.hlsli"
+#include "CPBR.hlsli"
 
 struct VSInput
 {
@@ -32,6 +33,10 @@ cbuffer ConstantBuffer1 : register(b1)
 cbuffer ConstantBuffer2 : register(b2)
 {
     ModelData modelData;
+};
+cbuffer ConstantBuffer3 : register(b3)
+{
+    CPBR cPBR;
 };
 
 StructuredBuffer<VertexData> vertexDataArray : register(t0);
@@ -62,9 +67,6 @@ PSInput VSMain(VSInput input)
     return result;
 }
 
-static const float BASE_REFLECTIVITY = 0.01;
-static const float ALBEDO_MULTIPLIER = 0.1;
-
 float4 PSMain(PSInput input) : SV_TARGET
 {
     MeshData m = meshDataArray[meshIndex];
@@ -88,9 +90,9 @@ float4 PSMain(PSInput input) : SV_TARGET
     float3 N = NormalTBN(texNormalValue, input.worldPosition.xyz, input.normal, input.uv);
     float3 V = normalize(camData.cameraPosition - input.worldPosition.xyz);
     float NoV = max(dot(N, V), 0.0);
-    float3 F0 = BASE_REFLECTIVITY.xxx;
+    float3 F0 = cPBR.baseReflectivity.xxx;
     F0 = lerp(F0, albedo, metallic);
-    float3 Lo = albedo * ALBEDO_MULTIPLIER;
+    float3 Lo = albedo * cPBR.albedoMultipler;
     
     uint len;
     uint stride;
@@ -108,6 +110,8 @@ float4 PSMain(PSInput input) : SV_TARGET
             roughness,
             alphaRoughness,
             NoV,
+            cPBR.lightIntensity,
+            cPBR.lightFalloff,
             light);
     }
     

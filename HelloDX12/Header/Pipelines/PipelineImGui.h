@@ -16,15 +16,16 @@ public:
 
 	void Destroy();
 
-	void Update(DX12Context& ctx) override {}
+	void Update(DX12Context& ctx, UIData& uiData) override {}
 	void PopulateCommandList(DX12Context& ctx) override;
 
 	void ImGuiStart();
 	void ImGuiSetWindow(const char* title, int width, int height, float fontSize = 1.0f);
 	void ImGuiEnd();
-	void ImGuiDrawEmpty();
 
+	void ImGuiDrawEmpty();
 	void ImGuiShowFrameData(Timer* timer);
+	void ImGuiShowPBRConfig(CPBR* constBuffPBR);
 
 private:
 	ResourcesShared* resourcesShared_ = nullptr;

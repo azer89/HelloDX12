@@ -2,6 +2,8 @@
 #include "DX12Exception.h"
 #include "RootConstParam.h"
 
+#include <algorithm>
+
 #include <vector>
 
 PipelineMipmap::PipelineMipmap(
@@ -120,8 +122,8 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	for (uint32_t currMipLevel = 0; currMipLevel < image->mipmapCount_ - 1; ++currMipLevel)
 	{
 		// Mipmap dimensions
-		uint32_t dstWidth = max(image->width_ >> (currMipLevel + 1), 1);
-		uint32_t dstHeight = max(image->height_ >> (currMipLevel + 1), 1);
+		uint32_t dstWidth = std::max(image->width_ >> (currMipLevel + 1), 1u);
+		uint32_t dstHeight = std::max(image->height_ >> (currMipLevel + 1), 1u);
 
 		// SRV for source texture
 		srvSrcDesc.Texture2D.MostDetailedMip = currMipLevel;
@@ -155,8 +157,8 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 
 		// Dispatch the compute shader with one thread per 8x8 pixels
 		commandList->Dispatch(
-			max(dstWidth / 8, 1u),
-			max(dstHeight / 8, 1u),
+			std::max(dstWidth / 8, 1u),
+			std::max(dstHeight / 8, 1u),
 			1);
 
 		// Barrier

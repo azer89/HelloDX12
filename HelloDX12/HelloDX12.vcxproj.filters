@@ -114,7 +114,7 @@
     <ClInclude Include="Header\Resources\ResourcesLights.h">
       <Filter>Header\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Header\ConstantDefinitions.h">
+    <ClInclude Include="Header\ConstantBufferStructs.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Header\Pipelines\PipelineClear.h">
@@ -308,6 +308,9 @@
       <Filter>Shader\PBR</Filter>
     </None>
     <None Include="Shader\PBR\PBR.hlsl">
+      <Filter>Shader\PBR</Filter>
+    </None>
+    <None Include="Shader\PBR\CPBR.hlsli">
       <Filter>Shader\PBR</Filter>
     </None>
   </ItemGroup>

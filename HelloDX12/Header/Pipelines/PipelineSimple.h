@@ -23,7 +23,7 @@ public:
 		ResourcesLights* resourcesLights);
 	~PipelineSimple();
 
-	void Update(DX12Context& ctx) override;
+	void Update(DX12Context& ctx, UIData& uiData) override;
 	void PopulateCommandList(DX12Context& ctx) override;
 
 	void Destroy() override;
@@ -38,7 +38,7 @@ public:
 
 private:
 	void CreateIndirectCommand(DX12Context& ctx);
-	void CreateConstantBuffer(DX12Context& ctx);
+	void CreateConstantBuffers(DX12Context& ctx);
 	void CreateDescriptors(DX12Context& ctx);
 	void CreateShaders(DX12Context& ctx);
 	void CreateGraphicsPipeline(DX12Context& ctx);
@@ -53,6 +53,7 @@ public:
 private:
 	std::array<DX12DescriptorHeap, AppConfig::FrameCount> descriptorHeaps_ = {};
 	std::array<DX12Buffer, AppConfig::FrameCount> constBuffCamera_ = {};
+	std::array<DX12Buffer, AppConfig::FrameCount> constBuffPBR_ = {};
 };
 
 #endif

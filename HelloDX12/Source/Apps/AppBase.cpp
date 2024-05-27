@@ -64,6 +64,11 @@ void AppBase::ParseCommandLineArgs(WCHAR* argv[], int argc)
 
 void AppBase::OnKeyDown(uint8_t key)
 {
+	// learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
+	if (key == 0x49)
+	{
+		uiData_.imguiShow_ = !uiData_.imguiShow_;
+	}
 }
 
 void AppBase::OnKeyUp(uint8_t key)
