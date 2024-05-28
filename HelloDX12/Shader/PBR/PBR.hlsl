@@ -24,16 +24,20 @@ struct PSInput
 
 cbuffer RootConstants : register(b0)
 {
+    // This is equivalent to gl_DrawID or gl_BaseInstance 
     uint meshIndex;
-}
+};
+
 cbuffer ConstantBuffer1 : register(b1)
 {
     CameraData camData;
 };
+
 cbuffer ConstantBuffer2 : register(b2)
 {
     ModelData modelData;
 };
+
 cbuffer ConstantBuffer3 : register(b3)
 {
     CPBR cPBR;
