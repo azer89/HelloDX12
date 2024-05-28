@@ -95,17 +95,17 @@ private:
 public:
 	// TODO Set below as private
 
-	uint64_t bufferSize_ = 0; // TODO Set as width_
-	ID3D12Resource* resource_ = nullptr;
-	D3D12MA::Allocation* dmaAllocation_ = nullptr;
+	uint64_t bufferSize_{}; // TODO Set as width_
+	ID3D12Resource* resource_{};
+	D3D12MA::Allocation* dmaAllocation_{};
 	
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDescription_ = {};
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_ = {};
-	D3D12_INDEX_BUFFER_VIEW indexBufferView_ = {};
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDescription_{};
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
+	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
 	
-	uint64_t constantBufferSize_ = 0;
-	uint8_t* mappedData_ = nullptr;
-	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress_ = 0;
+	uint64_t constantBufferSize_{};
+	uint8_t* mappedData_{};
+	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress_{};
 
 private:
 	D3D12_RESOURCE_STATES state_ = D3D12_RESOURCE_STATE_COMMON; // TODO currently does not track mipmap levels

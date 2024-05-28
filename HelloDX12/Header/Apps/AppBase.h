@@ -74,27 +74,27 @@ private:
 	void ConsoleShow();
 
 protected:
-	uint32_t windowWidth_ = 0;
-	uint32_t windowHeight_ = 0;
-	uint32_t targetWindowWidth_ = 0;
-	uint32_t targetWindowHeight_ = 0;
+	uint32_t windowWidth_{};
+	uint32_t windowHeight_{};
+	uint32_t targetWindowWidth_{};
+	uint32_t targetWindowHeight_{};
 	bool windowResize_ = false;
 
-	float windowAspectRatio_ = 0;
+	float windowAspectRatio_{};
 
-	UIData uiData_ = {};
-	Timer timer_;
+	UIData uiData_{};
+	Timer timer_{};
 
-	std::unique_ptr<Camera> camera_ = nullptr;
-	std::vector<std::unique_ptr<PipelineBase>> pipelines_ = {};
-	std::vector<std::unique_ptr<ResourcesBase>> resources_ = {};
+	std::unique_ptr<Camera> camera_{};
+	std::vector<std::unique_ptr<PipelineBase>> pipelines_{};
+	std::vector<std::unique_ptr<ResourcesBase>> resources_{};
 
-	DX12Context context_ = {};
+	DX12Context context_{};
 
 private:
 	
 	// Window title.
-	std::wstring title_ = {};
+	std::wstring title_{};
 };
 
 #endif

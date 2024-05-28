@@ -27,7 +27,7 @@ public:
 	void AddShader(D3D12_COMPUTE_PIPELINE_STATE_DESC& psoDesc) const;
 
 private:
-	IDxcBlob* handle_ = nullptr;
+	IDxcBlob* handle_{};
 	ShaderType shaderType_ = ShaderType::Invalid;
 };
 

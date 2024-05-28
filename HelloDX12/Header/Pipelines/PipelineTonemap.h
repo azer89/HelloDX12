@@ -28,8 +28,8 @@ private:
 	void CreateShaders(DX12Context& ctx);
 
 private:
-	ResourcesShared* resourcesShared_ = nullptr;
-	DX12DescriptorHeap descriptorHeap_ = {};
+	ResourcesShared* resourcesShared_{};
+	DX12DescriptorHeap descriptorHeap_{};
 };
 
 #endif

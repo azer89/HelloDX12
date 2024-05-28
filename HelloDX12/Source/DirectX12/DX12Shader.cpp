@@ -35,7 +35,7 @@ void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderTyp
 	const LPCWSTR entryPoint = GetEntryPoint(shaderType);
 	const LPCWSTR target = GetTarget(shaderType);
 
-	IDxcIncludeHandler* pIncludeHandler = nullptr;
+	IDxcIncludeHandler* pIncludeHandler{};
 	ctx.GetDXCUtils()->CreateDefaultIncludeHandler(&pIncludeHandler);
 
 	LPCWSTR argument[] =
@@ -50,7 +50,7 @@ void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderTyp
 		//L"-Qstrip_reflect", // Strip reflection
 	};
 
-	IDxcBlobEncoding* pSource = nullptr;
+	IDxcBlobEncoding* pSource{};
 	ctx.GetDXCUtils()->LoadFile(assetPath.c_str(), nullptr, &pSource);
 	const DxcBuffer sourceBuffer =
 	{
@@ -59,7 +59,7 @@ void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderTyp
 		.Encoding = DXC_CP_ACP // Assume BOM says UTF8 or UTF16 or this is ANSI text.
 	};
 	
-	IDxcResult* pResults;
+	IDxcResult* pResults{};
 	ctx.GetDXCCompiler()->Compile(
 		&sourceBuffer,
 		argument,
@@ -68,7 +68,7 @@ void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderTyp
 		IID_PPV_ARGS(&pResults) // Compiler output status, buffer, and errors
 	);
 
-	IDxcBlobUtf8* pErrors = nullptr;
+	IDxcBlobUtf8* pErrors{};
 	pResults->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&pErrors), nullptr);
 	// Note that d3dcompiler would return null if no errors or warnings are present.
 	// IDxcCompiler3::Compile will always return an error buffer, 
@@ -85,7 +85,7 @@ void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderTyp
 		throw std::runtime_error("Shader error " + filename);
 	}
 
-	IDxcBlobUtf16* pOutputName = nullptr;
+	IDxcBlobUtf16* pOutputName{};
 	pResults->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&handle_), &pOutputName);
 	if (handle_ == nullptr)
 	{

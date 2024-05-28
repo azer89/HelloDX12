@@ -46,16 +46,16 @@ private:
 	[[nodiscard]] std::unordered_map<TextureType, uint32_t> GetTextureIndices(DX12Context& ctx, const aiMesh* mesh);
 		
 public:
-	std::string filepath_ = {};
-	std::string directory_ = {};
-	std::vector<Mesh> meshes_ = {};
+	std::string filepath_{};
+	std::string directory_{};
+	std::vector<Mesh> meshes_{};
 
-	std::vector<DX12Image> textures_ = {};
-	std::unordered_map<std::string, uint32_t> textureMap_ = {};
+	std::vector<DX12Image> textures_{};
+	std::unordered_map<std::string, uint32_t> textureMap_{};
 
 private:
-	const aiScene* scene_ = nullptr;
-	std::unique_ptr<PipelineMipmap> pipelineMipmap_ = nullptr;
+	const aiScene* scene_{};
+	std::unique_ptr<PipelineMipmap> pipelineMipmap_{};
 };
 
 #endif

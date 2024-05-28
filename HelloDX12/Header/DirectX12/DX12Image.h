@@ -32,14 +32,14 @@ public:
 	void SetName(const std::string& objectName) const;
 
 public:
-	uint32_t width_ = 0;
-	uint32_t height_ = 0;
-	uint32_t pixelSize_ = 0;
-	uint32_t mipmapCount_ = 0;
-	uint32_t layerCount_ = 0;
+	uint32_t width_{};
+	uint32_t height_{};
+	uint32_t pixelSize_{};
+	uint32_t mipmapCount_{};
+	uint32_t layerCount_{};
 	DXGI_FORMAT format_ = DXGI_FORMAT_UNKNOWN;
 
-	DX12Buffer buffer_ = {};
+	DX12Buffer buffer_{};
 };
 
 #endif

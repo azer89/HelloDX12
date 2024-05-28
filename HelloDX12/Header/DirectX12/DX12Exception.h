@@ -13,8 +13,8 @@ public:
 
 private:
 	HRESULT ErrorCode = S_OK;
-	std::wstring FunctionName;
-	std::wstring Filename;
+	std::wstring FunctionName{};
+	std::wstring Filename{};
 	int LineNumber = -1;
 };
 

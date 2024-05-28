@@ -30,15 +30,15 @@ private:
 	void CreateBindlessResources(DX12Context& ctx);
 
 public:
-	Model model_ = {};
-	std::array<ModelMatrix, AppConfig::FrameCount> modelConsts_ = {};
-	std::array<DX12Buffer, AppConfig::FrameCount> modelConstBuffs_ = {};
+	Model model_{};
+	std::array<ModelMatrix, AppConfig::FrameCount> modelConsts_{};
+	std::array<DX12Buffer, AppConfig::FrameCount> modelConstBuffs_{};
 
-	SceneData sceneData_ = {}; // Containing vertices and indices
-	std::vector<MeshData> meshDataArray_ = {};
-	DX12Buffer vertexBuffer_ = {};
-	DX12Buffer indexBuffer_ = {};
-	DX12Buffer meshDataBuffer_ = {};
+	SceneData sceneData_{}; // Containing vertices and indices
+	std::vector<MeshData> meshDataArray_{};
+	DX12Buffer vertexBuffer_{};
+	DX12Buffer indexBuffer_{};
+	DX12Buffer meshDataBuffer_{};
 };
 
 #endif

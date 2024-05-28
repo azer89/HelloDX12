@@ -33,7 +33,7 @@ void Timer::Update()
 {
 	LARGE_INTEGER largeInt;
 	Win32Call(QueryPerformanceCounter(&largeInt));
-	uint32_t currentTime = largeInt.QuadPart - startTime_;
+	uint32_t currentTime = static_cast<uint32_t>(largeInt.QuadPart - startTime_);
 	delta_ = currentTime - elapsed_;
 	deltaSecondsFloat_ = delta_ / frequencyFloat_;
 	elapsed_ = currentTime;

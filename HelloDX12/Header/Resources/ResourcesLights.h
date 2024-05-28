@@ -29,8 +29,8 @@ public:
 	ID3D12Resource* GetResource() const { return buffer_.resource_; }
 
 public:
-	std::vector<LightData> lights_ = {};
-	DX12Buffer buffer_ = {};
+	std::vector<LightData> lights_{};
+	DX12Buffer buffer_{};
 };
 
 #endif

@@ -45,15 +45,15 @@ private:
 
 public:
 	
-	Scene* scene_ = nullptr;
-	Camera* camera_ = nullptr;
-	ResourcesShared* resourcesShared_ = nullptr;
-	ResourcesLights* resourcesLights_ = nullptr;
+	Scene* scene_{};
+	Camera* camera_{};
+	ResourcesShared* resourcesShared_{};
+	ResourcesLights* resourcesLights_{};
 
 private:
-	std::array<DX12DescriptorHeap, AppConfig::FrameCount> descriptorHeaps_ = {};
-	std::array<DX12Buffer, AppConfig::FrameCount> constBuffCamera_ = {};
-	std::array<DX12Buffer, AppConfig::FrameCount> constBuffPBR_ = {};
+	std::array<DX12DescriptorHeap, AppConfig::FrameCount> descriptorHeaps_{};
+	std::array<DX12Buffer, AppConfig::FrameCount> constBuffCamera_{};
+	std::array<DX12Buffer, AppConfig::FrameCount> constBuffPBR_{};
 };
 
 #endif

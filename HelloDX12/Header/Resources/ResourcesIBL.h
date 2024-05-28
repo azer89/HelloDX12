@@ -19,9 +19,9 @@ private:
 	void CreateEnviromentCubemap(DX12Context& ctx);
 
 public:
-	DX12Image hdrImage_ = {};
+	DX12Image hdrImage_{};
 
-	DX12Image environmentCubemap_ = {};
+	DX12Image environmentCubemap_{};
 	D3D12_UNORDERED_ACCESS_VIEW_DESC envCubemapUAVDesc_;
 
 };

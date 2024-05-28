@@ -22,12 +22,12 @@ public:
 	void OnDestroy() override;
 
 private:
-	std::unique_ptr<Scene> scene_ = nullptr;
-	PipelineSimple* pipSimple_ = nullptr;
-	PipelineImGui* imguiPtr_ = nullptr;
-	ResourcesShared* resourcesShared_ = nullptr;
-	ResourcesLights* resourcesLights_ = nullptr;
-	ResourcesIBL* resourcesIBL = nullptr;
+	std::unique_ptr<Scene> scene_{};
+	PipelineSimple* pipSimple_{};
+	PipelineImGui* imguiPtr_{};
+	ResourcesShared* resourcesShared_{};
+	ResourcesLights* resourcesLights_{};
+	ResourcesIBL* resourcesIBL{};
 };
 
 #endif

@@ -19,9 +19,9 @@ public:
 	void BindDescriptorsCompute(ID3D12GraphicsCommandList* commandList, uint32_t startRootParamIndex) const;
 
 public:
-	ID3D12DescriptorHeap* handle_ = nullptr;
-	std::vector<DX12Descriptor> descriptors_ = {};
-	DX12DescriptorArray descriptorArray_ = {};
+	ID3D12DescriptorHeap* handle_{};
+	std::vector<DX12Descriptor> descriptors_{};
+	DX12DescriptorArray descriptorArray_{};
 };
 
 #endif

@@ -28,10 +28,10 @@ struct DX12DescriptorArray
 public:
 	D3D12_DESCRIPTOR_RANGE_FLAGS rangeFlags_;
 	D3D12_SHADER_VISIBILITY shaderVisibility_;
-	std::vector<DX12Buffer*> buffers_ = {};
-	std::vector<D3D12_SHADER_RESOURCE_VIEW_DESC> srvDescriptions_ = {};
-	std::vector<CD3DX12_CPU_DESCRIPTOR_HANDLE> cpuHandles_ = {};
-	std::vector<CD3DX12_GPU_DESCRIPTOR_HANDLE> gpuHandles_ = {};
+	std::vector<DX12Buffer*> buffers_{};
+	std::vector<D3D12_SHADER_RESOURCE_VIEW_DESC> srvDescriptions_{};
+	std::vector<CD3DX12_CPU_DESCRIPTOR_HANDLE> cpuHandles_{};
+	std::vector<CD3DX12_GPU_DESCRIPTOR_HANDLE> gpuHandles_{};
 
 	bool HasBuffers() const
 	{

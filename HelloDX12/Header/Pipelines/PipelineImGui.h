@@ -28,10 +28,10 @@ public:
 	void ImGuiShowPBRConfig(CPBR* constBuffPBR);
 
 private:
-	ResourcesShared* resourcesShared_ = nullptr;
+	ResourcesShared* resourcesShared_{};
 
 	// TODO Use DX12DescriptorHeap
-	ID3D12DescriptorHeap* descriptorHeap_ = nullptr;
+	ID3D12DescriptorHeap* descriptorHeap_{};
 };
 
 #endif

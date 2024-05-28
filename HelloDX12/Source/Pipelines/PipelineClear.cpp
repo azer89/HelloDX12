@@ -17,7 +17,7 @@ void PipelineClear::PopulateCommandList(DX12Context& ctx)
 	// Clear swapchain
 	const auto swapchainRtvHandle = resourcesShared_->GetSwapchainCPUHandle(ctx.GetFrameIndex());
 	commandList->ClearRenderTargetView(swapchainRtvHandle, AppConfig::ClearColor , 0, nullptr);
-
+	
 	// Clear offscreen attachment
 	const auto offscreenRtvHandle = resourcesShared_->GetMultiSampledRTVHandle();
 	commandList->ClearRenderTargetView(offscreenRtvHandle, AppConfig::ClearColor, 0, nullptr);

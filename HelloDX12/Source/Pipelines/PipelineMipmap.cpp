@@ -21,14 +21,14 @@ void PipelineMipmap::GenerateShader(DX12Context& ctx)
 
 void PipelineMipmap::CreatePipeline(DX12Context& ctx)
 {
-	std::vector<CD3DX12_DESCRIPTOR_RANGE1> ranges = {};
+	std::vector<CD3DX12_DESCRIPTOR_RANGE1> ranges{};
 	// Resource needs to be volatile
 	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE);
 	ranges.emplace_back().Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE);
 	
 	uint32_t paramOffset = 0;
 	constexpr uint32_t rootConstantCount = 2;
-	std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters= {};
+	std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters{};
 	rootParameters.emplace_back().InitAsConstants(rootConstantCount, 0);
 	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + paramOffset++, D3D12_SHADER_VISIBILITY_ALL);
 	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + paramOffset++, D3D12_SHADER_VISIBILITY_ALL);

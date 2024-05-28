@@ -49,27 +49,27 @@ private:
 	void CreateDSV(DX12Context& ctx);
 
 private:
-	uint32_t rtvIncrementSize_ = 0;
+	uint32_t rtvIncrementSize_{};
 
 	// Swapchain RTV
-	ID3D12DescriptorHeap* swapchainRTVHeap_ = nullptr;
-	std::array<DX12Buffer, AppConfig::FrameCount> swapchainBuffers_ = {};
-	std::array<CD3DX12_CPU_DESCRIPTOR_HANDLE, AppConfig::FrameCount> swapchainCPUHandles_ = {};
+	ID3D12DescriptorHeap* swapchainRTVHeap_{};
+	std::array<DX12Buffer, AppConfig::FrameCount> swapchainBuffers_{};
+	std::array<CD3DX12_CPU_DESCRIPTOR_HANDLE, AppConfig::FrameCount> swapchainCPUHandles_{};
 
 	// Offscreen Multisampled RTV (MSAA)
-	DX12Image multiSampledImage_ = {};
-	CD3DX12_CPU_DESCRIPTOR_HANDLE multiSampledRTVHandle_ = {};
-	ID3D12DescriptorHeap* multiSampledRTVHeap_ = nullptr;
+	DX12Image multiSampledImage_{};
+	CD3DX12_CPU_DESCRIPTOR_HANDLE multiSampledRTVHandle_{};
+	ID3D12DescriptorHeap* multiSampledRTVHeap_{};
 
 	// Resolve target
-	DX12Image singleSampledImage_ = {};
-	CD3DX12_CPU_DESCRIPTOR_HANDLE singleSampledRTVHandle_ = {};
-	ID3D12DescriptorHeap* singleSampledRTVHeap_ = nullptr;
+	DX12Image singleSampledImage_{};
+	CD3DX12_CPU_DESCRIPTOR_HANDLE singleSampledRTVHandle_{};
+	ID3D12DescriptorHeap* singleSampledRTVHeap_{};
 
 	// Depth stencil
-	DX12Image depthImage_ = {};
-	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle_;
-	ID3D12DescriptorHeap* dsvHeap_ = nullptr;
+	DX12Image depthImage_{};
+	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle_{};
+	ID3D12DescriptorHeap* dsvHeap_{};
 };
 
 #endif

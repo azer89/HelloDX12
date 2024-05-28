@@ -15,8 +15,8 @@ void DX12RootSignature::Create(DX12Context& ctx,
 	const D3D12_ROOT_SIGNATURE_FLAGS& rootSignatureFlags)
 {
 	// Root signature
-	ID3DBlob* signature = nullptr;
-	ID3DBlob* error = nullptr;
+	ID3DBlob* signature{};
+	ID3DBlob* error{};
 	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
 	rootSignatureDesc.Init_1_1(
 		static_cast<UINT>(rootParameters.size()),
@@ -25,7 +25,7 @@ void DX12RootSignature::Create(DX12Context& ctx,
 		&samplerDesc,
 		rootSignatureFlags);
 
-	D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
+	D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData{};
 	featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
 	if (FAILED(ctx.GetDevice()->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &featureData, sizeof(featureData))))
 	{
@@ -61,7 +61,7 @@ void DX12RootSignature::Create(DX12Context& ctx,
 	uint32_t srvRegister = 0;
 	uint32_t uavRegister = 0;
 
-	std::vector<CD3DX12_DESCRIPTOR_RANGE1> ranges = {};
+	std::vector<CD3DX12_DESCRIPTOR_RANGE1> ranges{};
 	for (uint32_t i = 0; i < descriptors.size(); ++i)
 	{
 		if (descriptors[i].type_ == D3D12_DESCRIPTOR_RANGE_TYPE_CBV)
@@ -90,7 +90,7 @@ void DX12RootSignature::Create(DX12Context& ctx,
 		);
 	}
 
-	std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters = {};
+	std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters{};
 	if (rootConstantCount > 0)
 	{
 		rootParameters.emplace_back().InitAsConstants(rootConstantCount, 0);

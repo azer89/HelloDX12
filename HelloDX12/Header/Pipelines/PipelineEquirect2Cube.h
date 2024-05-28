@@ -35,7 +35,7 @@ private:
 		DX12Image* cubemapImage);
 
 private:
-	DX12DescriptorHeap descriptorHeap_ = {};
+	DX12DescriptorHeap descriptorHeap_{};
 };
 
 #endif

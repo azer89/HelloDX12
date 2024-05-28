@@ -29,19 +29,19 @@ protected:
 	void CreateIndirectCommandFromArray(DX12Context& ctx, const std::span<IndirectCommand> commandArray);
 
 protected:
-	ID3D12PipelineState* pipelineState_ = nullptr;
+	ID3D12PipelineState* pipelineState_{};
 	
-	DX12RootSignature rootSignature_ = {};
+	DX12RootSignature rootSignature_{};
 
-	ID3D12CommandSignature* commandSignature_ = nullptr;
-	DX12Buffer indirectCommand_;
+	ID3D12CommandSignature* commandSignature_{};
+	DX12Buffer indirectCommand_{};
 
-	DX12Shader vertexShader_ = {};
-	DX12Shader fragmentShader_ = {};
-	DX12Shader computeShader_ = {};
+	DX12Shader vertexShader_{};
+	DX12Shader fragmentShader_{};
+	DX12Shader computeShader_{};
 
-	CD3DX12_VIEWPORT viewport_ = {};
-	CD3DX12_RECT scissor_ = {};
+	CD3DX12_VIEWPORT viewport_{};
+	CD3DX12_RECT scissor_{};
 };
 
 #endif

@@ -73,31 +73,31 @@ private:
 	void ReleaseSwapchainResources();
 
 private:
-	uint32_t swapchainWidth_ = 0;
-	uint32_t swapchainHeight_ = 0;
+	uint32_t swapchainWidth_{};
+	uint32_t swapchainHeight_{};
 	DXGI_FORMAT swapchainFormat_ = DXGI_FORMAT_R8G8B8A8_UNORM;
-	std::array<ID3D12Resource*, AppConfig::FrameCount> swapchainResources_ = { nullptr };
+	std::array<ID3D12Resource*, AppConfig::FrameCount> swapchainResources_{};
 	
 	// Pipeline objects.
-	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapchain_ = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12Device> device_ = nullptr;
-	Microsoft::WRL::ComPtr<IDXGIAdapter1> adapter_ = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocators_[AppConfig::FrameCount] = {};
-	Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue_ = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList_ = nullptr;
+	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapchain_{};
+	Microsoft::WRL::ComPtr<ID3D12Device> device_{};
+	Microsoft::WRL::ComPtr<IDXGIAdapter1> adapter_{};
+	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocators_[AppConfig::FrameCount]{};
+	Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue_{};
+	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList_{};
 
 	// Synchronization objects.
-	uint32_t frameIndex_ = 0;
-	HANDLE fenceCompletionEvent_ = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12Fence> fence_ = nullptr;
-	uint64_t fenceValues_[AppConfig::FrameCount] = {};
+	uint32_t frameIndex_{};
+	HANDLE fenceCompletionEvent_{};
+	Microsoft::WRL::ComPtr<ID3D12Fence> fence_{};
+	uint64_t fenceValues_[AppConfig::FrameCount]{};
 
 	// D12 Memory Allocator
-	D3D12MA::Allocator* dmaAllocator_ = nullptr;
+	D3D12MA::Allocator* dmaAllocator_{};
 
 	// DXC
-	Microsoft::WRL::ComPtr<IDxcUtils> dxcUtils_ = nullptr;
-	Microsoft::WRL::ComPtr<IDxcCompiler3> dxcCompiler_ = nullptr;
+	Microsoft::WRL::ComPtr<IDxcUtils> dxcUtils_{};
+	Microsoft::WRL::ComPtr<IDxcCompiler3> dxcCompiler_{};
 };
 
 #endif

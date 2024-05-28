@@ -28,7 +28,7 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 	// Enable the debug layer (requires the Graphics Tools "optional feature").
 	// NOTE: Enabling the debug layer after device creation will invalidate the active device.
 	{
-		ID3D12Debug* debugController = nullptr;
+		ID3D12Debug* debugController{};
 		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
 		{
 			debugController->EnableDebugLayer();
@@ -56,9 +56,11 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 	SetInfoQueue();
 
 	// Describe and create the command queue.
-	D3D12_COMMAND_QUEUE_DESC queueDesc = {};
-	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-	queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+	D3D12_COMMAND_QUEUE_DESC queueDesc = 
+	{
+		.Type = D3D12_COMMAND_LIST_TYPE_DIRECT,
+		.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE
+	};
 	ThrowIfFailed(device_->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&commandQueue_)));
 
 	// Swapchain
@@ -110,7 +112,7 @@ void DX12Context::CreateSwapchain(IDXGIFactory4* factory, uint32_t swapchainWidt
 	swapchainWidth_ = swapchainWidth;
 	swapchainHeight_ = swapchainHeight;
 
-	DXGI_SWAP_CHAIN_DESC swapchainDesc = {};
+	DXGI_SWAP_CHAIN_DESC swapchainDesc{};
 	swapchainDesc.BufferCount = AppConfig::FrameCount;
 	swapchainDesc.BufferDesc.Width = swapchainWidth_;
 	swapchainDesc.BufferDesc.Height = swapchainHeight_;
