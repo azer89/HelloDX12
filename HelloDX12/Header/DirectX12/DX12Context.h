@@ -32,16 +32,16 @@ public:
 	void Destroy();
 
 	[[nodiscard]] uint32_t GetFrameIndex() const { return frameIndex_; }
-	[[nodiscard]] ID3D12Device* GetDevice() const { return device_.Get(); }
+	[[nodiscard]] ID3D12Device* GetDevice() const { return device_; }
 	[[nodiscard]] D3D12MA::Allocator* GetDMAAllocator() const { return dmaAllocator_; }
 	[[nodiscard]] IDxcUtils* GetDXCUtils() const { return dxcUtils_.Get(); }
 	[[nodiscard]] IDxcCompiler3* GetDXCCompiler() const { return dxcCompiler_.Get(); }
-	[[nodiscard]] ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
+	[[nodiscard]] ID3D12GraphicsCommandList* GetCommandList() const { return commandList_; }
 
 	[[nodiscard]] uint32_t GetSwapchainWidth() const { return swapchainWidth_; }
 	[[nodiscard]] uint32_t GetSwapchainHeight() const { return swapchainHeight_; }
 	[[nodiscard]] DXGI_FORMAT GetSwapchainFormat() const { return swapchainFormat_; }
-	[[nodiscard]] IDXGISwapChain3* GetSwapchain() const { return swapchain_.Get(); }
+	[[nodiscard]] IDXGISwapChain3* GetSwapchain() const { return swapchain_; }
 	[[nodiscard]] ID3D12Resource* GetSwapchainResource(uint32_t frameIndex) const { return swapchainResources_[frameIndex]; }
 	
 	void CreateFence();
@@ -77,14 +77,14 @@ private:
 	uint32_t swapchainHeight_{};
 	DXGI_FORMAT swapchainFormat_ = DXGI_FORMAT_R8G8B8A8_UNORM;
 	std::array<ID3D12Resource*, AppConfig::FrameCount> swapchainResources_{};
+	IDXGISwapChain4* swapchain_{};
+
+	ID3D12Device* device_{};
+	IDXGIAdapter1* adapter_{};
 	
-	// Pipeline objects.
-	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapchain_{};
-	Microsoft::WRL::ComPtr<ID3D12Device> device_{};
-	Microsoft::WRL::ComPtr<IDXGIAdapter1> adapter_{};
-	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocators_[AppConfig::FrameCount]{};
-	Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue_{};
-	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList_{};
+	std::array<ID3D12CommandAllocator*, AppConfig::FrameCount> commandAllocators_{};
+	ID3D12CommandQueue* commandQueue_{};
+	ID3D12GraphicsCommandList* commandList_{};
 
 	// Synchronization objects.
 	uint32_t frameIndex_{};

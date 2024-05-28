@@ -15,6 +15,17 @@ void DX12Context::Destroy()
 		dmaAllocator_->Release();
 		dmaAllocator_ = nullptr;
 	}
+
+	commandList_->Release();
+	commandQueue_->Release();
+	for (auto cAlloc : commandAllocators_)
+	{
+		cAlloc->Release();
+	}
+	swapchain_->Release();
+	device_->Release();
+	adapter_->Release();
+
 	CloseHandle(fenceCompletionEvent_);
 }
 
@@ -46,7 +57,7 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 		GetHardwareAdapter(factory, &adapter_);
 
 		ThrowIfFailed(D3D12CreateDevice(
-			adapter_.Get(),
+			adapter_,
 			D3D_FEATURE_LEVEL_11_0,
 			IID_PPV_ARGS(&device_)
 		));
@@ -75,7 +86,7 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 	ThrowIfFailed(device_->CreateCommandList(
 		0,
 		D3D12_COMMAND_LIST_TYPE_DIRECT,
-		commandAllocators_[0].Get(), // TODO
+		commandAllocators_[0], // TODO
 		nullptr,
 		IID_PPV_ARGS(&commandList_)));
 	commandList_->Close();
@@ -83,8 +94,8 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 	// Memory allocator
 	{
 		const D3D12MA::ALLOCATOR_DESC desc = {
-			.pDevice = device_.Get(),
-			.pAdapter = adapter_.Get(),
+			.pDevice = device_,
+			.pAdapter = adapter_,
 		};
 
 		ThrowIfFailed(D3D12MA::CreateAllocator(&desc, &dmaAllocator_));
@@ -129,7 +140,7 @@ void DX12Context::CreateSwapchain(IDXGIFactory4* factory, uint32_t swapchainWidt
 
 	IDXGISwapChain* tempSwapchain;
 	ThrowIfFailed(factory->CreateSwapChain(
-		commandQueue_.Get(), 
+		commandQueue_, 
 		&swapchainDesc,
 		&tempSwapchain
 	));
@@ -289,7 +300,7 @@ void DX12Context::ResetCommandAllocator() const
 
 void DX12Context::ResetCommandList() const
 {
-	ThrowIfFailed(commandList_->Reset(commandAllocators_[frameIndex_].Get(), nullptr));
+	ThrowIfFailed(commandList_->Reset(commandAllocators_[frameIndex_], nullptr));
 }
 
 void DX12Context::CloseCommandList() const
