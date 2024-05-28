@@ -46,7 +46,7 @@ public:
 	LRESULT WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 protected:
-	void SetCustomWindowText(LPCWSTR text) const;
+	void SetCustomWindowText(const TCHAR* text) const;
 
 	template<class T, class... U>
 	requires (std::is_base_of_v<PipelineBase, T>)
