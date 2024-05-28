@@ -79,7 +79,11 @@ public:
 		D3D12_RESOURCE_STATES afterState);
 
 	void SetName(const std::string& objectName) const;
-	
+
+	// Getters
+	[[nodiscard]] D3D12_SHADER_RESOURCE_VIEW_DESC GetSRVDescription() const { return srvDescription_;  }
+	[[nodiscard]] ID3D12Resource* GetResource() const { return resource_; }
+
 private:
 	void CreateUploadHeap(DX12Context& ctx,
 		uint64_t bufferSize,
@@ -92,9 +96,7 @@ private:
 
 	static uint32_t GetConstantBufferByteSize(uint64_t byteSize);
 
-public:
-	// TODO Set below as private
-
+private:
 	uint64_t bufferSize_{}; // TODO Set as width_
 	ID3D12Resource* resource_{};
 	D3D12MA::Allocation* dmaAllocation_{};
@@ -107,7 +109,6 @@ public:
 	uint8_t* mappedData_{};
 	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress_{};
 
-private:
 	D3D12_RESOURCE_STATES state_ = D3D12_RESOURCE_STATE_COMMON; // TODO currently does not track mipmap levels
 	bool isSwapchainBuffer_ = false;
 };

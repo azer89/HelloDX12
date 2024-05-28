@@ -59,7 +59,7 @@ void PipelineSkybox::CreateDescriptors(DX12Context& ctx)
 		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
 		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
 		.buffer_ = &(resourcesIBL_->environmentCubemap_.buffer_),
-		.srvDescription_ = resourcesIBL_->environmentCubemap_.buffer_.srvDescription_
+		.srvDescription_ = resourcesIBL_->environmentCubemap_.buffer_.GetSRVDescription()
 	};
 
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)

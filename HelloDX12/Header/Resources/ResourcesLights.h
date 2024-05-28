@@ -26,7 +26,7 @@ public:
 
 	void AddLights(DX12Context& ctx, const std::vector<LightData>& lights);
 
-	ID3D12Resource* GetResource() const { return buffer_.resource_; }
+	ID3D12Resource* GetResource() const { return buffer_.GetResource(); }
 
 public:
 	std::vector<LightData> lights_{};

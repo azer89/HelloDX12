@@ -114,28 +114,28 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
 			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
 			.buffer_ = &(scene_->vertexBuffer_),
-			.srvDescription_ = scene_->vertexBuffer_.srvDescription_
+			.srvDescription_ = scene_->vertexBuffer_.GetSRVDescription()
 		},
 		{ // t1
 			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
 			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
 			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
 			.buffer_ = &(scene_->indexBuffer_),
-			.srvDescription_ = scene_->indexBuffer_.srvDescription_
+			.srvDescription_ = scene_->indexBuffer_.GetSRVDescription()
 		},
 		{ // t2
 			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
 			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
 			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
 			.buffer_ = &(scene_->meshDataBuffer_),
-			.srvDescription_ = scene_->meshDataBuffer_.srvDescription_
+			.srvDescription_ = scene_->meshDataBuffer_.GetSRVDescription()
 		},
 		{ // t3
 			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
 			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
 			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
 			.buffer_ = &(resourcesLights_->buffer_),
-			.srvDescription_ = resourcesLights_->buffer_.srvDescription_
+			.srvDescription_ = resourcesLights_->buffer_.GetSRVDescription()
 		},
 	};
 
@@ -241,7 +241,7 @@ void PipelineSimple::PopulateCommandList(DX12Context& ctx)
 	commandList->ExecuteIndirect(
 		commandSignature_, // pCommandSignature
 		meshCount, // MaxCommandCount
-		indirectCommand_.resource_, // pArgumentBuffer
+		indirectCommand_.GetResource(), // pArgumentBuffer
 		0, // ArgumentBufferOffset
 		nullptr, // pCountBuffer
 		0); // CountBufferOffset

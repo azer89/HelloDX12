@@ -48,11 +48,11 @@ void DX12DescriptorHeap::SetupHandles(DX12Context& ctx)
 		}
 		else if (descriptors_[i].type_ == D3D12_DESCRIPTOR_RANGE_TYPE_SRV)
 		{
-			ctx.GetDevice()->CreateShaderResourceView(descriptors_[i].buffer_->resource_, &(descriptors_[i].srvDescription_), cpuHandle);
+			ctx.GetDevice()->CreateShaderResourceView(descriptors_[i].buffer_->GetResource(), &(descriptors_[i].srvDescription_), cpuHandle);
 		}
 		else if (descriptors_[i].type_ == D3D12_DESCRIPTOR_RANGE_TYPE_UAV)
 		{
-			ctx.GetDevice()->CreateUnorderedAccessView(descriptors_[i].buffer_->resource_, nullptr, &(descriptors_[i].uavDescription_), cpuHandle);
+			ctx.GetDevice()->CreateUnorderedAccessView(descriptors_[i].buffer_->GetResource(), nullptr, &(descriptors_[i].uavDescription_), cpuHandle);
 		}
 
 		descriptors_[i].cpuHandle_ = cpuHandle;
@@ -70,7 +70,7 @@ void DX12DescriptorHeap::SetupHandles(DX12Context& ctx)
 		CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(handle_->GetGPUDescriptorHandleForHeapStart(), i + prevDescriptroCount, incrementSize);
 
 		ctx.GetDevice()->CreateShaderResourceView(
-			descriptorArray_.buffers_[i]->resource_,
+			descriptorArray_.buffers_[i]->GetResource(),
 			&(descriptorArray_.srvDescriptions_[i]),
 			cpuHandle);
 

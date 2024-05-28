@@ -31,7 +31,7 @@ public:
 
 	// Swapchain buffers
 	[[nodiscard]] DX12Buffer* GetSwapchainBuffer(uint32_t frameIndex) { return &(swapchainBuffers_[frameIndex]); }
-	[[nodiscard]] ID3D12Resource* GetSwapchainResource(uint32_t frameIndex) const { return swapchainBuffers_[frameIndex].resource_; }
+	[[nodiscard]] ID3D12Resource* GetSwapchainResource(uint32_t frameIndex) const { return swapchainBuffers_[frameIndex].GetResource(); }
 	[[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetSwapchainCPUHandle(uint32_t frameIndex) const { return swapchainCPUHandles_[frameIndex]; }
 
 	// Depth attachment

@@ -72,7 +72,7 @@ DX12DescriptorArray Scene::GetImageDescriptors()
 	for (uint32_t i = 0; i < model_.textures_.size(); ++i)
 	{
 		dArray.buffers_[i] = &(model_.textures_[i].buffer_);
-		dArray.srvDescriptions_[i] = model_.textures_[i].buffer_.srvDescription_;
+		dArray.srvDescriptions_[i] = model_.textures_[i].buffer_.GetSRVDescription();
 	}
 
 	return dArray;
