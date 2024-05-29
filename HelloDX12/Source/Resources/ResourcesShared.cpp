@@ -135,7 +135,7 @@ void ResourcesShared::CreateMultiSampledRTV(DX12Context& ctx)
 
 	// Handle
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(multiSampledRTVHeap_->GetCPUDescriptorHandleForHeapStart());
-	ctx.GetDevice()->CreateRenderTargetView(multiSampledImage_.buffer_.resource_, nullptr, rtvHandle);
+	ctx.GetDevice()->CreateRenderTargetView(multiSampledImage_.GetResource(), nullptr, rtvHandle);
 	
 	multiSampledRTVHandle_ = CD3DX12_CPU_DESCRIPTOR_HANDLE(
 		multiSampledRTVHeap_->GetCPUDescriptorHandleForHeapStart(),
@@ -155,7 +155,7 @@ void ResourcesShared::CreateSingleSampledRTV(DX12Context& ctx)
 
 	// Handle
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(singleSampledRTVHeap_->GetCPUDescriptorHandleForHeapStart());
-	ctx.GetDevice()->CreateRenderTargetView(singleSampledImage_.buffer_.resource_, nullptr, rtvHandle);
+	ctx.GetDevice()->CreateRenderTargetView(singleSampledImage_.GetResource(), nullptr, rtvHandle);
 
 	singleSampledRTVHandle_ = CD3DX12_CPU_DESCRIPTOR_HANDLE(
 		singleSampledRTVHeap_->GetCPUDescriptorHandleForHeapStart(),

@@ -16,7 +16,7 @@ public:
 	void CreateCubemap(DX12Context& ctx, uint32_t width, uint32_t height);
 	void CreateColorAttachment(DX12Context& ctx, uint32_t msaaCount);
 	void CreateDepthAttachment(DX12Context& ctx, uint32_t msaaCount);
-	ID3D12Resource* GetResource() const { return buffer_.resource_; }
+	ID3D12Resource* GetResource() const { return buffer_.GetResource(); }
 	
 	void UAVBarrier(ID3D12GraphicsCommandList* commandList);
 	void TransitionCommand(

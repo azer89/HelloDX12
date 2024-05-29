@@ -29,7 +29,7 @@ AppBase::~AppBase()
 }
 
 // Helper function for setting the window's title text.
-void AppBase::SetCustomWindowText(LPCWSTR text) const
+void AppBase::SetCustomWindowText(const TCHAR* text) const
 {
 	std::wstring windowText = title_ + L": " + text;
 	SetWindowText(Win32Application::GetHwnd(), windowText.c_str());

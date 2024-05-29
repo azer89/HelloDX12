@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <iostream>
 
-LPCWSTR GetEntryPoint(ShaderType shaderType)
+const TCHAR* GetEntryPoint(ShaderType shaderType)
 {
 	if (shaderType == ShaderType::Vertex) { return L"VSMain"; }
 	if (shaderType == ShaderType::Fragment) { return L"PSMain"; }
@@ -13,7 +13,7 @@ LPCWSTR GetEntryPoint(ShaderType shaderType)
 	throw std::runtime_error("Shader type not recognized");
 }
 
-LPCWSTR GetTarget(ShaderType shaderType)
+const TCHAR* GetTarget(ShaderType shaderType)
 {
 	if (shaderType == ShaderType::Vertex) { return L"vs_6_6"; }
 	if (shaderType == ShaderType::Fragment) { return L"ps_6_6"; }
@@ -32,13 +32,13 @@ void DX12Shader::Create(DX12Context& ctx, const std::string& filename, ShaderTyp
 
 	const std::wstring assetPath = Utility::WStringConvert(filename);
 
-	const LPCWSTR entryPoint = GetEntryPoint(shaderType);
-	const LPCWSTR target = GetTarget(shaderType);
+	const TCHAR* entryPoint = GetEntryPoint(shaderType);
+	const TCHAR* target = GetTarget(shaderType);
 
 	IDxcIncludeHandler* pIncludeHandler{};
 	ctx.GetDXCUtils()->CreateDefaultIncludeHandler(&pIncludeHandler);
 
-	LPCWSTR argument[] =
+	const TCHAR* argument[] =
 	{
 		assetPath.c_str(),
 		L"-E", entryPoint,
