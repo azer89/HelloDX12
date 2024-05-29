@@ -81,6 +81,7 @@ public:
 	void SetName(const std::string& objectName) const;
 
 	// Getters
+	[[nodiscard]] D3D12_UNORDERED_ACCESS_VIEW_DESC GetUAVDescription(uint32_t mipLevel) const;
 	[[nodiscard]] D3D12_SHADER_RESOURCE_VIEW_DESC GetSRVDescription() const { return srvDescription_;  }
 	[[nodiscard]] ID3D12Resource* GetResource() const { return resource_; }
 
