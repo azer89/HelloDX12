@@ -742,6 +742,28 @@ void DX12Buffer::SetName(const std::string& objectName) const
 	dmaAllocation_->SetName(Utility::WStringConvert(dmaName).c_str());
 }
 
+D3D12_UNORDERED_ACCESS_VIEW_DESC DX12Buffer::GetUAVDescription(uint32_t mipLevel) const
+{
+	const D3D12_RESOURCE_DESC resourceDescription = resource_->GetDesc();
+	assert(resourceDescription.Flags & D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
+
+	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDescription{};
+	uavDescription.Format = resourceDescription.Format;
+	if (resourceDescription.DepthOrArraySize > 1) 
+	{
+		uavDescription.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2DARRAY;
+		uavDescription.Texture2DArray.MipSlice = mipLevel;
+		uavDescription.Texture2DArray.FirstArraySlice = 0;
+		uavDescription.Texture2DArray.ArraySize = resourceDescription.DepthOrArraySize;
+	}
+	else 
+	{
+		uavDescription.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+		uavDescription.Texture2D.MipSlice = mipLevel;
+	}
+	return uavDescription;
+}
+
 uint32_t DX12Buffer::GetConstantBufferByteSize(uint64_t byteSize)
 {
 	// Constant buffers must be a multiple of the minimum hardware

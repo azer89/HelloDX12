@@ -17,8 +17,7 @@ public:
 	void GenerateCubemapFromHDR(
 		DX12Context& ctx, 
 		DX12Image* hdrImage, 
-		DX12Image* cubemapImage,
-		const D3D12_UNORDERED_ACCESS_VIEW_DESC& cubemapUAVDesc);
+		DX12Image* cubemapImage);
 
 	void Update(DX12Context& ctx, UIData& uiData) override {};
 	void PopulateCommandList(DX12Context& ctx) override {};
@@ -26,8 +25,7 @@ public:
 private:
 	void CreateDescriptors(DX12Context& ctx, 
 		DX12Image* hdrImage,
-		DX12Image* cubemapImage,
-		const D3D12_UNORDERED_ACCESS_VIEW_DESC& cubemapUAVDesc);
+		DX12Image* cubemapImage);
 	void GenerateShader(DX12Context& ctx);
 	void CreatePipeline(DX12Context& ctx);
 	void Execute(DX12Context& ctx,

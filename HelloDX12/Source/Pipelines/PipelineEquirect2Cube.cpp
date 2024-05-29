@@ -18,10 +18,9 @@ void PipelineEquirect2Cube::Destroy()
 
 void PipelineEquirect2Cube::GenerateCubemapFromHDR(DX12Context& ctx, 
 	DX12Image* hdrImage, 
-	DX12Image* cubemapImage,
-	const D3D12_UNORDERED_ACCESS_VIEW_DESC& cubemapUAVDesc)
+	DX12Image* cubemapImage)
 {
-	CreateDescriptors(ctx, hdrImage, cubemapImage, cubemapUAVDesc);
+	CreateDescriptors(ctx, hdrImage, cubemapImage);
 	GenerateShader(ctx);
 	CreatePipeline(ctx);
 	Execute(ctx, hdrImage, cubemapImage);
@@ -30,8 +29,7 @@ void PipelineEquirect2Cube::GenerateCubemapFromHDR(DX12Context& ctx,
 void PipelineEquirect2Cube::CreateDescriptors(
 	DX12Context& ctx,
 	DX12Image* hdrImage,
-	DX12Image* cubemapImage,
-	const D3D12_UNORDERED_ACCESS_VIEW_DESC& cubemapUAVDesc)
+	DX12Image* cubemapImage)
 {
 	std::vector<DX12Descriptor> descriptors(2);
 	descriptors[0] =
@@ -49,7 +47,7 @@ void PipelineEquirect2Cube::CreateDescriptors(
 		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE,
 		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
 		.buffer_ = &(cubemapImage->buffer_),
-		.uavDescription_ = cubemapUAVDesc
+		.uavDescription_ = cubemapImage->buffer_.GetUAVDescription(0)
 	};
 
 	descriptorHeap_.descriptors_ = descriptors;
