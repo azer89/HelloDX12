@@ -168,6 +168,15 @@
     <ClInclude Include="Header\Timer.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Header\Pipelines\PipelineBRDFLUT.h">
+      <Filter>Header\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Pipelines\PipelineDiffuseMap.h">
+      <Filter>Header\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Pipelines\PipelineSpecularMap.h">
+      <Filter>Header\Pipelines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -262,6 +271,15 @@
     </ClCompile>
     <ClCompile Include="Source\Timer.cpp">
       <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Pipelines\PipelineBRDFLUT.cpp">
+      <Filter>Source\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Pipelines\PipelineDiffuseMap.cpp">
+      <Filter>Source\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Pipelines\PipelineSpecularMap.cpp">
+      <Filter>Source\Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

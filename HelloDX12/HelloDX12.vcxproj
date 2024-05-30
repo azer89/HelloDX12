@@ -29,7 +29,9 @@
     <ClInclude Include="Header\DirectX12\DX12Shader.h" />
     <ClInclude Include="Header\IndirectCommand.h" />
     <ClInclude Include="Header\Pipelines\PipelineBase.h" />
+    <ClInclude Include="Header\Pipelines\PipelineBRDFLUT.h" />
     <ClInclude Include="Header\Pipelines\PipelineClear.h" />
+    <ClInclude Include="Header\Pipelines\PipelineDiffuseMap.h" />
     <ClInclude Include="Header\Pipelines\PipelineEquirect2Cube.h" />
     <ClInclude Include="Header\Pipelines\PipelineImGui.h" />
     <ClInclude Include="Header\Pipelines\PipelineMipmap.h" />
@@ -37,6 +39,7 @@
     <ClInclude Include="Header\Pipelines\PipelineResolve.h" />
     <ClInclude Include="Header\Pipelines\PipelineSimple.h" />
     <ClInclude Include="Header\Pipelines\PipelineSkybox.h" />
+    <ClInclude Include="Header\Pipelines\PipelineSpecularMap.h" />
     <ClInclude Include="Header\Pipelines\PipelineTonemap.h" />
     <ClInclude Include="Header\Resources\ResourcesBase.h" />
     <ClInclude Include="Header\Resources\ResourcesIBL.h" />
@@ -67,7 +70,9 @@
     <ClCompile Include="Source\DirectX12\DX12RootSignature.cpp" />
     <ClCompile Include="Source\DirectX12\DX12Shader.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineBase.cpp" />
+    <ClCompile Include="Source\Pipelines\PipelineBRDFLUT.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineClear.cpp" />
+    <ClCompile Include="Source\Pipelines\PipelineDiffuseMap.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineEquirect2Cube.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineImGui.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineMipmap.cpp" />
@@ -75,6 +80,7 @@
     <ClCompile Include="Source\Pipelines\PipelineResolve.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineSimple.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineSkybox.cpp" />
+    <ClCompile Include="Source\Pipelines\PipelineSpecularMap.cpp" />
     <ClCompile Include="Source\Pipelines\PipelineTonemap.cpp" />
     <ClCompile Include="Source\Resources\ResourcesIBL.cpp" />
     <ClCompile Include="Source\Resources\ResourcesLights.cpp" />
