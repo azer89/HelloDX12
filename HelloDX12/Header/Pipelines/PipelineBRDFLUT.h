@@ -10,10 +10,12 @@ class PipelineBRDFLUT final : public PipelineBase
 public:
 	PipelineBRDFLUT(
 		DX12Context& ctx);
-	~PipelineBRDFLUT() = default;
+	~PipelineBRDFLUT();
 
-	void Update(DX12Context& ctx, UIData& uiData) override {}
-	void PopulateCommandList(DX12Context& ctx) override {};
+	void Destroy() override;
+
+	void Update(DX12Context& ctx, UIData& uiData) override {} // Empty
+	void PopulateCommandList(DX12Context& ctx) override {}; // Empty
 
 	void Execute(DX12Context& ctx,
 		DX12Image* lut);
@@ -25,6 +27,10 @@ private:
 	void GenerateShader(DX12Context& ctx);
 
 	void CreatePipeline(DX12Context& ctx);
+
+private:
+	DX12DescriptorHeap descriptorHeap_{};
+
 };
 
 #endif
