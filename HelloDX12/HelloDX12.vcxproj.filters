@@ -43,6 +43,9 @@
     <Filter Include="Shader\PBR">
       <UniqueIdentifier>{055bd003-f892-475f-81cd-4fc38b740a4b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\IBL">
+      <UniqueIdentifier>{526f54ae-1444-4c63-b18c-519b696c6241}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\Win32Application.h">
@@ -331,5 +334,16 @@
     <None Include="Shader\PBR\CPBR.hlsli">
       <Filter>Shader\PBR</Filter>
     </None>
+    <None Include="Shader\IBL\BRDFLUT.hlsl">
+      <Filter>Shader\IBL</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shader\IBL\Diffuse.hlsl">
+      <Filter>Shader\IBL</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\IBL\Specular.hlsl">
+      <Filter>Shader\IBL</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
