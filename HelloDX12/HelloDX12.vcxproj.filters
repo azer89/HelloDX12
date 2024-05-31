@@ -337,6 +337,12 @@
     <None Include="Shader\IBL\BRDFLUT.hlsl">
       <Filter>Shader\IBL</Filter>
     </None>
+    <None Include="Shader\IBL\ThreadIdToXYZ.hlsli">
+      <Filter>Shader\IBL</Filter>
+    </None>
+    <None Include="Shader\IBL\Hammersley.hlsli">
+      <Filter>Shader\IBL</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shader\IBL\Diffuse.hlsl">

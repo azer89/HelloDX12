@@ -43,4 +43,13 @@ float2 BRDF(float NoV, float roughness)
 [numthreads(32, 32, 1)]
 void CSMain(uint2 threadID : SV_DispatchThreadID)
 {
+    // Get output LUT dimensions.
+    float outputWidth, outputHeight;
+    LUT.GetDimensions(outputWidth, outputHeight);
+    
+    float2 uv;
+    uv.x = (float(threadID.x) + 0.5) / outputWidth;
+    uv.y = (float(threadID.y) + 0.5) / outputHeight;
+
+    LUT[threadID] = BRDF(uv.x, 1.0 - uv.y); // TODO
 }

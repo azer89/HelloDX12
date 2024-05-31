@@ -18,6 +18,8 @@ public:
 public:
 	DX12Image hdrImage_{};
 	DX12Image environmentCubemap_{};
+
+	DX12Image brdfLutImage_{};
 };
 
 #endif

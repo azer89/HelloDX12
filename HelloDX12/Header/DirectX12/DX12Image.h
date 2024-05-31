@@ -14,6 +14,13 @@ public:
 	void Load(DX12Context& ctx, void* data, uint32_t width, uint32_t height);
 	void LoadHDR(DX12Context& ctx, const std::string& filename);
 	void CreateCubemap(DX12Context& ctx, uint32_t width, uint32_t height);
+	void Create(DX12Context& ctx, 
+		uint32_t width, 
+		uint32_t height, 
+		uint32_t mipmapCount, 
+		uint32_t layerCount, 
+		DXGI_FORMAT format,
+		D3D12_RESOURCE_FLAGS flags);
 	void CreateColorAttachment(DX12Context& ctx, uint32_t msaaCount);
 	void CreateDepthAttachment(DX12Context& ctx, uint32_t msaaCount);
 	ID3D12Resource* GetResource() const { return buffer_.GetResource(); }

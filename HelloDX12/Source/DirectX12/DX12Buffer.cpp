@@ -416,7 +416,6 @@ void DX12Buffer::CreateColorAttachment(
 	uint32_t width,
 	uint32_t height,
 	uint32_t mipmapCount,
-	uint32_t bytesPerPixel,
 	uint32_t msaaCount,
 	DXGI_FORMAT imageFormat,
 	D3D12_RESOURCE_FLAGS flags)
