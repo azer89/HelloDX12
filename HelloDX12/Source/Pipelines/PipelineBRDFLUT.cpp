@@ -22,6 +22,16 @@ void PipelineBRDFLUT::Execute(DX12Context& ctx,
 	CreateDescriptors(ctx, lut);
 	GenerateShader(ctx);
 	CreatePipeline(ctx);
+
+	// Start recording 
+	ctx.ResetCommandList();
+	auto commandList = ctx.GetCommandList();
+
+	lut->TransitionCommand(commandList, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+
+	lut->TransitionCommand(commandList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+
+	ctx.SubmitCommandListAndWaitForGPU();
 }
 
 void PipelineBRDFLUT::CreateDescriptors(DX12Context& ctx,
