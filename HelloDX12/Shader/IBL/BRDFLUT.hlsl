@@ -40,7 +40,7 @@ float2 BRDF(float NoV, float roughness)
     return lutValue / float(SAMPLE_COUNT);
 }
 
-[numthreads(32, 32, 1)]
+[numthreads(1, 1, 1)]
 void CSMain(uint2 threadID : SV_DispatchThreadID)
 {
     // Get output LUT dimensions.

@@ -39,8 +39,8 @@ void PipelineBRDFLUT::Execute(DX12Context& ctx,
 	descriptorHeap_.BindDescriptorsCompute(commandList, 0);
 
 	commandList->Dispatch(
-		lut->width_ / 32,
-		lut->height_ / 32,
+		lut->width_, // TODO
+		lut->height_, // TODO
 		1);
 
 	lut->TransitionCommand(commandList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
