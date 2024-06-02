@@ -10,11 +10,11 @@ RWTexture2D<float2> LUT : register(u0);
 float2 BRDF(float NoV, float roughness)
 {
 	// Normal always points along z-axis
-    const float3 N = float3(0.0, 0.0, 1.0);
+    float3 N = float3(0.0, 0.0, 1.0);
     float3 V = float3(sqrt(1.0 - NoV * NoV), 0.0, NoV);
 
-    float2 lutValue = 0.0.xx;
-    for (uint i = 0; i < SAMPLE_COUNT; i++)
+    float2 lutValue = float2(0.0, 0.0);
+    for (uint i = 0u; i < SAMPLE_COUNT; i++)
     {
         float2 Xi = Hammersley(i, SAMPLE_COUNT);
         float3 H = ImportanceSampleGGX(Xi, N, roughness);

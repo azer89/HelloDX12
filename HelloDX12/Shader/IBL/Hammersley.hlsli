@@ -1,6 +1,6 @@
-
-// Compute Van der Corput radical inverse
-// See: http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html
+// Hammersley Points on the Hemisphere
+// CC BY 3.0 (Holger Dammertz)
+// http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html
 float RadicalInverse_VdC(uint bits)
 {
     bits = (bits << 16u) | (bits >> 16u);
@@ -11,8 +11,9 @@ float RadicalInverse_VdC(uint bits)
     return float(bits) * 2.3283064365386963e-10; // / 0x100000000
 }
 
-// Sample i-th point from Hammersley point set of NumSamples points total.
-float2 Hammersley(uint i, uint sampleCount)
+// Hammersley describes a sequence of points in the 2d unit square [0,1)^2
+// that can be used for quasi Monte Carlo integration
+float2 Hammersley(uint i, uint N)
 {
-    return float2(float(i) / float(sampleCount), RadicalInverse_VdC(i));
+    return float2(float(i) / float(N), RadicalInverse_VdC(i));
 }

@@ -1,5 +1,7 @@
 #include "PipelineBRDFLUT.h"
 
+#include <algorithm>
+
 PipelineBRDFLUT::PipelineBRDFLUT(
 	DX12Context& ctx) :
 	PipelineBase(ctx)
@@ -28,6 +30,18 @@ void PipelineBRDFLUT::Execute(DX12Context& ctx,
 	auto commandList = ctx.GetCommandList();
 
 	lut->TransitionCommand(commandList, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+
+	commandList->SetPipelineState(pipelineState_);
+	commandList->SetComputeRootSignature(rootSignature_.handle_);
+
+	// Descriptors
+	descriptorHeap_.BindHeap(commandList);
+	descriptorHeap_.BindDescriptorsCompute(commandList, 0);
+
+	commandList->Dispatch(
+		lut->width_ / 32,
+		lut->height_ / 32,
+		1);
 
 	lut->TransitionCommand(commandList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
