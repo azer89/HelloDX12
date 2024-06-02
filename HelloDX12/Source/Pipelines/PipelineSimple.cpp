@@ -167,7 +167,8 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 		descriptorHeaps_[i].Create(ctx);
 	}
 
-	D3D12_STATIC_SAMPLER_DESC sampler = DX12Image::GetDefaultSampler();
+	std::vector<CD3DX12_STATIC_SAMPLER_DESC> samplerArray = { { 0, D3D12_FILTER_ANISOTROPIC } };
+	samplerArray[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	
 	constexpr D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
@@ -175,7 +176,7 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
-	rootSignature_.Create(ctx, sampler, descriptors, descriptorArray, ROOT_CONSTANT_COUNT, rootSignatureFlags);
+	rootSignature_.Create(ctx, samplerArray, descriptors, descriptorArray, ROOT_CONSTANT_COUNT, rootSignatureFlags);
 }
 
 void PipelineSimple::CreateShaders(DX12Context& ctx)

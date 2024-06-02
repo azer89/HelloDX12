@@ -13,12 +13,12 @@ public:
 	void Destroy();
 
 	void Create(DX12Context& ctx,
-		const D3D12_STATIC_SAMPLER_DESC& samplerDesc,
+		const std::span<CD3DX12_STATIC_SAMPLER_DESC> samplerDescArray,
 		const std::span<CD3DX12_ROOT_PARAMETER1> rootParameters,
 		const D3D12_ROOT_SIGNATURE_FLAGS& rootSignatureFlags);
 
 	void Create(DX12Context& ctx,
-		const D3D12_STATIC_SAMPLER_DESC& samplerDesc,
+		const std::span<CD3DX12_STATIC_SAMPLER_DESC> samplerDescArray,
 		const std::span<DX12Descriptor> descriptors,
 		const DX12DescriptorArray& descriptorArray,
 		uint32_t rootConstantCount,

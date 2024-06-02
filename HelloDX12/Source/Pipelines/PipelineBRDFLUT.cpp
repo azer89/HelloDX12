@@ -64,10 +64,11 @@ void PipelineBRDFLUT::CreateDescriptors(DX12Context& ctx,
 	descriptorHeap_.descriptors_ = descriptors;
 	descriptorHeap_.Create(ctx);
 
-	CD3DX12_STATIC_SAMPLER_DESC sampler{ 1, D3D12_FILTER_MIN_MAG_MIP_LINEAR };
-	sampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-	sampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-	sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	// TODO Not used
+	std::vector<CD3DX12_STATIC_SAMPLER_DESC> samplerArray = { { 1, D3D12_FILTER_MIN_MAG_MIP_LINEAR } };
+	samplerArray[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	samplerArray[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	samplerArray[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
 	constexpr D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
@@ -75,7 +76,7 @@ void PipelineBRDFLUT::CreateDescriptors(DX12Context& ctx,
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
-	rootSignature_.Create(ctx, sampler, descriptors, {}, 0, rootSignatureFlags);
+	rootSignature_.Create(ctx, samplerArray, descriptors, {}, 0, rootSignatureFlags);
 }
 
 void PipelineBRDFLUT::GenerateShader(DX12Context& ctx)
