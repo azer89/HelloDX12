@@ -48,10 +48,11 @@ StructuredBuffer<uint> indexArray : register(t1);
 StructuredBuffer<MeshData> meshDataArray : register(t2);
 StructuredBuffer<LightData> lightDataArray : register(t3);
 
-Texture2D brdfLut : register(t4);
-Texture2D allTextures[] : register(t5); // Unbounded array
-
 SamplerState defaultSampler : register(s0);
+SamplerState brdfLutSampler : register(s1);
+
+Texture2D brdfLutTexture : register(t4);
+Texture2D allTextures[] : register(t5); // Unbounded array
 
 PSInput VSMain(VSInput input)
 {
@@ -98,6 +99,9 @@ float4 PSMain(PSInput input) : SV_TARGET
     float3 F0 = cPBR.baseReflectivity.xxx;
     F0 = lerp(F0, albedo, metallic);
     float3 Lo = albedo * cPBR.albedoMultipler;
+    
+    // IBL
+    float2 brdfLutValue = brdfLutTexture.Sample(brdfLutSampler, float2(0.0, 0.0)).rg; // TODO
     
     uint len;
     uint stride;

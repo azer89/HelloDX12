@@ -167,8 +167,16 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 		descriptorHeaps_[i].Create(ctx);
 	}
 
-	std::vector<CD3DX12_STATIC_SAMPLER_DESC> samplerArray = { { 0, D3D12_FILTER_ANISOTROPIC } };
+	constexpr uint32_t samplerCount = 2;
+	std::vector<CD3DX12_STATIC_SAMPLER_DESC> samplerArray(samplerCount);
+	
+	samplerArray[0] = {0, D3D12_FILTER_ANISOTROPIC};
 	samplerArray[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+	samplerArray[1] = { 1, D3D12_FILTER_MIN_MAG_MIP_LINEAR };
+	samplerArray[1].AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	samplerArray[1].AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	samplerArray[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	
 	constexpr D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
