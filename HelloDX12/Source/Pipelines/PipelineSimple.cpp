@@ -10,11 +10,13 @@ PipelineSimple::PipelineSimple(
 	Scene* scene, 
 	Camera* camera,
 	ResourcesShared* resourcesShared,
+	ResourcesIBL* resourcesIBL,
 	ResourcesLights* resourcesLights) :
 	PipelineBase(ctx),
 	scene_(scene),
 	camera_(camera),
 	resourcesShared_(resourcesShared),
+	resourcesIBL_(resourcesIBL),
 	resourcesLights_(resourcesLights)
 {
 	CreateIndirectCommand(ctx);
@@ -136,6 +138,13 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
 			.buffer_ = &(resourcesLights_->buffer_),
 			.srvDescription_ = resourcesLights_->buffer_.GetSRVDescription()
+		},
+		{ // t4
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
+			.buffer_ = &(resourcesIBL_->brdfLutImage_.buffer_),
+			.srvDescription_ = resourcesIBL_->brdfLutImage_.buffer_.GetSRVDescription()
 		},
 	};
 

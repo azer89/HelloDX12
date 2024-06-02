@@ -48,7 +48,8 @@ StructuredBuffer<uint> indexArray : register(t1);
 StructuredBuffer<MeshData> meshDataArray : register(t2);
 StructuredBuffer<LightData> lightDataArray : register(t3);
 
-Texture2D allTextures[] : register(t4); // Unbounded array
+Texture2D brdfLut : register(t4);
+Texture2D allTextures[] : register(t5); // Unbounded array
 
 SamplerState defaultSampler : register(s0);
 

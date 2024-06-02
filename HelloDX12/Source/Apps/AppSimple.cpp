@@ -49,6 +49,7 @@ void AppSimple::OnInit()
 		scene_.get(), 
 		camera_.get(), 
 		resourcesShared_,
+		resourcesIBL,
 		resourcesLights_);
 	AddPipeline<PipelineResolve>(context_, resourcesShared_);
 	AddPipeline<PipelineTonemap>(context_, resourcesShared_);

@@ -13,6 +13,7 @@ ResourcesIBL::ResourcesIBL(DX12Context& ctx, const std::string& hdrFile)
 	environmentCubemap_.buffer_.SetName("Environment_Cubemap");
 
 	brdfLutImage_.Create(ctx, 256, 256, 1, 1, DXGI_FORMAT_R16G16_FLOAT, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
+	brdfLutImage_.buffer_.SetName("BRDF_LUT");
 
 	PipelineEquirect2Cube pipE2C(ctx);
 	pipE2C.GenerateCubemapFromHDR(ctx, &hdrImage_, &environmentCubemap_);
