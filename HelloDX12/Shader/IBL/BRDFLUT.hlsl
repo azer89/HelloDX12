@@ -51,5 +51,6 @@ void CSMain(uint2 threadID : SV_DispatchThreadID)
     uv.x = (float(threadID.x) + 1.0) / outputWidth;
     uv.y = (float(threadID.y) + 1.0) / outputHeight;
 
-    LUT[threadID] = BRDF(uv.x, 1.0 - uv.y); // TODO
+    // TODO There's a bug with the lower part of the lut image
+    LUT[threadID] = BRDF(uv.x, 1.0 - uv.y);
 }
