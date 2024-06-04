@@ -9,7 +9,8 @@ ResourcesIBL::ResourcesIBL(DX12Context& ctx, const std::string& hdrFile)
 	hdrImage_.LoadHDR(ctx, hdrFile);
 	hdrImage_.buffer_.SetName("HDR_Image");
 
-	environmentCubemap_.CreateCubemap(ctx, CUBE_SIZE, CUBE_SIZE);
+	constexpr uint32_t mipmapCount = 1;
+	environmentCubemap_.CreateCubemap(ctx, CUBE_SIZE, CUBE_SIZE, mipmapCount);
 	environmentCubemap_.buffer_.SetName("Environment_Cubemap");
 
 	brdfLutImage_.Create(ctx, 256, 256, 1, 1, DXGI_FORMAT_R16G16_FLOAT, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);

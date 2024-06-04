@@ -13,7 +13,7 @@ public:
 	void Load(DX12Context& ctx, const std::string& filename);
 	void Load(DX12Context& ctx, void* data, uint32_t width, uint32_t height);
 	void LoadHDR(DX12Context& ctx, const std::string& filename);
-	void CreateCubemap(DX12Context& ctx, uint32_t width, uint32_t height);
+	void CreateCubemap(DX12Context& ctx, uint32_t width, uint32_t height, uint32_t mipmapCount);
 	void Create(DX12Context& ctx, 
 		uint32_t width, 
 		uint32_t height, 
