@@ -1,4 +1,4 @@
-static const float PI = 3.141592;
+static const float PI = 3.141592653589;
 
 // Specular D
 // Trowbridge-Reitz GGX that models the distribution of microfacet normal.

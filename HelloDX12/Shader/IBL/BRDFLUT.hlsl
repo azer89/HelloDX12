@@ -10,15 +10,15 @@ RWTexture2D<float2> LUT : register(u0);
 float2 BRDF(float NoV, float roughness)
 {
 	// Normal always points along z-axis
-    float3 N = float3(0.0, 0.0, 1.0);
+    const float3 N = float3(0.0, 0.0, 1.0);
     float3 V = float3(sqrt(1.0 - NoV * NoV), 0.0, NoV);
 
     float2 lutValue = float2(0.0, 0.0);
-    for (uint i = 0u; i < SAMPLE_COUNT; i++)
+    for (uint i = 0; i < SAMPLE_COUNT; i++)
     {
         float2 Xi = Hammersley(i, SAMPLE_COUNT);
         float3 H = ImportanceSampleGGX(Xi, N, roughness);
-        float3 L = 2.0 * dot(V, H) * H - V;
+        float3 L = normalize(2.0 * dot(V, H) * H - V);
 
         float dotNL = max(dot(N, L), 0.0);
 
@@ -40,7 +40,7 @@ float2 BRDF(float NoV, float roughness)
     return lutValue / float(SAMPLE_COUNT);
 }
 
-[numthreads(1, 1, 1)]
+[numthreads(32, 32, 1)]
 void CSMain(uint2 threadID : SV_DispatchThreadID)
 {
     // Get output LUT dimensions.
@@ -48,8 +48,8 @@ void CSMain(uint2 threadID : SV_DispatchThreadID)
     LUT.GetDimensions(outputWidth, outputHeight);
     
     float2 uv;
-    uv.x = (float(threadID.x) + 0.5) / outputWidth;
-    uv.y = (float(threadID.y) + 0.5) / outputHeight;
+    uv.x = (float(threadID.x) + 1.0) / outputWidth;
+    uv.y = (float(threadID.y) + 1.0) / outputHeight;
 
     LUT[threadID] = BRDF(uv.x, 1.0 - uv.y); // TODO
 }
