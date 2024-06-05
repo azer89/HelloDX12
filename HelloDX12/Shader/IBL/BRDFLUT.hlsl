@@ -48,9 +48,9 @@ void CSMain(uint2 threadID : SV_DispatchThreadID)
     LUT.GetDimensions(outputWidth, outputHeight);
     
     float2 uv;
-    uv.x = (float(threadID.x) + 1.0) / outputWidth;
-    uv.y = (float(threadID.y) + 1.0) / outputHeight;
+    uv.x = (float(threadID.x) + 0.5) / outputWidth;
+    uv.y = (float(threadID.y) + 0.5) / outputHeight;
 
-    // TODO There's a bug with the lower part of the lut image
+    // TODO The lower part of the lut image is incorrect
     LUT[threadID] = BRDF(uv.x, 1.0 - uv.y);
 }
