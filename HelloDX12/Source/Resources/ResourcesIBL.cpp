@@ -4,6 +4,7 @@
 #include "Utility.h"
 
 constexpr uint32_t CUBE_SIZE = 1024;
+constexpr uint32_t LUT_SIZE = 256;
 
 ResourcesIBL::ResourcesIBL(DX12Context& ctx, const std::string& hdrFile)
 {
@@ -22,7 +23,7 @@ ResourcesIBL::ResourcesIBL(DX12Context& ctx, const std::string& hdrFile)
 	specularCubemap_.CreateCubemap(ctx, CUBE_SIZE, CUBE_SIZE, specularMipmapCount);
 	specularCubemap_.buffer_.SetName("Specular_Cubemap");
 
-	brdfLutImage_.Create(ctx, 256, 256, 1, 1, DXGI_FORMAT_R16G16_FLOAT, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
+	brdfLutImage_.Create(ctx, LUT_SIZE, LUT_SIZE, 1, 1, DXGI_FORMAT_R16G16_FLOAT, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
 	brdfLutImage_.buffer_.SetName("BRDF_LUT");
 
 	PipelineEquirect2Cube pipE2C(ctx);
