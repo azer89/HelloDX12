@@ -32,7 +32,7 @@ float3 Diffuse(float3 N)
             float3 sampleVec = tangentSample.x * right + tangentSample.y * up + tangentSample.z * N;
 
             //diffuseColor += texture(cubeMap, sampleVec).rgb * cos(theta) * sin(theta);
-            diffuseColor += inputTexture.SampleLevel(defaultSampler, sampleVec, 0) * cos(theta) * sin(theta);
+            diffuseColor += inputTexture.SampleLevel(defaultSampler, sampleVec, 0).rgb * cos(theta) * sin(theta);
             sampleCount++;
         }
     }

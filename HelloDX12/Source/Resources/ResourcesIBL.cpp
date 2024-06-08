@@ -1,6 +1,7 @@
 #include "ResourcesIBL.h"
 #include "PipelineEquirect2Cube.h"
 #include "PipelineSpecularMap.h"
+#include "PipelineDiffuseMap.h"
 #include "PipelineBRDFLUT.h"
 #include "Utility.h"
 
@@ -35,6 +36,9 @@ ResourcesIBL::ResourcesIBL(DX12Context& ctx, const std::string& hdrFile)
 
 	PipelineSpecularMap pipSpecular(ctx);
 	pipSpecular.Execute(ctx, &environmentCubemap_, &specularCubemap_);
+
+	PipelineDiffuseMap pipDiffuse(ctx);
+	pipDiffuse.Execute(ctx, &environmentCubemap_, &diffuseCubemap_);
 }
 
 ResourcesIBL::~ResourcesIBL()
