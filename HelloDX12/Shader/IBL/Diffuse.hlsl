@@ -44,4 +44,16 @@ float3 Diffuse(float3 N)
 [numthreads(32, 32, 1)]
 void CSMain(uint3 threadID : SV_DispatchThreadID)
 {
+    uint outputWidth, outputHeight, outputDepth;
+    outputTexture.GetDimensions(outputWidth, outputHeight, outputDepth);
+    if (threadID.x >= outputWidth || threadID.y >= outputHeight)
+    {
+        return;
+    }
+    
+    float3 scan = ThreadIdToXYZ(threadID, outputWidth, outputHeight);
+    float3 direction = normalize(scan);
+    float3 diffuseColor = Diffuse(direction);
+    
+    outputTexture[threadID] = float4(diffuseColor, 1.0);
 }

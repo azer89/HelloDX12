@@ -33,24 +33,6 @@ void PipelineMipmap::CreatePipeline(DX12Context& ctx)
 	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + paramOffset++, D3D12_SHADER_VISIBILITY_ALL);
 	rootParameters.emplace_back().InitAsDescriptorTable(1, ranges.data() + paramOffset++, D3D12_SHADER_VISIBILITY_ALL);
 
-	// Static sampler used to get the linearly interpolated color for the mipmaps
-	D3D12_STATIC_SAMPLER_DESC samplerDesc =
-	{
-		.Filter = D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT,
-		.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
-		.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
-		.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
-		.MipLODBias = 0.0f,
-		.MaxAnisotropy = 0,
-		.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER,
-		.BorderColor = D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK,
-		.MinLOD = 0.0f,
-		.MaxLOD = D3D12_FLOAT32_MAX,
-		.ShaderRegister = 0,
-		.RegisterSpace = 0,
-		.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL
-	};
-
 	std::vector<CD3DX12_STATIC_SAMPLER_DESC> samplerArray = { { 0, D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT } };
 	samplerArray[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 

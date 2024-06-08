@@ -10,7 +10,9 @@ class PipelineSpecularMap final : public PipelineBase
 public:
 	PipelineSpecularMap(
 		DX12Context& ctx);
-	~PipelineSpecularMap() = default;
+	~PipelineSpecularMap();
+
+	void Destroy() override;
 
 	void Update(DX12Context& ctx, UIData& uiData) override {}
 	void PopulateCommandList(DX12Context& ctx) override {};
@@ -27,6 +29,9 @@ private:
 	void GenerateShader(DX12Context& ctx);
 
 	void CreatePipeline(DX12Context& ctx);
+
+private:
+	DX12DescriptorHeap descriptorHeap_;
 };
 
 #endif

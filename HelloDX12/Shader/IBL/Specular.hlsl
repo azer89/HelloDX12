@@ -3,12 +3,13 @@
 #include "Hammersley.hlsli"
 #include "../PBR/Header.hlsli"
 
-cbuffer SpecularMapFilterSettings : register(b0)
+cbuffer RootConstants : register(b0)
 {
     float roughness;
 };
 
 TextureCube inputTexture : register(t0);
+
 RWTexture2DArray<float4> outputTexture : register(u0);
 
 SamplerState defaultSampler : register(s0);
@@ -28,7 +29,7 @@ float3 Specular(float3 N)
     inputTexture.GetDimensions(0, inputWidth, inputHeight, inputLevels);
     float saTexel = 4.0 * PI / (6.0 * inputWidth * inputHeight);
 
-    float3 specularColor = float3(0.0);
+    float3 specularColor = 0.0.xxx;
     float totalWeight = 0.0;
 
     for (uint i = 0u; i < SAMPLE_COUNT; ++i)
@@ -67,4 +68,16 @@ float3 Specular(float3 N)
 [numthreads(32, 32, 1)]
 void CSMain(uint3 threadID : SV_DispatchThreadID)
 {
+    uint outputWidth, outputHeight, outputDepth;
+    outputTexture.GetDimensions(outputWidth, outputHeight, outputDepth);
+    if (threadID.x >= outputWidth || threadID.y >= outputHeight)
+    {
+        return;
+    }
+    
+    float3 scan = ThreadIdToXYZ(threadID, outputWidth, outputHeight);
+    float3 direction = normalize(scan);
+    float3 specularColor = Specular(direction);
+    
+    outputTexture[threadID] = float4(specularColor, 1.0);
 }

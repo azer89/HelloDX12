@@ -17,6 +17,10 @@ public:
 	void BindHeap(ID3D12GraphicsCommandList* commandList) const;
 	void BindDescriptorsGraphics(ID3D12GraphicsCommandList* commandList, uint32_t startRootParamIndex) const;
 	void BindDescriptorsCompute(ID3D12GraphicsCommandList* commandList, uint32_t startRootParamIndex) const;
+	void BindSingleDescriptorCompute(
+		ID3D12GraphicsCommandList* commandList, 
+		uint32_t rootParamIndex,
+		uint32_t descriptorIndex) const;
 
 public:
 	ID3D12DescriptorHeap* handle_{};
