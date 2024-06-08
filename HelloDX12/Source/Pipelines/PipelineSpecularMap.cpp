@@ -23,11 +23,11 @@ void PipelineSpecularMap::Execute(DX12Context& ctx,
 	DX12Image* environmentMap,
 	DX12Image* specularMap)
 {
-
-	/*CreateDescriptors(ctx, environmentMap, specularMap);
+	CreateDescriptors(ctx, environmentMap, specularMap);
 	GenerateShader(ctx);
 	CreatePipeline(ctx);
 
+	/*
 	// Start recording 
 	ctx.ResetCommandList();
 	auto commandList = ctx.GetCommandList();
@@ -77,9 +77,7 @@ void PipelineSpecularMap::CreateDescriptors(DX12Context& ctx,
 	descriptorHeap_.descriptors_ = descriptorsA;
 	descriptorHeap_.Create(ctx);
 
-	std::vector<CD3DX12_STATIC_SAMPLER_DESC> samplerArray = { { 1, D3D12_FILTER_MIN_MAG_MIP_LINEAR } };
-	samplerArray[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-	samplerArray[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	std::vector<CD3DX12_STATIC_SAMPLER_DESC> samplerArray = { { 0, D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT } };
 	samplerArray[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 	constexpr D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
