@@ -27,23 +27,44 @@ void PipelineSpecularMap::Execute(DX12Context& ctx,
 	GenerateShader(ctx);
 	CreatePipeline(ctx);
 
-	/*
 	// Start recording 
 	ctx.ResetCommandList();
 	auto commandList = ctx.GetCommandList();
 
+	commandList->SetComputeRootSignature(rootSignature_.handle_);
+	commandList->SetPipelineState(pipelineState_);
+	commandList->SetDescriptorHeaps(1, &descriptorHeap_.handle_);
+
 	environmentMap->TransitionCommand(commandList, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 	specularMap->TransitionCommand(commandList, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 
+	uint32_t outputWitdh = specularMap->width_;
+	uint32_t outputHeight = specularMap->height_;
 	const uint32_t mipmapCount = Utility::MipMapCount(specularMap->width_, specularMap->height_);
 	for (int i = static_cast<int>(mipmapCount - 1u); i >= 0; --i)
 	{
+		uint32_t rootParamIndex = 0;
+		float roughness = static_cast<float>(i) / static_cast<float>(mipmapCount - 1);
+		commandList->SetComputeRoot32BitConstant(
+			rootParamIndex++,
+			roughness,
+			0);
+		descriptorHeap_.BindSingleDescriptorCompute(commandList, rootParamIndex++, 0);
+		descriptorHeap_.BindSingleDescriptorCompute(commandList, rootParamIndex++, i + 1);
+
+		const uint32_t groupCountX = std::max<uint32_t>(1, outputWitdh / 32);
+		const uint32_t groupCountY = std::max<uint32_t>(1, outputHeight / 32);
+
+		commandList->Dispatch(groupCountX, groupCountY, 6);
+
+		// Barrier
+		specularMap->UAVBarrier(commandList);
 	}
 
 	environmentMap->TransitionCommand(commandList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	specularMap->TransitionCommand(commandList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-	ctx.SubmitCommandListAndWaitForGPU();*/
+	ctx.SubmitCommandListAndWaitForGPU();
 }
 
 void PipelineSpecularMap::CreateDescriptors(DX12Context& ctx,
@@ -56,7 +77,7 @@ void PipelineSpecularMap::CreateDescriptors(DX12Context& ctx,
 	descriptorsA[0] =
 	{
 		.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
-		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE,
 		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_ALL,
 		.buffer_ = &(environmentMap->buffer_),
 		.srvDescription_ = environmentMap->buffer_.GetSRVDescription()
