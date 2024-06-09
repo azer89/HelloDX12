@@ -7,12 +7,11 @@ RWTexture2DArray<float4> outputTexture : register(u0);
 SamplerState defaultSampler : register(s0);
 
 static const float PI = 3.141592653589;
+static const float TWO_PI = PI * 2.0;
+static const float HALF_PI = PI * 0.5;
 
 float3 Diffuse(float3 N)
 {
-    const float TWO_PI = PI * 2.0;
-    const float HALF_PI = PI * 0.5;
-
     float3 diffuseColor = 0.0.xxx;
 
 	// Tangent space calculation from origin point
@@ -51,9 +50,11 @@ void CSMain(uint3 threadID : SV_DispatchThreadID)
         return;
     }
     
-    float3 scan = ThreadIdToXYZ(threadID, outputWidth, outputHeight);
+    /*float3 scan = ThreadIdToXYZ(threadID, outputWidth, outputHeight);
     float3 direction = normalize(scan);
     float3 diffuseColor = Diffuse(direction);
     
-    outputTexture[threadID] = float4(diffuseColor, 1.0);
+    outputTexture[threadID] = float4(diffuseColor, 1.0);*/
+    
+    outputTexture[threadID] = float4(1.0, 0.5, 0.5, 1.0);
 }
