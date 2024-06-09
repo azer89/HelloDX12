@@ -9,6 +9,7 @@ SamplerState defaultSampler : register(s0);
 static const float PI = 3.141592653589;
 static const float TWO_PI = PI * 2.0;
 static const float HALF_PI = PI * 0.5;
+static const float SAMPLE_DELTA = 0.1;
 
 float3 Diffuse(float3 N)
 {
@@ -19,18 +20,17 @@ float3 Diffuse(float3 N)
     float3 right = normalize(cross(up, N));
     up = normalize(cross(N, right));
 
-    float sampleDelta = 0.025;
     uint sampleCount = 0u;
-    for (float phi = 0.0; phi < TWO_PI; phi += sampleDelta)
+    for (float phi = 0.0; phi < TWO_PI; phi += SAMPLE_DELTA)
     {
-        for (float theta = 0.0; theta < HALF_PI; theta += sampleDelta)
+        for (float theta = 0.0; theta < HALF_PI; theta += SAMPLE_DELTA)
         {
 			// Spherical to cartesian (in tangent space)
             float3 tangentSample = float3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
+            
 			// Tangent space to world
             float3 sampleVec = tangentSample.x * right + tangentSample.y * up + tangentSample.z * N;
-
-            //diffuseColor += texture(cubeMap, sampleVec).rgb * cos(theta) * sin(theta);
+            
             diffuseColor += inputTexture.SampleLevel(defaultSampler, sampleVec, 0).rgb * cos(theta) * sin(theta);
             sampleCount++;
         }
@@ -55,6 +55,4 @@ void CSMain(uint3 threadID : SV_DispatchThreadID)
     float3 diffuseColor = Diffuse(direction);
     
     outputTexture[threadID] = float4(diffuseColor, 1.0);
-    
-    //outputTexture[threadID] = float4(1.0, 0.5, 0.5, 1.0);
 }
