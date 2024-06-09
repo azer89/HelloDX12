@@ -31,12 +31,12 @@ void PipelineSpecularMap::Execute(DX12Context& ctx,
 	ctx.ResetCommandList();
 	auto commandList = ctx.GetCommandList();
 
+	environmentMap->TransitionCommand(commandList, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+	specularMap->TransitionCommand(commandList, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+
 	commandList->SetComputeRootSignature(rootSignature_.handle_);
 	commandList->SetPipelineState(pipelineState_);
 	commandList->SetDescriptorHeaps(1, &descriptorHeap_.handle_);
-
-	environmentMap->TransitionCommand(commandList, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-	specularMap->TransitionCommand(commandList, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 
 	uint32_t outputWitdh = specularMap->width_;
 	uint32_t outputHeight = specularMap->height_;
@@ -54,8 +54,8 @@ void PipelineSpecularMap::Execute(DX12Context& ctx,
 
 		const uint32_t groupCountX = std::max<uint32_t>(1, outputWitdh / 32);
 		const uint32_t groupCountY = std::max<uint32_t>(1, outputHeight / 32);
-
-		commandList->Dispatch(groupCountX, groupCountY, 6);
+		constexpr uint32_t groupCountZ = 6;
+		commandList->Dispatch(groupCountX, groupCountY, groupCountZ);
 
 		// Barrier
 		specularMap->UAVBarrier(commandList);

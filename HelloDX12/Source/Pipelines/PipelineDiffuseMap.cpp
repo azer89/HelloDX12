@@ -23,6 +23,30 @@ void PipelineDiffuseMap::Execute(DX12Context& ctx,
 	CreateDescriptors(ctx, environmentMap, diffuseMap);
 	GenerateShader(ctx);
 	CreatePipeline(ctx);
+
+	// Start recording 
+	ctx.ResetCommandList();
+	auto commandList = ctx.GetCommandList();
+
+	environmentMap->TransitionCommand(commandList, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+	diffuseMap->TransitionCommand(commandList, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+
+	commandList->SetComputeRootSignature(rootSignature_.handle_);
+	commandList->SetPipelineState(pipelineState_);
+	commandList->SetDescriptorHeaps(1, &descriptorHeap_.handle_);
+
+	descriptorHeap_.BindHeap(commandList);
+	descriptorHeap_.BindDescriptorsCompute(commandList, 0);
+
+	const uint32_t groupCountX = std::max<uint32_t>(1, diffuseMap->width_ / 32);
+	const uint32_t groupCountY = std::max<uint32_t>(1, diffuseMap->height_ / 32);
+	constexpr uint32_t groupCountZ = 6;
+	commandList->Dispatch(groupCountX, groupCountY, groupCountZ);
+
+	environmentMap->TransitionCommand(commandList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	diffuseMap->TransitionCommand(commandList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+
+	ctx.SubmitCommandListAndWaitForGPU();
 }
 
 void PipelineDiffuseMap::CreateDescriptors(DX12Context& ctx,
