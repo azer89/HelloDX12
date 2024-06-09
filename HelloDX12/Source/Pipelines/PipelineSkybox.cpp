@@ -58,8 +58,8 @@ void PipelineSkybox::CreateDescriptors(DX12Context& ctx)
 		.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
 		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
 		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
-		.buffer_ = &(resourcesIBL_->environmentCubemap_.buffer_),
-		.srvDescription_ = resourcesIBL_->environmentCubemap_.buffer_.GetSRVDescription()
+		.buffer_ = &(resourcesIBL_->diffuseCubemap_.buffer_),
+		.srvDescription_ = resourcesIBL_->diffuseCubemap_.buffer_.GetSRVDescription()
 	};
 
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
@@ -71,7 +71,7 @@ void PipelineSkybox::CreateDescriptors(DX12Context& ctx)
 		descriptorHeaps_[i].Create(ctx);
 	}
 
-	std::vector<CD3DX12_STATIC_SAMPLER_DESC> samplerArray = { { 0, D3D12_FILTER_ANISOTROPIC } };
+	std::vector<CD3DX12_STATIC_SAMPLER_DESC> samplerArray = { { 0, D3D12_FILTER_MIN_MAG_MIP_LINEAR } };
 	samplerArray[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
 	// Allow input layout and deny unnecessary access to certain pipeline stages.

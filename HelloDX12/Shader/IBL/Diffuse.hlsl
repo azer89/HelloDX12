@@ -50,11 +50,11 @@ void CSMain(uint3 threadID : SV_DispatchThreadID)
         return;
     }
     
-    /*float3 scan = ThreadIdToXYZ(threadID, outputWidth, outputHeight);
+    float3 scan = ThreadIdToXYZ(threadID, outputWidth, outputHeight);
     float3 direction = normalize(scan);
     float3 diffuseColor = Diffuse(direction);
     
-    outputTexture[threadID] = float4(diffuseColor, 1.0);*/
+    outputTexture[threadID] = float4(diffuseColor, 1.0);
     
-    outputTexture[threadID] = float4(1.0, 0.5, 0.5, 1.0);
+    //outputTexture[threadID] = float4(1.0, 0.5, 0.5, 1.0);
 }
