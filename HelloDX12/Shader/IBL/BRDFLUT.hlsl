@@ -18,7 +18,7 @@ float2 BRDF(float NoV, float roughness)
     {
         float2 Xi = Hammersley(i, SAMPLE_COUNT);
         float3 H = ImportanceSampleGGX(Xi, N, roughness);
-        float3 L = normalize(2.0 * dot(V, H) * H - V);
+        precise float3 L = normalize(2.0 * dot(V, H) * H - V); // NOTE has to use precise
 
         float dotNL = max(dot(N, L), 0.0);
 

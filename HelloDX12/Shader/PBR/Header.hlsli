@@ -61,7 +61,7 @@ float3 ImportanceSampleGGX(float2 Xi, float3 N, float roughness)
 
     // TODO Issue with sqrt of negative number
     float cosTheta = sqrt((1.0 - Xi.y) / (1.0 + (a * a - 1.0) * Xi.y));
-    float sinTheta = max(1.0 - cosTheta * cosTheta, 0.0);
+    float sinTheta = 1.0 - cosTheta * cosTheta;
     sinTheta = sqrt(sinTheta);
 
 	// From spherical coordinates to cartesian coordinates - halfway vector
