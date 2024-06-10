@@ -31,7 +31,10 @@ float3 Diffuse(float3 N)
 			// Tangent space to world
             float3 sampleVec = tangentSample.x * right + tangentSample.y * up + tangentSample.z * N;
             
-            float3 textureColor = inputTexture.SampleLevel(defaultSampler, sampleVec, 0).rgb;
+            // TODO Bandaid solution
+            // normalize is used to prevent extreme values found in light sources
+            float3 textureColor = normalize(inputTexture.SampleLevel(defaultSampler, sampleVec, 0).rgb);
+            
             diffuseColor += textureColor * cos(theta) * sin(theta);
             sampleCount++;
         }

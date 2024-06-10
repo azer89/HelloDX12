@@ -50,9 +50,7 @@ void CSMain(uint3 threadID : SV_DispatchThreadID)
     float phi = atan2(v.z, v.x);
     float theta = acos(v.y);
 
-    // TODO
-    // normalize is used to prevent extreme values found in blight light sources
-    float4 color = normalize(inputTexture.SampleLevel(defaultSampler, float2(phi / TwoPI, theta / PI), 0));
+    float4 color = inputTexture.SampleLevel(defaultSampler, float2(phi / TwoPI, theta / PI), 0);
     
     outputTexture[threadID] = color;
 }
