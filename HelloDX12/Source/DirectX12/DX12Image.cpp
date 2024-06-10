@@ -114,7 +114,7 @@ void DX12Image::CreateCubemap(DX12Context& ctx, uint32_t width, uint32_t height,
 	width_ = width;
 	height_ = height;
 	pixelSize_ = 4 * sizeof(float);
-	format_ = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	format_ = DXGI_FORMAT_R16G16B16A16_FLOAT; // TODO Using 16 for now, because 32-bit precision is very slow when calculating IBL maps 
 	mipmapCount_ = mipmapCount;
 	layerCount_ = 6;
 	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;

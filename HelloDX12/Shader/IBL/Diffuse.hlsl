@@ -9,7 +9,7 @@ SamplerState defaultSampler : register(s0);
 static const float PI = 3.141592653589;
 static const float TWO_PI = PI * 2.0;
 static const float HALF_PI = PI * 0.5;
-static const float SAMPLE_DELTA = 0.1;
+static const float SAMPLE_DELTA = 0.025;
 
 float3 Diffuse(float3 N)
 {
@@ -40,7 +40,7 @@ float3 Diffuse(float3 N)
     return diffuseColor;
 }
 
-[numthreads(32, 32, 1)]
+[numthreads(4, 4, 1)]
 void CSMain(uint3 threadID : SV_DispatchThreadID)
 {
     uint outputWidth, outputHeight, outputDepth;

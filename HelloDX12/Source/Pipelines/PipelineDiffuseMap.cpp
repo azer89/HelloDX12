@@ -38,8 +38,8 @@ void PipelineDiffuseMap::Execute(DX12Context& ctx,
 	descriptorHeap_.BindHeap(commandList);
 	descriptorHeap_.BindDescriptorsCompute(commandList, 0);
 
-	const uint32_t groupCountX = std::max<uint32_t>(1, diffuseMap->width_ / 32);
-	const uint32_t groupCountY = std::max<uint32_t>(1, diffuseMap->height_ / 32);
+	const uint32_t groupCountX = std::max<uint32_t>(1, diffuseMap->width_ / 4);
+	const uint32_t groupCountY = std::max<uint32_t>(1, diffuseMap->height_ / 4);
 	constexpr uint32_t groupCountZ = 6;
 	commandList->Dispatch(groupCountX, groupCountY, groupCountZ);
 
@@ -74,8 +74,10 @@ void PipelineDiffuseMap::CreateDescriptors(DX12Context& ctx,
 	descriptorHeap_.descriptors_ = descriptors;
 	descriptorHeap_.Create(ctx);
 
-	std::vector<CD3DX12_STATIC_SAMPLER_DESC> samplerArray = { { 0, D3D12_FILTER_MIN_MAG_MIP_LINEAR } };
+	std::vector<CD3DX12_STATIC_SAMPLER_DESC> samplerArray = { { 0, D3D12_FILTER_MIN_MAG_MIP_POINT } };
 	samplerArray[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+	samplerArray[0].MinLOD = 0.0f;
+	samplerArray[0].MaxLOD = 0.0f;
 
 	constexpr D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
