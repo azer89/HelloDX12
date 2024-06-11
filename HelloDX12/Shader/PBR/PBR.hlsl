@@ -125,6 +125,17 @@ float4 PSMain(PSInput input) : SV_TARGET
             light);
     }
     
-    float3 color = emissive + Lo;
+    float3 ambient = Ambient(
+        albedo,
+        F0,
+        N,
+        V,
+        cPBR.maxReflectionLod,
+        metallic,
+        roughness,
+        ao,
+        NoV);
+    
+    float3 color = ambient + emissive + Lo;
     return float4(color, 1.0f);
 }

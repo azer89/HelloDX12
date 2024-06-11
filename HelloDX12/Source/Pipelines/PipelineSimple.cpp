@@ -245,6 +245,7 @@ void PipelineSimple::Update(DX12Context& ctx, UIData& uiData)
 	CPBR* pPBR = constBuffPBR_[frameIndex].As<CPBR>();
 	pPBR->albedoMultipler = uiData.constBufferPBR_.albedoMultipler;
 	pPBR->baseReflectivity = uiData.constBufferPBR_.baseReflectivity;
+	pPBR->maxReflectionLod = uiData.constBufferPBR_.maxReflectionLod;
 	pPBR->lightFalloff = uiData.constBufferPBR_.lightFalloff;
 	pPBR->lightIntensity = uiData.constBufferPBR_.lightIntensity;
 }
