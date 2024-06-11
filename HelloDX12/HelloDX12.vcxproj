@@ -101,6 +101,7 @@
       </ShaderType>
       <FileType>Document</FileType>
     </None>
+    <None Include="Shader\IBL\Ambient.hlsli" />
     <None Include="Shader\IBL\Hammersley.hlsli" />
     <None Include="Shader\IBL\ThreadIdToXYZ.hlsli" />
     <None Include="Shader\MeshData.hlsli" />

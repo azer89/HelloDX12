@@ -352,5 +352,8 @@
     <None Include="Shader\MipmapArray.hlsl">
       <Filter>Shader</Filter>
     </None>
+    <None Include="Shader\IBL\Ambient.hlsli">
+      <Filter>Shader\IBL</Filter>
+    </None>
   </ItemGroup>
 </Project>
