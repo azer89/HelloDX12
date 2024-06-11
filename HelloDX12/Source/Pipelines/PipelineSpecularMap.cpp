@@ -1,4 +1,5 @@
 #include "PipelineSpecularMap.h"
+#include "RootConstParam.h"
 #include "Utility.h"
 
 constexpr uint32_t ROOT_CONSTANT_COUNT = 1;
@@ -47,7 +48,7 @@ void PipelineSpecularMap::Execute(DX12Context& ctx,
 		float roughness = static_cast<float>(i) / static_cast<float>(mipmapCount - 1);
 		commandList->SetComputeRoot32BitConstant(
 			rootParamIndex++,
-			roughness,
+			RootConstParam(roughness).uint_,
 			0);
 		descriptorHeap_.BindSingleDescriptorCompute(commandList, rootParamIndex++, 0);
 		descriptorHeap_.BindSingleDescriptorCompute(commandList, rootParamIndex++, i + 1);
