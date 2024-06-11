@@ -9,7 +9,7 @@ SamplerState defaultSampler : register(s0);
 static const float PI = 3.141592653589;
 static const float TWO_PI = PI * 2.0;
 static const float HALF_PI = PI * 0.5;
-static const float SAMPLE_DELTA = 0.05;
+static const float SAMPLE_DELTA = 0.025;
 
 float3 Diffuse(float3 N)
 {
