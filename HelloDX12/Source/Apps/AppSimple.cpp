@@ -22,7 +22,7 @@ void AppSimple::OnInit()
 
 	// Scene
 	scene_ = std::make_unique<Scene>();
-	scene_->Init(context_, AppConfig::ModelFolder + "Zaku/Zaku.gltf");
+	scene_->Init(context_, AppConfig::ModelFolder + "DamagedHelmet/DamagedHelmet.gltf");
 
 	// IBL
 	resourcesIBL = AddResources<ResourcesIBL>(context_, AppConfig::TextureFolder + "piazza_bologni_1k.hdr");
