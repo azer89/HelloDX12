@@ -8,6 +8,7 @@ A graphics renderer developed using C++ and DirectX 12.
 
 ### Features
 * PBR
+* IBL
 * Blinn-Phong
 * Tonemapping
 * MSAA
