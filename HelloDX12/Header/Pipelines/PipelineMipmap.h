@@ -9,7 +9,8 @@ class PipelineMipmap final : public PipelineBase
 {
 public:
 	PipelineMipmap(
-		DX12Context& ctx);
+		DX12Context& ctx,
+		bool textureArray);
 	~PipelineMipmap() = default;
 
 	void GenerateMipmap(DX12Context& ctx, DX12Image* image);
@@ -20,6 +21,9 @@ public:
 private:
 	void GenerateShader(DX12Context& ctx);
 	void CreatePipeline(DX12Context& ctx);
+
+private:
+	bool textureArray_ = false;
 };
 
 #endif

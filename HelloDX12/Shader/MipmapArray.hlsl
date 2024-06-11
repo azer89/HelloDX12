@@ -23,5 +23,5 @@ void CSMain(uint3 threadID : SV_DispatchThreadID)
     float4 color = srcTexture.SampleLevel(defaultSampler, texcoords, 0);
 
 	// Write the final color into the destination texture
-    dstTexture[threadID.xy] = color;
+    dstTexture[threadID] = color;
 }

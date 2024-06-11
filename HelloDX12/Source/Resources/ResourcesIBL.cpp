@@ -1,4 +1,5 @@
 #include "ResourcesIBL.h"
+#include "PipelineMipmap.h"
 #include "PipelineEquirect2Cube.h"
 #include "PipelineSpecularMap.h"
 #include "PipelineDiffuseMap.h"
@@ -13,7 +14,7 @@ ResourcesIBL::ResourcesIBL(DX12Context& ctx, const std::string& hdrFile)
 	hdrImage_.LoadHDR(ctx, hdrFile);
 	hdrImage_.buffer_.SetName("HDR_Image");
 
-	constexpr uint32_t envMipmapCount = 1;
+	const uint32_t envMipmapCount = Utility::MipMapCount(CUBE_SIZE);
 	environmentCubemap_.CreateCubemap(ctx, CUBE_SIZE, CUBE_SIZE, envMipmapCount);
 	environmentCubemap_.buffer_.SetName("Environment_Cubemap");
 
@@ -30,6 +31,10 @@ ResourcesIBL::ResourcesIBL(DX12Context& ctx, const std::string& hdrFile)
 
 	PipelineEquirect2Cube pipE2C(ctx);
 	pipE2C.GenerateCubemapFromHDR(ctx, &hdrImage_, &environmentCubemap_);
+
+	bool isTextureArray = true;
+	PipelineMipmap pipMipmap(ctx, isTextureArray);
+	pipMipmap.GenerateMipmap(ctx, &environmentCubemap_);
 
 	PipelineBRDFLUT pipLUT(ctx);
 	pipLUT.Execute(ctx, &brdfLutImage_);

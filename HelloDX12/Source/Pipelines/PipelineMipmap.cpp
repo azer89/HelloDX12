@@ -3,12 +3,14 @@
 #include "RootConstParam.h"
 
 #include <algorithm>
-
+#include <iostream>
 #include <vector>
 
 PipelineMipmap::PipelineMipmap(
-	DX12Context& ctx) :
-	PipelineBase(ctx)
+	DX12Context& ctx,
+	bool textureArray) :
+	PipelineBase(ctx),
+	textureArray_(textureArray)
 {
 	GenerateShader(ctx);
 	CreatePipeline(ctx);
@@ -16,7 +18,14 @@ PipelineMipmap::PipelineMipmap(
 
 void PipelineMipmap::GenerateShader(DX12Context& ctx)
 {
-	computeShader_.Create(ctx, AppConfig::ShaderFolder + "Mipmap.hlsl", ShaderType::Compute);
+	if (textureArray_)
+	{
+		computeShader_.Create(ctx, AppConfig::ShaderFolder + "MipmapArray.hlsl", ShaderType::Compute);
+	}
+	else
+	{
+		computeShader_.Create(ctx, AppConfig::ShaderFolder + "Mipmap.hlsl", ShaderType::Compute);
+	}
 }
 
 void PipelineMipmap::CreatePipeline(DX12Context& ctx)
@@ -56,6 +65,12 @@ void PipelineMipmap::CreatePipeline(DX12Context& ctx)
 
 void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 {
+	if (image->mipmapCount_ <= 1)
+	{
+		std::cerr << "mipmap count << " << image->mipmapCount_ << " is invalid\n";
+		return;
+	}
+
 	// Prepare the shader resource view description for the source texture
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvSrcDesc =
 	{
@@ -66,11 +81,12 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	srvSrcDesc.Texture2D.MipLevels = 1;
 
 	// Prepare the unordered access view description for the destination texture
-	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDstDesc =
+	/*D3D12_UNORDERED_ACCESS_VIEW_DESC uavDstDesc =
 	{
 		.Format = image->format_,
 		.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D
-	};
+	};*/
+	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDstDesc = image->buffer_.GetUAVDescription(0);
 
 	// Descriptor heap
 	// TODO Use DX12Descriptor::CreateDescriptorHeap(...)
@@ -144,7 +160,7 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 		commandList->Dispatch(
 			std::max(dstWidth / 8, 1u),
 			std::max(dstHeight / 8, 1u),
-			1);
+			image->layerCount_);
 
 		// Barrier
 		image->UAVBarrier(commandList);
