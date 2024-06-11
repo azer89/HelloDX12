@@ -4,7 +4,7 @@ Downsample shader for generating mipmap
 */
 
 Texture2D<float4> srcTexture : register(t0);
-RWTexture2D<float4> dstTexture : register(u0); // Non cubemap image
+RWTexture2DArray<float4> dstTexture : register(u0); // Array for cubemap
 SamplerState defaultSampler : register(s0);
 
 cbuffer CB : register(b0)
