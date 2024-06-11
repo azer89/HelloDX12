@@ -143,6 +143,20 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
 			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
 			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
+			.buffer_ = &(resourcesIBL_->specularCubemap_.buffer_),
+			.srvDescription_ = resourcesIBL_->specularCubemap_.buffer_.GetSRVDescription()
+		},
+		{ // t5
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
+			.buffer_ = &(resourcesIBL_->diffuseCubemap_.buffer_),
+			.srvDescription_ = resourcesIBL_->diffuseCubemap_.buffer_.GetSRVDescription()
+		},
+		{ // t6
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
 			.buffer_ = &(resourcesIBL_->brdfLutImage_.buffer_),
 			.srvDescription_ = resourcesIBL_->brdfLutImage_.buffer_.GetSRVDescription()
 		},

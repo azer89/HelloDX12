@@ -48,11 +48,13 @@ StructuredBuffer<uint> indexArray : register(t1);
 StructuredBuffer<MeshData> meshDataArray : register(t2);
 StructuredBuffer<LightData> lightDataArray : register(t3);
 
+TextureCube specularTexture : register(t4);
+TextureCube diffuseTexture : register(t5);
+Texture2D brdfLutTexture : register(t6);
+Texture2D allTextures[] : register(t7); // Unbounded array
+
 SamplerState defaultSampler : register(s0);
 SamplerState brdfLutSampler : register(s1);
-
-Texture2D brdfLutTexture : register(t4);
-Texture2D allTextures[] : register(t5); // Unbounded array
 
 PSInput VSMain(VSInput input)
 {
