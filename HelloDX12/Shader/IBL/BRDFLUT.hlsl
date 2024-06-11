@@ -50,7 +50,6 @@ void CSMain(uint2 threadID : SV_DispatchThreadID)
     float2 uv;
     uv.x = (float(threadID.x) + 0.5) / outputWidth;
     uv.y = (float(threadID.y) + 0.5) / outputHeight;
-
-    // TODO The lower part of the lut image is incorrect
+    
     LUT[threadID] = BRDF(uv.x, 1.0 - uv.y);
 }

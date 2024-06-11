@@ -21,10 +21,7 @@ float3 Specular(float3 N)
 	// Make the simplifying assumption that V equals R equals the normal 
     float3 R = N;
     float3 V = R;
-
-    //float2 texelSize = 1.0 / textureSize(cubeMap, 0); // TODO
-    //float saTexel = 4.0 * PI / (6.0 * texelSize.x * texelSize.x);
-    // Get input cubemap dimensions at zero mipmap level.
+    
     float inputWidth, inputHeight, inputLevels;
     inputTexture.GetDimensions(0, inputWidth, inputHeight, inputLevels);
     float saTexel = 4.0 * PI / (6.0 * inputWidth * inputHeight);
@@ -52,9 +49,7 @@ float3 Specular(float3 N)
             float pdf = D * NoH / (4.0 * HoV) + 0.0001;
             float saSample = 1.0 / (float(SAMPLE_COUNT) * pdf + 0.0001);
             float mipLevel = roughness == 0.0 ? 0.0 : 0.5 * log2(saSample / saTexel);
-
-            //specularColor += textureLod(cubeMap, L, mipLevel).rgb * NoL; // TODO
-            // color  += inputTexture.SampleLevel(defaultSampler, Li, mipLevel).rgb * cosLi;
+            
             specularColor += inputTexture.SampleLevel(defaultSampler, L, mipLevel).rgb * NoL;
             totalWeight += NoL;
         }
