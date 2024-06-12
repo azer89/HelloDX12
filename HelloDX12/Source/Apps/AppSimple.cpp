@@ -22,7 +22,7 @@ void AppSimple::OnInit()
 
 	// Scene
 	scene_ = std::make_unique<Scene>();
-	scene_->Init(context_, AppConfig::ModelFolder + "Sponza/Sponza.gltf");
+	scene_->Init(context_, AppConfig::ModelFolder + "Zaku/Zaku.gltf");
 
 	// IBL
 	resourcesIBL = AddResources<ResourcesIBL>(context_, AppConfig::TextureFolder + "industrial_sunset_02_puresky_1k.hdr");
@@ -49,6 +49,7 @@ void AppSimple::OnInit()
 		scene_.get(), 
 		camera_.get(), 
 		resourcesShared_,
+		resourcesIBL,
 		resourcesLights_);
 	AddPipeline<PipelineResolve>(context_, resourcesShared_);
 	AddPipeline<PipelineTonemap>(context_, resourcesShared_);

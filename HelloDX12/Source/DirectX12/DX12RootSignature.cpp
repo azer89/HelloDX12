@@ -10,7 +10,7 @@ void DX12RootSignature::Destroy()
 }
 
 void DX12RootSignature::Create(DX12Context& ctx,
-	const D3D12_STATIC_SAMPLER_DESC& samplerDesc,
+	const std::span<CD3DX12_STATIC_SAMPLER_DESC> samplerDescArray,
 	const std::span<CD3DX12_ROOT_PARAMETER1> rootParameters,
 	const D3D12_ROOT_SIGNATURE_FLAGS& rootSignatureFlags)
 {
@@ -21,8 +21,8 @@ void DX12RootSignature::Create(DX12Context& ctx,
 	rootSignatureDesc.Init_1_1(
 		static_cast<UINT>(rootParameters.size()),
 		rootParameters.data(),
-		1,
-		&samplerDesc,
+		samplerDescArray.size(),
+		samplerDescArray.data(),
 		rootSignatureFlags);
 
 	D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData{};
@@ -51,7 +51,7 @@ void DX12RootSignature::Create(DX12Context& ctx,
 }
 
 void DX12RootSignature::Create(DX12Context& ctx,
-	const D3D12_STATIC_SAMPLER_DESC& samplerDesc,
+	const std::span<CD3DX12_STATIC_SAMPLER_DESC> samplerDescArray,
 	const std::span<DX12Descriptor> descriptors,
 	const DX12DescriptorArray& descriptorArray,
 	uint32_t rootConstantCount,
@@ -109,5 +109,5 @@ void DX12RootSignature::Create(DX12Context& ctx,
 			descriptorArray.shaderVisibility_);
 	}
 
-	Create(ctx, samplerDesc, rootParameters, rootSignatureFlags);
+	Create(ctx, samplerDescArray, rootParameters, rootSignatureFlags);
 }

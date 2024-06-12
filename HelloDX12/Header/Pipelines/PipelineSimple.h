@@ -6,6 +6,7 @@
 #include "PipelineBase.h"
 #include "ResourcesShared.h"
 #include "ResourcesLights.h"
+#include "ResourcesIBL.h"
 #include "Scene.h"
 #include "Camera.h"
 #include "Configs.h"
@@ -20,6 +21,7 @@ public:
 		Scene* scene, 
 		Camera* camera, 
 		ResourcesShared* resourcesShared,
+		ResourcesIBL* resourcesIBL,
 		ResourcesLights* resourcesLights);
 	~PipelineSimple();
 
@@ -48,6 +50,7 @@ public:
 	Scene* scene_{};
 	Camera* camera_{};
 	ResourcesShared* resourcesShared_{};
+	ResourcesIBL* resourcesIBL_{};
 	ResourcesLights* resourcesLights_{};
 
 private:

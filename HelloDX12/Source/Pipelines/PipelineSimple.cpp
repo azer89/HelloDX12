@@ -10,11 +10,13 @@ PipelineSimple::PipelineSimple(
 	Scene* scene, 
 	Camera* camera,
 	ResourcesShared* resourcesShared,
+	ResourcesIBL* resourcesIBL,
 	ResourcesLights* resourcesLights) :
 	PipelineBase(ctx),
 	scene_(scene),
 	camera_(camera),
 	resourcesShared_(resourcesShared),
+	resourcesIBL_(resourcesIBL),
 	resourcesLights_(resourcesLights)
 {
 	CreateIndirectCommand(ctx);
@@ -137,6 +139,27 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 			.buffer_ = &(resourcesLights_->buffer_),
 			.srvDescription_ = resourcesLights_->buffer_.GetSRVDescription()
 		},
+		{ // t4
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
+			.buffer_ = &(resourcesIBL_->specularCubemap_.buffer_),
+			.srvDescription_ = resourcesIBL_->specularCubemap_.buffer_.GetSRVDescription()
+		},
+		{ // t5
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
+			.buffer_ = &(resourcesIBL_->diffuseCubemap_.buffer_),
+			.srvDescription_ = resourcesIBL_->diffuseCubemap_.buffer_.GetSRVDescription()
+		},
+		{ // t6
+			.type_ = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+			.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+			.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
+			.buffer_ = &(resourcesIBL_->brdfLutImage_.buffer_),
+			.srvDescription_ = resourcesIBL_->brdfLutImage_.buffer_.GetSRVDescription()
+		},
 	};
 
 	// t4
@@ -158,7 +181,16 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 		descriptorHeaps_[i].Create(ctx);
 	}
 
-	D3D12_STATIC_SAMPLER_DESC sampler = DX12Image::GetDefaultSampler();
+	constexpr uint32_t samplerCount = 2;
+	std::vector<CD3DX12_STATIC_SAMPLER_DESC> samplerArray(samplerCount);
+	
+	samplerArray[0] = {0, D3D12_FILTER_ANISOTROPIC};
+	samplerArray[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+	samplerArray[1] = { 1, D3D12_FILTER_MIN_MAG_MIP_LINEAR };
+	samplerArray[1].AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	samplerArray[1].AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	samplerArray[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	
 	constexpr D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
@@ -166,7 +198,7 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
-	rootSignature_.Create(ctx, sampler, descriptors, descriptorArray, ROOT_CONSTANT_COUNT, rootSignatureFlags);
+	rootSignature_.Create(ctx, samplerArray, descriptors, descriptorArray, ROOT_CONSTANT_COUNT, rootSignatureFlags);
 }
 
 void PipelineSimple::CreateShaders(DX12Context& ctx)
@@ -213,6 +245,7 @@ void PipelineSimple::Update(DX12Context& ctx, UIData& uiData)
 	CPBR* pPBR = constBuffPBR_[frameIndex].As<CPBR>();
 	pPBR->albedoMultipler = uiData.constBufferPBR_.albedoMultipler;
 	pPBR->baseReflectivity = uiData.constBufferPBR_.baseReflectivity;
+	pPBR->maxReflectionLod = uiData.constBufferPBR_.maxReflectionLod;
 	pPBR->lightFalloff = uiData.constBufferPBR_.lightFalloff;
 	pPBR->lightIntensity = uiData.constBufferPBR_.lightIntensity;
 }

@@ -1,5 +1,7 @@
 #include "DX12DescriptorHeap.h"
 
+#include <iostream>
+
 void DX12DescriptorHeap::Destroy()
 {
 	if (handle_)
@@ -111,4 +113,17 @@ void DX12DescriptorHeap::BindDescriptorsCompute(ID3D12GraphicsCommandList* comma
 	{
 		commandList->SetComputeRootDescriptorTable(rootParamIndex++, descriptorArray_.GetFirstGPUHandle());
 	}
+}
+
+void DX12DescriptorHeap::BindSingleDescriptorCompute(
+	ID3D12GraphicsCommandList* commandList,
+	uint32_t rootParamIndex,
+	uint32_t descriptorIndex) const
+{
+	if (descriptorIndex < 0 || descriptorIndex >= descriptors_.size())
+	{
+		std::cerr << "descriptorIndex " << descriptorIndex << " is invalid\n";
+	}
+
+	commandList->SetComputeRootDescriptorTable(rootParamIndex, descriptors_[descriptorIndex].gpuHandle_);
 }

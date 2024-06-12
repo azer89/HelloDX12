@@ -110,6 +110,7 @@ void PipelineImGui::ImGuiShowPBRConfig(CPBR* constBuffPBR)
 {
 	ImGui::SliderFloat("Light Falloff", &(constBuffPBR->lightFalloff), 0.01f, 5.f);
 	ImGui::SliderFloat("Light Intensity", &(constBuffPBR->lightIntensity), 0.1f, 20.f);
+	ImGui::SliderFloat("Reflection LOD", &(constBuffPBR->maxReflectionLod), 0.1f, 5.0f);
 	ImGui::SliderFloat("Albedo", &(constBuffPBR->albedoMultipler), 0.0f, 1.0f);
 	ImGui::SliderFloat("Reflectivity", &(constBuffPBR->baseReflectivity), 0.01f, 1.f);
 }

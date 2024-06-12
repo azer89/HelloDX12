@@ -6,7 +6,6 @@
 
 #include "Header.hlsli"
 #include "NormalTBN.hlsli"
-#include "Radiance.hlsli"
 #include "CPBR.hlsli"
 
 struct VSInput
@@ -48,9 +47,16 @@ StructuredBuffer<uint> indexArray : register(t1);
 StructuredBuffer<MeshData> meshDataArray : register(t2);
 StructuredBuffer<LightData> lightDataArray : register(t3);
 
-Texture2D allTextures[] : register(t4); // Unbounded array
+TextureCube specularMap : register(t4);
+TextureCube diffuseMap : register(t5);
+Texture2D brdfLUT : register(t6);
+Texture2D allTextures[] : register(t7); // Unbounded array
 
 SamplerState defaultSampler : register(s0);
+SamplerState brdfLutSampler : register(s1);
+
+#include "../IBL/Ambient.hlsli"
+#include "Radiance.hlsli"
 
 PSInput VSMain(VSInput input)
 {
@@ -97,7 +103,7 @@ float4 PSMain(PSInput input) : SV_TARGET
     float3 F0 = cPBR.baseReflectivity.xxx;
     F0 = lerp(F0, albedo, metallic);
     float3 Lo = albedo * cPBR.albedoMultipler;
-    
+        
     uint len;
     uint stride;
     lightDataArray.GetDimensions(len, stride);
@@ -119,6 +125,17 @@ float4 PSMain(PSInput input) : SV_TARGET
             light);
     }
     
-    float3 color = emissive + Lo;
+    float3 ambient = Ambient(
+        albedo,
+        F0,
+        N,
+        V,
+        cPBR.maxReflectionLod,
+        metallic,
+        roughness,
+        ao,
+        NoV);
+    
+    float3 color = ambient + emissive + Lo;
     return float4(color, 1.0f);
 }

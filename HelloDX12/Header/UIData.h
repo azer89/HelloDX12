@@ -25,6 +25,7 @@ public:
 	{
 		.lightIntensity = 1.75f,
 		.baseReflectivity = 0.01f,
+		.maxReflectionLod = 1.0f,
 		.lightFalloff = 0.75f,
 		.albedoMultipler = 0.1f
 	};

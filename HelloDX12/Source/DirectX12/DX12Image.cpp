@@ -109,15 +109,40 @@ void DX12Image::LoadHDR(DX12Context& ctx, const std::string& filename)
 	stbi_image_free(pixels);
 }
 
-void DX12Image::CreateCubemap(DX12Context& ctx, uint32_t width, uint32_t height)
+void DX12Image::CreateCubemap(DX12Context& ctx, uint32_t width, uint32_t height, uint32_t mipmapCount)
 {
 	width_ = width;
 	height_ = height;
 	pixelSize_ = 4 * sizeof(float);
 	format_ = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	mipmapCount_ = 1;
+	mipmapCount_ = mipmapCount;
 	layerCount_ = 6;
 	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+
+	buffer_.CreateImage(
+		ctx,
+		width_,
+		height_,
+		mipmapCount_,
+		layerCount_,
+		format_,
+		flags);
+}
+
+void DX12Image::Create(DX12Context& ctx,
+	uint32_t width,
+	uint32_t height,
+	uint32_t mipmapCount,
+	uint32_t layerCount,
+	DXGI_FORMAT format,
+	D3D12_RESOURCE_FLAGS flags)
+{
+	width_ = width;
+	height_ = height;
+	pixelSize_ = 4 * sizeof(float);
+	format_ = format;
+	mipmapCount_ = mipmapCount;
+	layerCount_ = layerCount;
 
 	buffer_.CreateImage(
 		ctx,
@@ -149,7 +174,6 @@ void DX12Image::CreateColorAttachment(DX12Context& ctx, uint32_t msaaCount)
 		width_,
 		height_,
 		mipmapCount_,
-		pixelSize_,
 		msaaCount,
 		format_,
 		flags
@@ -164,7 +188,12 @@ void DX12Image::CreateDepthAttachment(DX12Context& ctx, uint32_t msaaCount)
 	mipmapCount_ = 1;
 	layerCount_ = 1;
 	format_ = DXGI_FORMAT_D32_FLOAT;
-	buffer_.CreateDepthAttachment(ctx, width_, height_, msaaCount, format_);
+	buffer_.CreateDepthAttachment(
+		ctx, 
+		width_, 
+		height_, 
+		msaaCount, 
+		format_);
 }
 
 D3D12_STATIC_SAMPLER_DESC DX12Image::GetDefaultSampler()

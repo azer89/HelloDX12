@@ -38,7 +38,8 @@ void Model::Load(
 	const std::string& path,
 	SceneData& sceneData)
 {
-	pipelineMipmap_ = std::make_unique<PipelineMipmap>(ctx);
+	bool isTextureArray = false;
+	pipelineMipmap_ = std::make_unique<PipelineMipmap>(ctx, isTextureArray);
 
 	filepath_ = path;
 	Assimp::Importer importer;

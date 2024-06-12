@@ -71,8 +71,8 @@ void PipelineSkybox::CreateDescriptors(DX12Context& ctx)
 		descriptorHeaps_[i].Create(ctx);
 	}
 
-	CD3DX12_STATIC_SAMPLER_DESC sampler{ 0, D3D12_FILTER_ANISOTROPIC };
-	sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	std::vector<CD3DX12_STATIC_SAMPLER_DESC> samplerArray = { { 0, D3D12_FILTER_MIN_MAG_MIP_LINEAR } };
+	samplerArray[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
 	// Allow input layout and deny unnecessary access to certain pipeline stages.
 	constexpr D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
@@ -82,7 +82,7 @@ void PipelineSkybox::CreateDescriptors(DX12Context& ctx)
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
 	// Root signature
-	rootSignature_.Create(ctx, sampler, descriptors, {}, 0, rootSignatureFlags);
+	rootSignature_.Create(ctx, samplerArray, descriptors, {}, 0, rootSignatureFlags);
 }
 
 void PipelineSkybox::GenerateShader(DX12Context& ctx)

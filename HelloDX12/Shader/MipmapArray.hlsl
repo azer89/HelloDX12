@@ -4,7 +4,7 @@ Downsample shader for generating mipmap
 */
 
 Texture2D<float4> srcTexture : register(t0);
-RWTexture2D<float4> dstTexture : register(u0); // Non cubemap image
+RWTexture2DArray<float4> dstTexture : register(u0); // Array for cubemap
 SamplerState defaultSampler : register(s0);
 
 cbuffer CB : register(b0)
@@ -23,5 +23,5 @@ void CSMain(uint3 threadID : SV_DispatchThreadID)
     float4 color = srcTexture.SampleLevel(defaultSampler, texcoords, 0);
 
 	// Write the final color into the destination texture
-    dstTexture[threadID.xy] = color;
+    dstTexture[threadID] = color;
 }

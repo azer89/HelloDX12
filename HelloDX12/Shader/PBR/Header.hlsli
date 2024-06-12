@@ -1,4 +1,4 @@
-#define PI 3.1415926535897932384626433832795
+static const float PI = 3.141592653589;
 
 // Specular D
 // Trowbridge-Reitz GGX that models the distribution of microfacet normal.
@@ -53,13 +53,16 @@ float3 FresnelSchlickRoughness(float cosTheta, float3 F0, float roughness)
     return F0 + (max((1.0 - roughness).xxx, F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
-float3 ImportanceSampleGGX(float2 xi, float3 N, float roughness)
+float3 ImportanceSampleGGX(float2 Xi, float3 N, float roughness)
 {
     float a = roughness * roughness; // Roughness remapping
 
-    float phi = 2.0 * PI * xi.x;
-    float cosTheta = sqrt((1.0 - xi.y) / (1.0 + (a * a - 1.0) * xi.y));
-    float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
+    float phi = 2.0 * PI * Xi.x;
+
+    // TODO Issue with sqrt of negative number
+    float cosTheta = sqrt((1.0 - Xi.y) / (1.0 + (a * a - 1.0) * Xi.y));
+    float sinTheta = 1.0 - cosTheta * cosTheta;
+    sinTheta = sqrt(sinTheta);
 
 	// From spherical coordinates to cartesian coordinates - halfway vector
     float3 H;
