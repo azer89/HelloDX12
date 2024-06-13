@@ -5,7 +5,7 @@ function(SetupDXC DXC_DIR_RETURN)
     file(GLOB_RECURSE DXC_BIN_PATH "${DXC_DIR}/*dxc.exe")
     
     if(DXC_BIN_PATH STREQUAL "")
-        set(URL "https://github.com/microsoft/DirectXShaderCompiler/releases/download/v1.8.2403.2/dxc_2024_03_29.zip")
+        set(URL "https://github.com/microsoft/DirectXShaderCompiler/releases/download/v1.8.2405/dxc_2024_05_24.zip")
         message(STATUS "Downloading DXC from ${URL}...")
         set(ARCHIVE_PATH "${DXC_DIR}/dxc.zip")
         file(DOWNLOAD "${URL}" "${ARCHIVE_PATH}" TIMEOUT 120)
