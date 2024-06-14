@@ -29,7 +29,7 @@ PipelineImGui::PipelineImGui(
 	// Setup Platform/Renderer backends
 	ImGui_ImplWin32_Init(Win32Application::GetHwnd());
 	ImGui_ImplDX12_Init(ctx.GetDevice(), AppConfig::FrameCount,
-		DXGI_FORMAT_R8G8B8A8_UNORM, descriptorHeap_,
+		ctx.GetSwapchainFormat(), descriptorHeap_,
 		descriptorHeap_->GetCPUDescriptorHandleForHeapStart(),
 		descriptorHeap_->GetGPUDescriptorHandleForHeapStart());
 }
