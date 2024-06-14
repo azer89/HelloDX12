@@ -64,14 +64,15 @@ void AppSimple::OnUpdate()
 	if (!uiData_.imguiShow_)
 	{
 		imguiPtr_->ImGuiDrawEmpty();
-		return;
 	}
-
-	imguiPtr_->ImGuiStart();
-	imguiPtr_->ImGuiSetWindow("Simple Renderer", 450, 750);
-	imguiPtr_->ImGuiShowFrameData(&timer_);
-	imguiPtr_->ImGuiShowPBRConfig(&(uiData_.constBufferPBR_));
-	imguiPtr_->ImGuiEnd();
+	else
+	{
+		imguiPtr_->ImGuiStart();
+		imguiPtr_->ImGuiSetWindow("Simple Renderer", 450, 750);
+		imguiPtr_->ImGuiShowFrameData(&timer_);
+		imguiPtr_->ImGuiShowPBRConfig(&(uiData_.constBufferPBR_));
+		imguiPtr_->ImGuiEnd();
+	}
 
 	for (auto& pip : pipelines_)
 	{
