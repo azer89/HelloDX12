@@ -88,7 +88,7 @@ float4 PSMain(PSInput input) : SV_TARGET
     }
     
     // PBR textures
-    float3 albedo = albedo4.xyz;
+    float3 albedo = pow(albedo4.xyz, 2.2);
     float3 emissive = allTextures[NonUniformResourceIndex(m.emissive)].Sample(defaultSampler, input.uv).rgb;
     float3 texNormalValue = allTextures[NonUniformResourceIndex(m.normal)].Sample(defaultSampler, input.uv).rgb * 2.0 - 1.0;
     float metallic = allTextures[NonUniformResourceIndex(m.metalness)].Sample(defaultSampler, input.uv).b;
