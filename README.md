@@ -1,11 +1,11 @@
 
 A graphics renderer developed using C++ and DirectX 12.
 
-<img width="700" alt="Sponza" src="https://github.com/azer89/HelloDX12/assets/790432/317aa44f-5771-4c99-a1bd-1f0da413a44a">
+<img width="700" alt="" src="https://github.com/azer89/HelloDX12/assets/790432/6caea4f2-64c6-4c9f-baea-9e59d53aba0e">
 
-<img width="700" alt="Zaku" src="https://github.com/azer89/HelloDX12/assets/790432/18ff889b-5e18-4009-bc28-3c9d0585234a">
+<img width="700" alt="" src="https://github.com/azer89/HelloDX12/assets/790432/4bb91ea5-a8a2-4ab1-a2d1-448a2b3a9064">
 
-<img width="700" alt="Zaku" src="https://github.com/azer89/HelloDX12/assets/790432/3cb1c260-5c06-4ad5-a531-c69ecef3e6fa">
+<img width="700" alt="" src="https://github.com/azer89/HelloDX12/assets/790432/023268cf-dfad-46b3-9a1b-74df7d20578e">
 
 ### Features
 * PBR

@@ -26,6 +26,11 @@ PipelineImGui::PipelineImGui(
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
 
+	ImGuiIO& io = ImGui::GetIO();
+	const std::string filename = AppConfig::FontFolder + "Roboto-Medium.ttf";
+	constexpr float fontSize = 12.0f;
+	io.Fonts->AddFontFromFileTTF(filename.c_str(), fontSize);
+
 	// Setup Platform/Renderer backends
 	ImGui_ImplWin32_Init(Win32Application::GetHwnd());
 	ImGui_ImplDX12_Init(ctx.GetDevice(), AppConfig::FrameCount,
