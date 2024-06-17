@@ -160,7 +160,7 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 		commandList->Dispatch(
 			std::max(dstWidth / 8, 1u),
 			std::max(dstHeight / 8, 1u),
-			image->layerCount_);
+			1u);
 
 		// Barrier
 		image->UAVBarrier(commandList);
