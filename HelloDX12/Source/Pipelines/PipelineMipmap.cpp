@@ -63,11 +63,35 @@ void PipelineMipmap::CreatePipeline(DX12Context& ctx)
 	ctx.GetDevice()->CreateComputePipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_));
 }
 
+uint32_t PipelineMipmap::GetMipmapCount(const std::span<DX12Image> images)
+{
+	uint32_t mipmapCount = 0;
+	for (uint32_t i = 0; i < images.size(); ++i)
+	{
+		if (images[i].mipmapCount_ <= 1)
+		{
+			continue;
+		}
+		mipmapCount += images[i].mipmapCount_;
+	}
+	return mipmapCount;
+}
+
+void PipelineMipmap::GenerateMipmap(DX12Context& ctx, const std::span<DX12Image> images)
+{
+	uint32_t mipmapCount = GetMipmapCount(images);
+	if (mipmapCount == 0)
+	{
+		std::cerr << "Mipmap count is 0\n";
+		return;
+	}
+}
+
 void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 {
 	if (image->mipmapCount_ <= 1)
 	{
-		std::cerr << "mipmap count << " << image->mipmapCount_ << " is invalid\n";
+		std::cerr << "Mipmap count " << image->mipmapCount_ << " is invalid\n";
 		return;
 	}
 
@@ -81,20 +105,13 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	srvSrcDesc.Texture2D.MipLevels = 1;
 
 	// Prepare the unordered access view description for the destination texture
-	/*D3D12_UNORDERED_ACCESS_VIEW_DESC uavDstDesc =
-	{
-		.Format = image->format_,
-		.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D
-	};*/
 	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDstDesc = image->buffer_.GetUAVDescription(0);
 
 	// Descriptor heap
-	// TODO Use DX12Descriptor::CreateDescriptorHeap(...)
-	uint32_t requiredHeapSize = image->mipmapCount_ - 1;
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc =
 	{
 		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-		.NumDescriptors = 2 * requiredHeapSize, // Heap size
+		.NumDescriptors = 2 * (image->mipmapCount_ - 1), // Heap size
 		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
 	};
 	ID3D12DescriptorHeap* descriptorHeap;
