@@ -2,6 +2,7 @@
 #define HELLO_DX12_MODEL
 
 #include "DX12Context.h"
+#include "DX12Image.h"
 #include "VertexData.h"
 #include "ScenePODs.h"
 #include "TextureMapper.h"
@@ -12,8 +13,6 @@
 #include <memory>
 
 #include "assimp/scene.h"
-
-#include "PipelineMipmap.h"
 
 class Model
 {
@@ -55,7 +54,6 @@ public:
 
 private:
 	const aiScene* scene_{};
-	std::unique_ptr<PipelineMipmap> pipelineMipmap_{};
 };
 
 #endif

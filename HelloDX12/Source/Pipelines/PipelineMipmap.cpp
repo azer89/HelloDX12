@@ -63,7 +63,7 @@ void PipelineMipmap::CreatePipeline(DX12Context& ctx)
 	ctx.GetDevice()->CreateComputePipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_));
 }
 
-uint32_t PipelineMipmap::GetMipmapCount(const std::span<DX12Image> images)
+uint32_t PipelineMipmap::GetHeapSize(const std::span<DX12Image> images)
 {
 	uint32_t mipmapCount = 0;
 	for (uint32_t i = 0; i < images.size(); ++i)
@@ -72,19 +72,115 @@ uint32_t PipelineMipmap::GetMipmapCount(const std::span<DX12Image> images)
 		{
 			continue;
 		}
-		mipmapCount += images[i].mipmapCount_;
+		mipmapCount += (images[i].mipmapCount_ - 1);
 	}
 	return mipmapCount;
 }
 
 void PipelineMipmap::GenerateMipmap(DX12Context& ctx, const std::span<DX12Image> images)
 {
-	uint32_t mipmapCount = GetMipmapCount(images);
-	if (mipmapCount == 0)
+	uint32_t heapSize = GetHeapSize(images);
+	if (heapSize == 0)
 	{
-		std::cerr << "Mipmap count is 0\n";
+		std::cerr << "Heap size is 0\n";
 		return;
 	}
+
+	// Descriptor heap
+	D3D12_DESCRIPTOR_HEAP_DESC heapDesc =
+	{
+		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+		.NumDescriptors = 2 * heapSize,
+		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
+	};
+	ID3D12DescriptorHeap* descriptorHeap;
+	ctx.GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&descriptorHeap));
+
+	UINT incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+	// CPU handles for generating SRV and UAV
+	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandleStart = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(cpuHandleStart, 0, incrementSize);
+
+	// GPU handle for descriptor tables
+	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandleStart = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
+	CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(gpuHandleStart, 0, incrementSize);
+
+	// Start recording 
+	ctx.ResetCommandList();
+	auto commandList = ctx.GetCommandList();
+
+	commandList->SetComputeRootSignature(rootSignature_.handle_);
+	commandList->SetPipelineState(pipelineState_);
+	commandList->SetDescriptorHeaps(1, &descriptorHeap);
+
+	for (uint32_t i = 0; i < images.size(); ++i)
+	{
+		// Prepare the shader resource view description for the source texture
+		D3D12_SHADER_RESOURCE_VIEW_DESC srvSrcDesc =
+		{
+			.Format = images[i].format_,
+			.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D,
+			.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
+		};
+		srvSrcDesc.Texture2D.MipLevels = 1;
+
+		// Prepare the unordered access view description for the destination texture
+		D3D12_UNORDERED_ACCESS_VIEW_DESC uavDstDesc = images[i].buffer_.GetUAVDescription(0);
+
+		images[i].TransitionCommand(commandList, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+
+		for (uint32_t currMipLevel = 0; currMipLevel < images[i].mipmapCount_ - 1; ++currMipLevel)
+		{
+			// Mipmap dimensions
+			uint32_t dstWidth = std::max(images[i].width_ >> (currMipLevel + 1), 1u);
+			uint32_t dstHeight = std::max(images[i].height_ >> (currMipLevel + 1), 1u);
+
+			// SRV for source texture
+			srvSrcDesc.Texture2D.MostDetailedMip = currMipLevel;
+			ctx.GetDevice()->CreateShaderResourceView(images[i].GetResource(), &srvSrcDesc, cpuHandle);
+			cpuHandle.Offset(1, incrementSize); // Add offset
+
+			// UAV for destination texture
+			uavDstDesc.Texture2D.MipSlice = currMipLevel + 1;
+			ctx.GetDevice()->CreateUnorderedAccessView(images[i].GetResource(), nullptr, &uavDstDesc, cpuHandle);
+			cpuHandle.Offset(1, incrementSize); // Add offset
+
+			uint32_t rootParamIndex = 0;
+
+			// Root constants
+			commandList->SetComputeRoot32BitConstant(
+				rootParamIndex,
+				RootConstParam(1.0f / static_cast<float>(dstWidth)).uint_,
+				0);
+			commandList->SetComputeRoot32BitConstant(
+				rootParamIndex,
+				RootConstParam(1.0f / static_cast<float>(dstHeight)).uint_,
+				1);
+
+			++rootParamIndex;
+
+			// Pass the source and destination texture views to the shader via descriptor tables
+			commandList->SetComputeRootDescriptorTable(rootParamIndex++, gpuHandle);
+			gpuHandle.Offset(1, incrementSize); // Add offset
+			commandList->SetComputeRootDescriptorTable(rootParamIndex++, gpuHandle);
+			gpuHandle.Offset(1, incrementSize); // Add offset
+
+			// Dispatch the compute shader with one thread per 8x8 pixels
+			commandList->Dispatch(
+				std::max(dstWidth / 8, 1u),
+				std::max(dstHeight / 8, 1u),
+				1u);
+
+			// Barrier
+			images[i].UAVBarrier(commandList);
+		}
+		images[i].TransitionCommand(commandList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	}
+
+	ctx.SubmitCommandListAndWaitForGPU();
+
+	descriptorHeap->Release();
 }
 
 void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
@@ -131,11 +227,11 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
 	ctx.ResetCommandList();
 	auto commandList = ctx.GetCommandList();
 
-	image->TransitionCommand(commandList, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-
 	commandList->SetComputeRootSignature(rootSignature_.handle_);
 	commandList->SetPipelineState(pipelineState_);
 	commandList->SetDescriptorHeaps(1, &descriptorHeap);
+
+	image->TransitionCommand(commandList, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 
 	for (uint32_t currMipLevel = 0; currMipLevel < image->mipmapCount_ - 1; ++currMipLevel)
 	{
