@@ -43,7 +43,7 @@ void AppSimple::OnInit()
 
 	// Pipelines
 	AddPipeline<PipelineClear>(context_, resourcesShared_);
-	AddPipeline<PipelineSkybox>(context_, resourcesIBL, resourcesShared_, camera_.get());
+	//AddPipeline<PipelineSkybox>(context_, resourcesIBL, resourcesShared_, camera_.get());
 	pipSimple_ = AddPipeline<PipelineSimple>(
 		context_, 
 		scene_.get(), 

@@ -225,6 +225,11 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 	psoDesc.SampleDesc.Count = AppConfig::MSAACount;
 	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 
+	// D3D12_DEPTH_WRITE_MASK_ALL
+	psoDesc.DepthStencilState.DepthEnable = TRUE;
+	psoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_GREATER;
+
 	// Set shader
 	vertexShader_.AddShader(psoDesc);
 	fragmentShader_.AddShader(psoDesc);
