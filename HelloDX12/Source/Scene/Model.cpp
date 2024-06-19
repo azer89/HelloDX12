@@ -1,5 +1,7 @@
 #include "Model.h"
 
+#include "PipelineMipmap.h"
+
 #include "assimp/postprocess.h"
 #include "assimp/Importer.hpp"
 #include "glm/glm.hpp"
@@ -26,11 +28,6 @@ void Model::Destroy()
 	{
 		t.Destroy();
 	}
-
-	if (pipelineMipmap_)
-	{
-		pipelineMipmap_.reset();
-	}
 }
 
 void Model::Load(
@@ -38,9 +35,6 @@ void Model::Load(
 	const std::string& path,
 	SceneData& sceneData)
 {
-	bool isTextureArray = false;
-	pipelineMipmap_ = std::make_unique<PipelineMipmap>(ctx, isTextureArray);
-
 	filepath_ = path;
 	Assimp::Importer importer;
 	scene_ = importer.ReadFile(
@@ -63,6 +57,11 @@ void Model::Load(
 		scene_->mRootNode,
 		glm::mat4(1.0),
 		sceneData);
+
+	// Create mipmaps for all textures
+	bool isTextureArray = false;
+	PipelineMipmap pipMipmap(ctx, isTextureArray);
+	pipMipmap.GenerateMipmap(ctx, textures_);
 }
 
 void Model::ProcessNode(
@@ -189,11 +188,6 @@ void Model::AddTexture(DX12Context& ctx, const std::string& textureFilename)
 		ctx,
 		fullFilePath);
 	textureMap_[textureFilename] = static_cast<uint32_t>(textures_.size() - 1);
-
-	if (textures_.back().width_ > 1 && textures_.back().height_ > 1)
-	{
-		pipelineMipmap_->GenerateMipmap(ctx, &(textures_.back()));
-	}
 }
 
 void Model::AddTexture(DX12Context& ctx, const std::string& textureName, void* data, int width, int height)
@@ -204,11 +198,6 @@ void Model::AddTexture(DX12Context& ctx, const std::string& textureName, void* d
 		1,
 		1);
 	textureMap_[textureName] = static_cast<uint32_t>(textures_.size() - 1);
-
-	if (width > 1 && height > 1)
-	{
-		pipelineMipmap_->GenerateMipmap(ctx, &(textures_.back()));
-	}
 }
 
 std::unordered_map<TextureType, uint32_t> Model::GetTextureIndices(DX12Context& ctx, const aiMesh* mesh)
