@@ -35,7 +35,7 @@ namespace CameraConfig
 	constexpr float Speed = 2.5f;
 	constexpr float Sensitivity = 0.1f;
 
-	// Reverse Z
+	// Reverse depth
 	constexpr float Near = 100.0f;
 	constexpr float Far = 0.1f;
 }
