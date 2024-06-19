@@ -1,5 +1,5 @@
 
-A graphics renderer developed using C++ and DirectX 12.
+A graphics engine developed using C++ and DirectX 12.
 
 <img width="700" alt="" src="https://github.com/azer89/HelloDX12/assets/790432/6caea4f2-64c6-4c9f-baea-9e59d53aba0e">
 
