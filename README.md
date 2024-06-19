@@ -10,15 +10,16 @@ A graphics renderer developed using C++ and DirectX 12.
 ### Features
 * PBR
 * IBL
+* Indirect draw
+* Vertex pulling
+* Bindless textures using unbounded array and dynamic indexing
+* Basic abstraction with simple resource state tracking and easier barrier insertion
+* Reverse depth
 * Blinn-Phong
 * Tonemapping
 * MSAA
 * Mipmap generator using compute shader
 * Skybox from equirectangular HDR image
-* Indirect draw
-* Vertex pulling
-* Bindless textures using unbounded array and dynamic indexing
-* Basic abstraction with simple resource state tracking and easier barrier insertion
 
 ### Build
 * Run CMake
