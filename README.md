@@ -1,5 +1,5 @@
 
-A graphics renderer developed using C++ and DirectX 12.
+A graphics engine developed using C++ and DirectX 12.
 
 <img width="700" alt="" src="https://github.com/azer89/HelloDX12/assets/790432/6caea4f2-64c6-4c9f-baea-9e59d53aba0e">
 
@@ -10,15 +10,16 @@ A graphics renderer developed using C++ and DirectX 12.
 ### Features
 * PBR
 * IBL
+* Indirect draw
+* Vertex pulling
+* Bindless textures using unbounded array and dynamic indexing
+* Basic abstraction with simple resource state tracking and easier barrier insertion
+* Reverse depth
 * Blinn-Phong
 * Tonemapping
 * MSAA
 * Mipmap generator using compute shader
 * Skybox from equirectangular HDR image
-* Indirect draw
-* Vertex pulling
-* Bindless textures using unbounded array and dynamic indexing
-* Basic abstraction with simple resource state tracking and easier barrier insertion
 
 ### Build
 * Run CMake

@@ -23,5 +23,6 @@ void PipelineClear::PopulateCommandList(DX12Context& ctx)
 	commandList->ClearRenderTargetView(offscreenRtvHandle, AppConfig::ClearColor, 0, nullptr);
 
 	const auto dsvHandle = resourcesShared_->GetDSVHandle();
-	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	constexpr float defaultDepthValue = 0.0f;  // 0.0f for reverse z, 1.0f otherwise
+	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, defaultDepthValue, 0, 0, nullptr);
 }

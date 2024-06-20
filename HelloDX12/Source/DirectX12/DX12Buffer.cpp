@@ -476,11 +476,12 @@ void DX12Buffer::CreateDepthAttachment(
 	state_ = D3D12_RESOURCE_STATE_DEPTH_WRITE;
 	srvDescription_ = GetSRVDescriptionFromImage(imageFormat, 1, 1);
 
+	constexpr float defaultDepthValue = 0.0f; // 0.0f for reverse z, 1.0f otherwise
 	D3D12_CLEAR_VALUE clearValue =
 	{
 		.Format = imageFormat
 	};
-	clearValue.DepthStencil.Depth = 1.0f;
+	clearValue.DepthStencil.Depth = defaultDepthValue;
 	clearValue.DepthStencil.Stencil = 0;
 
 	constexpr D3D12MA::ALLOCATION_DESC depthStencilAllocDesc =

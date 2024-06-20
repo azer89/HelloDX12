@@ -41,7 +41,7 @@ PSInput VSMain(uint vertexID : SV_VertexID)
     int idx = CUBE_INDICES[vertexID];
     float4 pos4 = float4(CUBE_POS[idx], 1.0);
     
-    // NOTE Set depth compare in PSO
+    // NOTE Set depth compare to D3D12_COMPARISON_FUNC_GREATER_EQUAL
     float4 posTransform = mul(pos4, camData.viewMatrix);
     posTransform = mul(posTransform, camData.projectionMatrix);
     posTransform = posTransform.xyww;
