@@ -53,7 +53,7 @@ void PipelineEquirect2Cube::CreateDescriptors(
 	descriptorHeap_.descriptors_ = descriptors;
 	descriptorHeap_.Create(ctx);
 
-	std::vector<CD3DX12_STATIC_SAMPLER_DESC> samplerArray = { { 0, D3D12_FILTER_MIN_MAG_MIP_LINEAR } };
+	std::vector<CD3DX12_STATIC_SAMPLER_DESC> samplerArray{ { 0, D3D12_FILTER_MIN_MAG_MIP_LINEAR } };
 	samplerArray[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 	constexpr D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =

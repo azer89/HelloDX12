@@ -441,11 +441,11 @@ void DX12Buffer::CreateColorAttachment(
 		.Flags = flags
 	};
 
-	const D3D12_CLEAR_VALUE clearValue =
+	const D3D12_CLEAR_VALUE clearValue
 	{
 		.Format = imageFormat,
 		// TODO
-		.Color = {
+		.Color{
 			AppConfig::ClearColor[0],
 			AppConfig::ClearColor[1],
 			AppConfig::ClearColor[2],

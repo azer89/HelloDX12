@@ -36,7 +36,7 @@ int Win32Application::Run(AppBase* pSample, HINSTANCE hInstance, int nCmdShow)
 	};
 	RegisterClassEx(&windowClass);
 
-	RECT windowRect = { 0, 0, static_cast<LONG>(pSample->GetWidth()), static_cast<LONG>(pSample->GetHeight()) };
+	RECT windowRect{ 0, 0, static_cast<LONG>(pSample->GetWidth()), static_cast<LONG>(pSample->GetHeight()) };
 	AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
 
 	// Create the window and store a handle to it.
@@ -59,7 +59,7 @@ int Win32Application::Run(AppBase* pSample, HINSTANCE hInstance, int nCmdShow)
 	ShowWindow(m_hwnd, nCmdShow);
 
 	// Main sample loop.
-	MSG msg = {};
+	MSG msg{};
 	while (msg.message != WM_QUIT)
 	{
 		// Process any messages in the queue.
@@ -86,7 +86,7 @@ LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wP
 	{
 	}
 
-	LPPOINT mousePos = {};
+	LPPOINT mousePos{};
 
 	switch (message)
 	{

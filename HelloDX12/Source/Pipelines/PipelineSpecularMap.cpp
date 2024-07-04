@@ -99,7 +99,7 @@ void PipelineSpecularMap::CreateDescriptors(DX12Context& ctx,
 	descriptorHeap_.descriptors_ = descriptorsA;
 	descriptorHeap_.Create(ctx);
 
-	std::vector<CD3DX12_STATIC_SAMPLER_DESC> samplerArray = { { 0, D3D12_FILTER_MIN_MAG_MIP_LINEAR } };
+	std::vector<CD3DX12_STATIC_SAMPLER_DESC> samplerArray{ { 0, D3D12_FILTER_MIN_MAG_MIP_LINEAR } };
 	samplerArray[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 	constexpr D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
@@ -108,7 +108,7 @@ void PipelineSpecularMap::CreateDescriptors(DX12Context& ctx,
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
-	std::vector<DX12Descriptor> descriptorsB = { descriptorsA[0], descriptorsA[1] };
+	std::vector<DX12Descriptor> descriptorsB{ descriptorsA[0], descriptorsA[1] };
 	rootSignature_.Create(ctx, samplerArray, descriptorsB, {}, ROOT_CONSTANT_COUNT, rootSignatureFlags);
 }
 

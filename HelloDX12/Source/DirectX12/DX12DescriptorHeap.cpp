@@ -83,7 +83,7 @@ void DX12DescriptorHeap::SetupHandles(DX12Context& ctx)
 
 void DX12DescriptorHeap::BindHeap(ID3D12GraphicsCommandList* commandList) const
 {
-	ID3D12DescriptorHeap* ppHeaps[] = { handle_ };
+	ID3D12DescriptorHeap* ppHeaps[]{ handle_ };
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 }
 

@@ -65,7 +65,7 @@ void PipelineBRDFLUT::CreateDescriptors(DX12Context& ctx,
 	descriptorHeap_.Create(ctx);
 
 	// Empty sampler
-	std::vector<CD3DX12_STATIC_SAMPLER_DESC> samplerArray = {};
+	std::vector<CD3DX12_STATIC_SAMPLER_DESC> samplerArray{};
 
 	constexpr D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |

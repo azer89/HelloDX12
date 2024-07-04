@@ -17,7 +17,7 @@
 
 inline std::string HrToString(HRESULT hr)
 {
-	char s_str[64] = {};
+	char s_str[64]{};
 	sprintf_s(s_str, "HRESULT of 0x%08X", static_cast<uint32_t>(hr));
 	return std::string(s_str);
 }
@@ -38,7 +38,7 @@ inline HRESULT ReadDataFromFile(LPCWSTR filename, byte** data, UINT* size)
 	using namespace Microsoft::WRL;
 
 #if WINVER >= _WIN32_WINNT_WIN8
-	CREATEFILE2_EXTENDED_PARAMETERS extendedParams = {};
+	CREATEFILE2_EXTENDED_PARAMETERS extendedParams{};
 	extendedParams.dwSize = sizeof(CREATEFILE2_EXTENDED_PARAMETERS);
 	extendedParams.dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
 	extendedParams.dwFileFlags = FILE_FLAG_SEQUENTIAL_SCAN;
@@ -55,7 +55,7 @@ inline HRESULT ReadDataFromFile(LPCWSTR filename, byte** data, UINT* size)
 		throw std::exception();
 	}
 
-	FILE_STANDARD_INFO fileInfo = {};
+	FILE_STANDARD_INFO fileInfo{};
 	if (!GetFileInformationByHandleEx(file.Get(), FileStandardInfo, &fileInfo, sizeof(fileInfo)))
 	{
 		throw std::exception();

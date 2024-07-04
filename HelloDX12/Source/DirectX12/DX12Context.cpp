@@ -93,7 +93,7 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 
 	// Memory allocator
 	{
-		const D3D12MA::ALLOCATOR_DESC desc = {
+		const D3D12MA::ALLOCATOR_DESC desc{
 			.pDevice = device_,
 			.pAdapter = adapter_,
 		};
@@ -311,7 +311,7 @@ void DX12Context::CloseCommandList() const
 void DX12Context::SubmitCommandList() const
 {
 	ThrowIfFailed(commandList_->Close());
-	ID3D12CommandList* ppCommandLists[] = { GetCommandList() };
+	ID3D12CommandList* ppCommandLists[]{ GetCommandList() };
 	commandQueue_->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 }
 

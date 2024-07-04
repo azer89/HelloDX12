@@ -62,7 +62,7 @@ void Scene::CreateBindlessResources(DX12Context& ctx)
 
 DX12DescriptorArray Scene::GetImageDescriptors()
 {
-	DX12DescriptorArray dArray = {
+	DX12DescriptorArray dArray{
 		.rangeFlags_ = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
 		.shaderVisibility_ = D3D12_SHADER_VISIBILITY_PIXEL,
 	};
