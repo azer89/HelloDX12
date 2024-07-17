@@ -75,7 +75,7 @@ private:
 private:
 	uint32_t swapchainWidth_{};
 	uint32_t swapchainHeight_{};
-	DXGI_FORMAT swapchainFormat_ = DXGI_FORMAT_R8G8B8A8_UNORM;
+	DXGI_FORMAT swapchainFormat_{ DXGI_FORMAT_R8G8B8A8_UNORM };
 	std::array<ID3D12Resource*, AppConfig::FrameCount> swapchainResources_{};
 	IDXGISwapChain4* swapchain_{};
 

@@ -44,7 +44,7 @@ public:
 	uint32_t pixelSize_{};
 	uint32_t mipmapCount_{};
 	uint32_t layerCount_{};
-	DXGI_FORMAT format_ = DXGI_FORMAT_UNKNOWN;
+	DXGI_FORMAT format_{ DXGI_FORMAT_UNKNOWN };
 
 	DX12Buffer buffer_{};
 };

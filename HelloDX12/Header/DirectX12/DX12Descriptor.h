@@ -45,8 +45,7 @@ public:
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE GetFirstGPUHandle() const
 	{
-		CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle = gpuHandles_.empty() ? CD3DX12_GPU_DESCRIPTOR_HANDLE() : gpuHandles_[0];
-		return gpuHandle;
+		return { gpuHandles_.empty() ? CD3DX12_GPU_DESCRIPTOR_HANDLE() : gpuHandles_[0] };
 	}
 };
 

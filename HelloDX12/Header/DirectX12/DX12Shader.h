@@ -28,7 +28,7 @@ public:
 
 private:
 	IDxcBlob* handle_{};
-	ShaderType shaderType_ = ShaderType::Invalid;
+	ShaderType shaderType_{ ShaderType::Invalid };
 };
 
 #endif
