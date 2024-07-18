@@ -28,7 +28,7 @@ private:
 	void CreatePipeline(DX12Context& ctx);
 
 private:
-	bool textureArray_ = false;
+	bool textureArray_{ false };
 };
 
 #endif
