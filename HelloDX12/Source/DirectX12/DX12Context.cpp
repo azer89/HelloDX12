@@ -255,7 +255,7 @@ void DX12Context::PresentSwapchain() const
 void DX12Context::MoveToNextFrame()
 {
 	// Schedule a Signal command in the queue.
-	const uint64_t currentFenceValue = fenceValues_[frameIndex_];
+	const uint64_t currentFenceValue{ fenceValues_[frameIndex_]};
 	ThrowIfFailed(commandQueue_->Signal(fence_.Get(), currentFenceValue));
 
 	// Update the frame index.
@@ -276,7 +276,7 @@ void DX12Context::WaitForAllFrames()
 {
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
-		const uint64_t currentFenceValue = fenceValues_[i];
+		const uint64_t currentFenceValue{ fenceValues_[i]};
 		ThrowIfFailed(commandQueue_->Signal(fence_.Get(), currentFenceValue));
 
 		// If the next frame is not ready to be rendered yet, wait until it is ready.

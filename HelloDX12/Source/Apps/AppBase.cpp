@@ -87,8 +87,8 @@ void AppBase::OnMouseMove(int mousePositionX, int mousePositionY)
 
 	if (!ImGui::GetIO().WantCaptureMouse && (uiData_.mouseLeftPressed_ || uiData_.mouseLeftHold_))
 	{
-		const float xOffset = static_cast<float>(mousePositionX) - uiData_.mousePositionX_;
-		const float yOffset = uiData_.mousePositionY_ - static_cast<float>(mousePositionY); // Reversed since y-coordinates go from bottom to top
+		const float xOffset{ static_cast<float>(mousePositionX) - uiData_.mousePositionX_ };
+		const float yOffset{ uiData_.mousePositionY_ - static_cast<float>(mousePositionY) }; // Reversed since y-coordinates go from bottom to top
 		camera_->ProcessMouseMovement(xOffset, yOffset);
 	}
 

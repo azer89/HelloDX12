@@ -14,7 +14,7 @@ void DX12DescriptorHeap::Destroy()
 // TODO Not used
 void DX12DescriptorHeap::Create(DX12Context& ctx, uint32_t descriptorCount)
 {
-	D3D12_DESCRIPTOR_HEAP_DESC heapDesc =
+	D3D12_DESCRIPTOR_HEAP_DESC heapDesc
 	{
 		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 		.NumDescriptors = descriptorCount,
@@ -25,7 +25,7 @@ void DX12DescriptorHeap::Create(DX12Context& ctx, uint32_t descriptorCount)
 
 void DX12DescriptorHeap::Create(DX12Context& ctx)
 {
-	D3D12_DESCRIPTOR_HEAP_DESC heapDesc =
+	D3D12_DESCRIPTOR_HEAP_DESC heapDesc
 	{
 		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 		.NumDescriptors = static_cast<UINT>(descriptors_.size() + descriptorArray_.DescriptorCount()),
@@ -62,14 +62,14 @@ void DX12DescriptorHeap::SetupHandles(DX12Context& ctx)
 	}
 
 	// This part is for unbounded array
-	uint32_t descriptorArraySize = descriptorArray_.DescriptorCount();
-	uint32_t prevDescriptroCount = static_cast<uint32_t>(descriptors_.size());
+	const uint32_t descriptorArraySize = descriptorArray_.DescriptorCount();
+	uint32_t prevDescriptorCount = static_cast<uint32_t>(descriptors_.size());
 	descriptorArray_.cpuHandles_.resize(descriptorArraySize);
 	descriptorArray_.gpuHandles_.resize(descriptorArraySize);
 	for (uint32_t i = 0; i < descriptorArraySize; ++i)
 	{
-		CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(handle_->GetCPUDescriptorHandleForHeapStart(), i + prevDescriptroCount, incrementSize);
-		CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(handle_->GetGPUDescriptorHandleForHeapStart(), i + prevDescriptroCount, incrementSize);
+		CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(handle_->GetCPUDescriptorHandleForHeapStart(), i + prevDescriptorCount, incrementSize);
+		CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(handle_->GetGPUDescriptorHandleForHeapStart(), i + prevDescriptorCount, incrementSize);
 
 		ctx.GetDevice()->CreateShaderResourceView(
 			descriptorArray_.buffers_[i]->GetResource(),

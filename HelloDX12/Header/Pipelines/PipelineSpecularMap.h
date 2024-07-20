@@ -31,7 +31,7 @@ private:
 	void CreatePipeline(DX12Context& ctx);
 
 private:
-	DX12DescriptorHeap descriptorHeap_;
+	DX12DescriptorHeap descriptorHeap_{};
 };
 
 #endif

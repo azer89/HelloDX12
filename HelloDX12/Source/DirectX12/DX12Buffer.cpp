@@ -576,7 +576,7 @@ DX12Context& ctx,
 	D3D12MA::Allocation* bufferUploadHeapAllocation;
 	CreateUploadHeap(ctx, bufferSize_, 1, &bufferUploadHeap, &bufferUploadHeapAllocation);
 
-	const uint32_t imageBytesPerRow = width * bytesPerPixel;
+	const uint32_t imageBytesPerRow{ width * bytesPerPixel };
 	const D3D12_SUBRESOURCE_DATA subresourceData =
 	{
 		.pData = imageData,
@@ -655,7 +655,7 @@ void DX12Buffer::CreateUploadHeap(DX12Context& ctx,
 
 void DX12Buffer::UAVBarrier(ID3D12GraphicsCommandList* commandList)
 {
-	const auto barrier = CD3DX12_RESOURCE_BARRIER::UAV(resource_);
+	const auto barrier{ CD3DX12_RESOURCE_BARRIER::UAV(resource_) };
 	commandList->ResourceBarrier(1, &barrier);
 }
 
@@ -676,11 +676,11 @@ void DX12Buffer::TransitionCommand(
 	D3D12_RESOURCE_STATES beforeState,
 	D3D12_RESOURCE_STATES afterState)
 {
-	const auto barrier =
+	const auto barrier{
 		CD3DX12_RESOURCE_BARRIER::Transition(
 			resource_,
 			beforeState,
-			afterState);
+			afterState)};
 
 	commandList->ResourceBarrier(1, &barrier);
 
@@ -738,13 +738,13 @@ void DX12Buffer::SetName(const std::string& objectName) const
 
 	ThrowIfFailed(resource_->SetName(Utility::WStringConvert(objectName).c_str()));
 
-	const std::string dmaName = objectName + "_Allocation_DMA";
+	const std::string dmaName{ objectName + "_Allocation_DMA" };
 	dmaAllocation_->SetName(Utility::WStringConvert(dmaName).c_str());
 }
 
 D3D12_UNORDERED_ACCESS_VIEW_DESC DX12Buffer::GetUAVDescription(uint32_t mipLevel) const
 {
-	const D3D12_RESOURCE_DESC resourceDescription = resource_->GetDesc();
+	const D3D12_RESOURCE_DESC resourceDescription{ resource_->GetDesc() };
 	assert(resourceDescription.Flags & D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
 
 	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDescription{};
