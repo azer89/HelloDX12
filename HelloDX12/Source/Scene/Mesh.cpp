@@ -18,11 +18,6 @@ Mesh::Mesh(
 	meshName_(meshName),
 	textureIndices_(std::move(textureIndices))
 {
-	/*image_ = std::make_unique<DX12Image>();
-	auto data = DX12Image::GenerateCheckerboard(100, 100, 4);
-	image_->Load(ctx, data.data(), 100, 100);
-	PipelineMipmap pip(ctx);
-	pip.GenerateMipmap(ctx, image_.get());*/
 }
 
 void Mesh::Destroy()
