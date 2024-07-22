@@ -11,11 +11,11 @@ Mesh::Mesh(
 	const uint32_t vertexCount,
 	const uint32_t indexCount,
 	std::unordered_map<TextureType, uint32_t>&& textureIndices) :
-	vertexOffset_(vertexOffset),
-	indexOffset_(indexOffset),
+	meshName_(meshName),
 	vertexCount_(vertexCount),
 	indexCount_(indexCount),
-	meshName_(meshName),
+	vertexOffset_(vertexOffset),
+	indexOffset_(indexOffset),
 	textureIndices_(std::move(textureIndices))
 {
 }
