@@ -8,9 +8,9 @@
 
 struct VertexData
 {
-	glm::vec3 position_;
-	glm::vec3 normal_;
-	glm::vec2 uv_;
+	glm::vec3 position_{};
+	glm::vec3 normal_{};
+	glm::vec2 uv_{};
 
 	VertexData() = default;
 

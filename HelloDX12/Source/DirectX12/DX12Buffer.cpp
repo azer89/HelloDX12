@@ -111,8 +111,8 @@ void DX12Buffer::CreateDeviceOnlyBuffer(
 	SetName("Device_Only_Buffer");
 
 	// Upload heap
-	ID3D12Resource* bufferUploadHeap;
-	D3D12MA::Allocation* bufferUploadHeapAllocation;
+	ID3D12Resource* bufferUploadHeap{};
+	D3D12MA::Allocation* bufferUploadHeapAllocation{};
 	CreateUploadHeap(ctx, static_cast<uint64_t>(bufferSize_), 1, &bufferUploadHeap, &bufferUploadHeapAllocation);
 
 	const D3D12_SUBRESOURCE_DATA subresourceData =
@@ -236,8 +236,8 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t buffe
 	SetName("Vertex_Buffer");
 
 	// Upload heap
-	ID3D12Resource* bufferUploadHeap;
-	D3D12MA::Allocation* bufferUploadHeapAllocation;
+	ID3D12Resource* bufferUploadHeap{};
+	D3D12MA::Allocation* bufferUploadHeapAllocation{};
 	CreateUploadHeap(ctx, static_cast<uint64_t>(bufferSize_), 1, &bufferUploadHeap, &bufferUploadHeapAllocation);
 
 	// Store vertex buffer in upload heap
@@ -322,8 +322,8 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t buffer
 	SetName("Index_Buffer");
 
 	// Upload heap
-	ID3D12Resource* bufferUploadHeap;
-	D3D12MA::Allocation* bufferUploadHeapAllocation;
+	ID3D12Resource* bufferUploadHeap{};
+	D3D12MA::Allocation* bufferUploadHeapAllocation{};
 	CreateUploadHeap(ctx, static_cast<uint64_t>(bufferSize_), 1, &bufferUploadHeap, &bufferUploadHeapAllocation);
 
 	// Store index buffer in upload heap
@@ -476,7 +476,7 @@ void DX12Buffer::CreateDepthAttachment(
 	state_ = D3D12_RESOURCE_STATE_DEPTH_WRITE;
 	srvDescription_ = GetSRVDescriptionFromImage(imageFormat, 1, 1);
 
-	constexpr float defaultDepthValue = 0.0f; // 0.0f for reverse z, 1.0f otherwise
+	constexpr float defaultDepthValue{ 0.0f }; // 0.0f for reverse z, 1.0f otherwise
 	D3D12_CLEAR_VALUE clearValue =
 	{
 		.Format = imageFormat
@@ -572,8 +572,8 @@ DX12Context& ctx,
 		&bufferSize_); // pTotalBytes
 
 	// Upload heap
-	ID3D12Resource* bufferUploadHeap;
-	D3D12MA::Allocation* bufferUploadHeapAllocation;
+	ID3D12Resource* bufferUploadHeap{};
+	D3D12MA::Allocation* bufferUploadHeapAllocation{};
 	CreateUploadHeap(ctx, bufferSize_, 1, &bufferUploadHeap, &bufferUploadHeapAllocation);
 
 	const uint32_t imageBytesPerRow{ width * bytesPerPixel };

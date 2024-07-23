@@ -9,7 +9,7 @@ namespace Utility
 
 	inline uint32_t MipMapCount(uint32_t w, uint32_t h)
 	{
-		int levels = 1;
+		int levels{ 1 };
 		while ((w | h) >> levels)
 		{
 			levels += 1;
@@ -19,7 +19,7 @@ namespace Utility
 
 	inline uint32_t MipMapCount(uint32_t size)
 	{
-		int levels = 1;
+		int levels{ 1 };
 		while (size >> levels)
 		{
 			levels += 1;
