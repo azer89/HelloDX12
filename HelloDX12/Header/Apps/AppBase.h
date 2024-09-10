@@ -78,7 +78,7 @@ protected:
 	uint32_t windowHeight_{};
 	uint32_t targetWindowWidth_{};
 	uint32_t targetWindowHeight_{};
-	bool windowResize_ = false;
+	bool windowResize_{ false };
 
 	float windowAspectRatio_{};
 
