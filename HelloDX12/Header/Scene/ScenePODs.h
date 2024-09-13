@@ -36,14 +36,12 @@ struct SceneData
 
 	uint32_t GetCurrentVertexOffset() const
 	{
-		if (vertexOffsets_.empty()) { return 0u; }
-		return vertexOffsets_.back();
+		return vertexOffsets_.empty() ? 0u : vertexOffsets_.back();
 	}
 
 	uint32_t GetCurrentIndexOffset() const
 	{
-		if (indexOffsets_.empty()) { return 0u; }
-		return indexOffsets_.back();
+		return indexOffsets_.empty() ? 0u : indexOffsets_.back();
 	}
 };
 
