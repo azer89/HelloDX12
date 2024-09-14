@@ -73,11 +73,9 @@ namespace TextureMapper
 
 	static TextureType GetTextureType(aiTextureType aiTType)
 	{
-		if (!TextureMapper::assimpTextureToTextureType.contains(aiTType))
-		{
-			return TextureType::None;
-		}
-		return TextureMapper::assimpTextureToTextureType[aiTType];
+		return TextureMapper::assimpTextureToTextureType.contains(aiTType) ?
+			TextureMapper::assimpTextureToTextureType[aiTType] :
+			TextureType::None;
 	}
 };
 
