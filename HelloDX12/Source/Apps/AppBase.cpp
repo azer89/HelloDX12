@@ -31,7 +31,7 @@ AppBase::~AppBase()
 // Helper function for setting the window's title text.
 void AppBase::SetCustomWindowText(const TCHAR* text) const
 {
-	std::wstring windowText = title_ + L": " + text;
+	const std::wstring windowText = title_ + L": " + text;
 	SetWindowText(Win32Application::GetHwnd(), windowText.c_str());
 }
 
@@ -154,12 +154,12 @@ void AppBase::EndRender()
 		context_.ResizeSwapchain(targetWindowWidth_, targetWindowHeight_);
 		camera_->SetScreenSize(static_cast<float>(targetWindowWidth_), static_cast<float>(targetWindowHeight_));
 
-		for (auto& res : resources_)
+		for (const auto& res : resources_)
 		{
 			res->OnWindowResize(context_, targetWindowWidth_, targetWindowHeight_);
 		}
 
-		for (auto& pip : pipelines_)
+		for (const auto& pip : pipelines_)
 		{
 			pip->SetupViewportAndScissor(context_);
 			pip->OnWindowResize(context_, targetWindowWidth_, targetWindowHeight_);

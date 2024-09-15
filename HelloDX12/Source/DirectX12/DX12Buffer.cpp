@@ -192,7 +192,7 @@ void DX12Buffer::CreateConstantBuffer(DX12Context& ctx, uint64_t bufferSize)
 	gpuAddress_ = resource_->GetGPUVirtualAddress();
 }
 
-void DX12Buffer::UploadData(void* data) const
+void DX12Buffer::UploadData(const void* data) const
 {
 	memcpy(mappedData_, data, bufferSize_);
 }
@@ -653,7 +653,7 @@ void DX12Buffer::CreateUploadHeap(DX12Context& ctx,
 		IID_PPV_ARGS(bufferUploadHeap)));
 }
 
-void DX12Buffer::UAVBarrier(ID3D12GraphicsCommandList* commandList)
+void DX12Buffer::UAVBarrier(ID3D12GraphicsCommandList* commandList) const
 {
 	const auto barrier{ CD3DX12_RESOURCE_BARRIER::UAV(resource_) };
 	commandList->ResourceBarrier(1, &barrier);

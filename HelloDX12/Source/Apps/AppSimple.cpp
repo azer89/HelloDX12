@@ -74,7 +74,7 @@ void AppSimple::OnUpdate()
 		imguiPtr_->ImGuiEnd();
 	}
 
-	for (auto& pip : pipelines_)
+	for (const auto& pip : pipelines_)
 	{
 		pip->Update(context_, uiData_);
 	}
@@ -85,7 +85,7 @@ void AppSimple::OnRender()
 {
 	BeginRender();
 
-	for (auto& pip : pipelines_)
+	for (const auto& pip : pipelines_)
 	{
 		pip->PopulateCommandList(context_);
 	}

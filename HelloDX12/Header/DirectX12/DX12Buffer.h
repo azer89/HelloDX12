@@ -55,7 +55,7 @@ public:
 		return reinterpret_cast<T*>(mappedData_);
 	}
 
-	void UploadData(void* data) const;
+	void UploadData(const void* data) const;
 
 	void Destroy();
 
@@ -68,7 +68,7 @@ public:
 		};
 	}
 
-	void UAVBarrier(ID3D12GraphicsCommandList* commandList);
+	void UAVBarrier(ID3D12GraphicsCommandList* commandList) const;
 	void TransitionCommand(
 		ID3D12GraphicsCommandList* commandList,
 		D3D12_RESOURCE_STATES afterState);
