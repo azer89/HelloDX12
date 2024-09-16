@@ -18,7 +18,7 @@ void DX12Context::Destroy()
 
 	commandList_->Release();
 	commandQueue_->Release();
-	for (auto cAlloc : commandAllocators_)
+	for (const auto& cAlloc : commandAllocators_)
 	{
 		cAlloc->Release();
 	}
@@ -67,7 +67,7 @@ void DX12Context::Init(uint32_t swapchainWidth, uint32_t swapchainHeight)
 	SetInfoQueue();
 
 	// Describe and create the command queue.
-	D3D12_COMMAND_QUEUE_DESC queueDesc = 
+	constexpr D3D12_COMMAND_QUEUE_DESC queueDesc = 
 	{
 		.Type = D3D12_COMMAND_LIST_TYPE_DIRECT,
 		.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE
@@ -274,20 +274,19 @@ void DX12Context::MoveToNextFrame()
 
 void DX12Context::WaitForAllFrames()
 {
-	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
+	for (auto& f : fenceValues_)
 	{
-		const uint64_t currentFenceValue{ fenceValues_[i]};
-		ThrowIfFailed(commandQueue_->Signal(fence_.Get(), currentFenceValue));
+		ThrowIfFailed(commandQueue_->Signal(fence_.Get(), f));
 
 		// If the next frame is not ready to be rendered yet, wait until it is ready.
-		if (fence_->GetCompletedValue() < fenceValues_[i])
+		if (fence_->GetCompletedValue() < f)
 		{
-			ThrowIfFailed(fence_->SetEventOnCompletion(fenceValues_[i], fenceCompletionEvent_));
+			ThrowIfFailed(fence_->SetEventOnCompletion(f, fenceCompletionEvent_));
 			WaitForSingleObject(fenceCompletionEvent_, INFINITE);
 		}
 
 		// Set the fence value for the next frame.
-		fenceValues_[i] = currentFenceValue + 1;
+		++f;
 	}
 
 	frameIndex_ = 0;
