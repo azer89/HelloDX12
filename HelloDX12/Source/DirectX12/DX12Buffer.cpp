@@ -225,7 +225,6 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t buffe
 		.Flags = D3D12_RESOURCE_FLAG_NONE
 	};
 	
-
 	ThrowIfFailed(ctx.GetDMAAllocator()->CreateResource(
 		&allocDesc,
 		&resourceDesc,

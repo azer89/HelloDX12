@@ -14,7 +14,7 @@ void DX12DescriptorHeap::Destroy()
 // TODO Not used
 void DX12DescriptorHeap::Create(DX12Context& ctx, uint32_t descriptorCount)
 {
-	D3D12_DESCRIPTOR_HEAP_DESC heapDesc
+	const D3D12_DESCRIPTOR_HEAP_DESC heapDesc
 	{
 		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 		.NumDescriptors = descriptorCount,
@@ -25,7 +25,7 @@ void DX12DescriptorHeap::Create(DX12Context& ctx, uint32_t descriptorCount)
 
 void DX12DescriptorHeap::Create(DX12Context& ctx)
 {
-	D3D12_DESCRIPTOR_HEAP_DESC heapDesc
+	const D3D12_DESCRIPTOR_HEAP_DESC heapDesc
 	{
 		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 		.NumDescriptors = static_cast<UINT>(descriptors_.size() + descriptorArray_.DescriptorCount()),
@@ -38,11 +38,11 @@ void DX12DescriptorHeap::Create(DX12Context& ctx)
 
 void DX12DescriptorHeap::SetupHandles(DX12Context& ctx)
 {
-	uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	for (uint32_t i = 0; i < descriptors_.size(); ++i)
 	{
-		CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(handle_->GetCPUDescriptorHandleForHeapStart(), i, incrementSize);
-		CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(handle_->GetGPUDescriptorHandleForHeapStart(), i, incrementSize);
+		const CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(handle_->GetCPUDescriptorHandleForHeapStart(), i, incrementSize);
+		const CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(handle_->GetGPUDescriptorHandleForHeapStart(), i, incrementSize);
 
 		if (descriptors_[i].type_ == D3D12_DESCRIPTOR_RANGE_TYPE_CBV)
 		{
@@ -63,13 +63,13 @@ void DX12DescriptorHeap::SetupHandles(DX12Context& ctx)
 
 	// This part is for unbounded array
 	const uint32_t descriptorArraySize = descriptorArray_.DescriptorCount();
-	uint32_t prevDescriptorCount = static_cast<uint32_t>(descriptors_.size());
+	const uint32_t prevDescriptorCount = static_cast<uint32_t>(descriptors_.size());
 	descriptorArray_.cpuHandles_.resize(descriptorArraySize);
 	descriptorArray_.gpuHandles_.resize(descriptorArraySize);
 	for (uint32_t i = 0; i < descriptorArraySize; ++i)
 	{
-		CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(handle_->GetCPUDescriptorHandleForHeapStart(), i + prevDescriptorCount, incrementSize);
-		CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(handle_->GetGPUDescriptorHandleForHeapStart(), i + prevDescriptorCount, incrementSize);
+		const CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(handle_->GetCPUDescriptorHandleForHeapStart(), i + prevDescriptorCount, incrementSize);
+		const CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(handle_->GetGPUDescriptorHandleForHeapStart(), i + prevDescriptorCount, incrementSize);
 
 		ctx.GetDevice()->CreateShaderResourceView(
 			descriptorArray_.buffers_[i]->GetResource(),
@@ -90,9 +90,9 @@ void DX12DescriptorHeap::BindHeap(ID3D12GraphicsCommandList* commandList) const
 void DX12DescriptorHeap::BindDescriptorsGraphics(ID3D12GraphicsCommandList* commandList, uint32_t startRootParamIndex) const
 {
 	uint32_t rootParamIndex = startRootParamIndex;
-	for (uint32_t i = 0; i < descriptors_.size(); ++i)
+	for (auto& d : descriptors_)
 	{
-		commandList->SetGraphicsRootDescriptorTable(rootParamIndex++, descriptors_[i].gpuHandle_);
+		commandList->SetGraphicsRootDescriptorTable(rootParamIndex++, d.gpuHandle_);
 	}
 
 	if (descriptorArray_.HasBuffers())
@@ -104,9 +104,9 @@ void DX12DescriptorHeap::BindDescriptorsGraphics(ID3D12GraphicsCommandList* comm
 void DX12DescriptorHeap::BindDescriptorsCompute(ID3D12GraphicsCommandList* commandList, uint32_t startRootParamIndex) const
 {
 	uint32_t rootParamIndex = startRootParamIndex;
-	for (uint32_t i = 0; i < descriptors_.size(); ++i)
+	for (auto& d : descriptors_)
 	{
-		commandList->SetComputeRootDescriptorTable(rootParamIndex++, descriptors_[i].gpuHandle_);
+		commandList->SetComputeRootDescriptorTable(rootParamIndex++, d.gpuHandle_);
 	}
 
 	if (descriptorArray_.HasBuffers())
