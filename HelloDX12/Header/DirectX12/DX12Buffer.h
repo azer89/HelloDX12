@@ -22,7 +22,7 @@ public:
 		D3D12_RESOURCE_FLAGS flags);
 	void CreateImageFromData(
 		DX12Context& ctx,
-		void* imageData,
+		const void* imageData,
 		uint32_t width,
 		uint32_t height,
 		uint32_t mipmapCount,

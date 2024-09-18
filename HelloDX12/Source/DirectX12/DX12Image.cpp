@@ -59,7 +59,7 @@ void DX12Image::Load(DX12Context& ctx, void* data, uint32_t width, uint32_t heig
 	format_ = ctx.GetSwapchainFormat();
 	mipmapCount_ = Utility::MipMapCount(width_, height_);
 	layerCount_ = 1;
-	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+	constexpr D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 
 	buffer_.CreateImageFromData(
 		ctx,
@@ -94,7 +94,7 @@ void DX12Image::LoadHDR(DX12Context& ctx, const std::string& filename)
 	mipmapCount_ = 1;
 	layerCount_ = 1;
 
-	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE;
+	constexpr D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE;
 
 	buffer_.CreateImageFromData(
 		ctx,
