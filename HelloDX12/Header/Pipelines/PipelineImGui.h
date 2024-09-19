@@ -14,7 +14,7 @@ public:
 		ResourcesShared* resourcesShared);
 	~PipelineImGui();
 
-	void Destroy();
+	void Destroy() override;
 
 	void Update(DX12Context& ctx, UIData& uiData) override {}
 	void PopulateCommandList(DX12Context& ctx) override;

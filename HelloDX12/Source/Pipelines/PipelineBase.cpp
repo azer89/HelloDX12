@@ -62,8 +62,8 @@ void PipelineBase::CreateCommandSignature(DX12Context& ctx)
 
 void PipelineBase::CreateIndirectCommandFromArray(DX12Context& ctx, const std::span<IndirectCommand> commandArray)
 {
+	constexpr uint32_t stride = sizeof(IndirectCommand);
 	const uint32_t elementCount = static_cast<uint32_t>(commandArray.size());
-	const uint32_t stride = sizeof(IndirectCommand);
 	const uint64_t bufferSize = static_cast<uint64_t>(elementCount * stride);
 	indirectCommand_.CreateDeviceOnlyBuffer(
 		ctx,

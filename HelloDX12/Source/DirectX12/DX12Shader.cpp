@@ -21,7 +21,7 @@ const TCHAR* GetTarget(ShaderType shaderType)
 	throw std::runtime_error("Shader type not recognized");
 }
 
-void DX12Shader::Destroy()
+void DX12Shader::Destroy() const
 {
 	if (handle_) { handle_->Release(); }
 }

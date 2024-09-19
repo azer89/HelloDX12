@@ -19,7 +19,7 @@ public:
 	DX12Shader() = default;
 	~DX12Shader() = default;
 
-	void Destroy();
+	void Destroy() const;
 	IDxcBlob* GetHandle() const { return handle_; }
 	void Create(DX12Context& ctx, const std::string& filename, ShaderType shaderType);
 

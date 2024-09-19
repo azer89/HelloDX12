@@ -12,7 +12,7 @@ public:
 		DX12Context& ctx,
 		ResourcesShared* resourcesShared);
 	~PipelineTonemap();
-	void Destroy();
+	void Destroy() override;
 
 	void Update(DX12Context& ctx, UIData& uiData) override {}
 	void PopulateCommandList(DX12Context& ctx) override;

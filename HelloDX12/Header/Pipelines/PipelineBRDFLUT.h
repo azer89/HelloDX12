@@ -30,7 +30,6 @@ private:
 
 private:
 	DX12DescriptorHeap descriptorHeap_{};
-
 };
 
 #endif

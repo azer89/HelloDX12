@@ -27,7 +27,6 @@ private:
 		DX12Image* diffuseMap);
 
 	void GenerateShader(DX12Context& ctx);
-
 	void CreatePipeline(DX12Context& ctx);
 
 private:

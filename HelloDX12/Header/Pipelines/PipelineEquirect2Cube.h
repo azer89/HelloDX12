@@ -12,7 +12,7 @@ public:
 		DX12Context& ctx);
 	~PipelineEquirect2Cube();
 
-	void Destroy();
+	void Destroy() override;
 
 	void GenerateCubemapFromHDR(
 		DX12Context& ctx, 
