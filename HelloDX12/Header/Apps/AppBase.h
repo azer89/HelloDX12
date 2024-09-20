@@ -26,7 +26,7 @@ public:
 	virtual void OnDestroy() = 0;
 
 	void OnUpdateInternal();
-	void BeginRender();
+	void BeginRender() const;
 	void EndRender();
 
 	void OnKeyDown(uint8_t key);

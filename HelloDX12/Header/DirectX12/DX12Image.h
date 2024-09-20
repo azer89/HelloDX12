@@ -25,7 +25,7 @@ public:
 	void CreateDepthAttachment(DX12Context& ctx, uint32_t msaaCount);
 	ID3D12Resource* GetResource() const { return buffer_.GetResource(); }
 	
-	void UAVBarrier(ID3D12GraphicsCommandList* commandList);
+	void UAVBarrier(ID3D12GraphicsCommandList* commandList) const;
 	void TransitionCommand(
 		ID3D12GraphicsCommandList* commandList,
 		D3D12_RESOURCE_STATES afterState);

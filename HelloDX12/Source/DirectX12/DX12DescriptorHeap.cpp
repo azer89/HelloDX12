@@ -41,8 +41,8 @@ void DX12DescriptorHeap::SetupHandles(DX12Context& ctx)
 	const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	for (uint32_t i = 0; i < descriptors_.size(); ++i)
 	{
-		const CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(handle_->GetCPUDescriptorHandleForHeapStart(), i, incrementSize);
-		const CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(handle_->GetGPUDescriptorHandleForHeapStart(), i, incrementSize);
+		const CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(handle_->GetCPUDescriptorHandleForHeapStart(), static_cast<int>(i), incrementSize);
+		const CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(handle_->GetGPUDescriptorHandleForHeapStart(), static_cast<int>(i), incrementSize);
 
 		if (descriptors_[i].type_ == D3D12_DESCRIPTOR_RANGE_TYPE_CBV)
 		{
@@ -68,8 +68,8 @@ void DX12DescriptorHeap::SetupHandles(DX12Context& ctx)
 	descriptorArray_.gpuHandles_.resize(descriptorArraySize);
 	for (uint32_t i = 0; i < descriptorArraySize; ++i)
 	{
-		const CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(handle_->GetCPUDescriptorHandleForHeapStart(), i + prevDescriptorCount, incrementSize);
-		const CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(handle_->GetGPUDescriptorHandleForHeapStart(), i + prevDescriptorCount, incrementSize);
+		const CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(handle_->GetCPUDescriptorHandleForHeapStart(), static_cast<int>(i + prevDescriptorCount), incrementSize);
+		const CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(handle_->GetGPUDescriptorHandleForHeapStart(), static_cast<int>(i + prevDescriptorCount), incrementSize);
 
 		ctx.GetDevice()->CreateShaderResourceView(
 			descriptorArray_.buffers_[i]->GetResource(),

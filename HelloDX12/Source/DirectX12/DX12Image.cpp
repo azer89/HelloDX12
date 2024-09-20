@@ -36,7 +36,7 @@ void DX12Image::Load(DX12Context& ctx, const std::string& filename)
 	format_ = ctx.GetSwapchainFormat();
 	mipmapCount_ = Utility::MipMapCount(width_, height_);
 	layerCount_ = 1;
-	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+	constexpr D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 
 	buffer_.CreateImageFromData(
 		ctx, 
@@ -117,7 +117,7 @@ void DX12Image::CreateCubemap(DX12Context& ctx, uint32_t width, uint32_t height,
 	format_ = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	mipmapCount_ = mipmapCount;
 	layerCount_ = 6;
-	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+	constexpr D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 
 	buffer_.CreateImage(
 		ctx,
@@ -219,7 +219,7 @@ D3D12_STATIC_SAMPLER_DESC DX12Image::GetDefaultSampler()
 	};
 }
 
-void DX12Image::UAVBarrier(ID3D12GraphicsCommandList* commandList)
+void DX12Image::UAVBarrier(ID3D12GraphicsCommandList* commandList) const
 {
 	buffer_.UAVBarrier(commandList);
 }
@@ -245,7 +245,7 @@ std::vector<uint8_t> DX12Image::GenerateCheckerboard(uint32_t width, uint32_t he
 	const uint32_t textureSize = rowPitch * height;
 
 	std::vector<uint8_t> data(textureSize);
-	uint8_t* pData = &data[0];
+	uint8_t* pData = data.data();
 
 	for (uint32_t n = 0; n < textureSize; n += pixelSize)
 	{

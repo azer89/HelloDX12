@@ -137,7 +137,7 @@ void AppBase::OnUpdateInternal()
 	timer_.Update();
 }
 
-void AppBase::BeginRender()
+void AppBase::BeginRender() const
 {
 	context_.ResetCommandAllocator();
 	context_.ResetCommandList();
