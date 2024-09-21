@@ -240,11 +240,12 @@ void DX12Image::SetName(const std::string& objectName) const
 std::vector<uint8_t> DX12Image::GenerateCheckerboard(uint32_t width, uint32_t height, uint32_t pixelSize)
 {
 	const uint32_t rowPitch = width * pixelSize;
-	const uint32_t cellPitch = rowPitch >> 6; // The width of a cell in the checkboard texture.
+	const uint32_t cellPitch = rowPitch >> 6; // The width of a cell in the checkerboard texture.
 	const uint32_t cellHeight = width >> 6; // The height of a cell in the checkerboard texture.
 	const uint32_t textureSize = rowPitch * height;
 
 	std::vector<uint8_t> data(textureSize);
+	
 	uint8_t* pData = data.data();
 
 	for (uint32_t n = 0; n < textureSize; n += pixelSize)

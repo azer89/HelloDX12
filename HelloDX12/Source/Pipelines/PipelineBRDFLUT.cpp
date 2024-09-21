@@ -27,7 +27,7 @@ void PipelineBRDFLUT::Execute(DX12Context& ctx,
 
 	// Start recording 
 	ctx.ResetCommandList();
-	auto commandList = ctx.GetCommandList();
+	const auto commandList = ctx.GetCommandList();
 
 	lut->TransitionCommand(commandList, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 
