@@ -26,7 +26,7 @@ void PipelineDiffuseMap::Execute(DX12Context& ctx,
 
 	// Start recording 
 	ctx.ResetCommandList();
-	auto commandList = ctx.GetCommandList();
+	const auto commandList = ctx.GetCommandList();
 
 	environmentMap->TransitionCommand(commandList, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 	diffuseMap->TransitionCommand(commandList, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);

@@ -13,7 +13,7 @@ PipelineImGui::PipelineImGui(
 	resourcesShared_(resourcesShared)
 {
 	{
-		D3D12_DESCRIPTOR_HEAP_DESC desc = 
+		constexpr D3D12_DESCRIPTOR_HEAP_DESC desc = 
 		{
 			.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 			.NumDescriptors = 1,

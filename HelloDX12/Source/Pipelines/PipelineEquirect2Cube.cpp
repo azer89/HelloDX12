@@ -89,7 +89,7 @@ void PipelineEquirect2Cube::Execute(
 {
 	// Start recording 
 	ctx.ResetCommandList();
-	auto commandList = ctx.GetCommandList();
+	const auto commandList = ctx.GetCommandList();
 
 	commandList->SetPipelineState(pipelineState_);
 	commandList->SetComputeRootSignature(rootSignature_.handle_);
