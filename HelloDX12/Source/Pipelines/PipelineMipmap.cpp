@@ -63,21 +63,21 @@ void PipelineMipmap::CreatePipeline(DX12Context& ctx)
 	ctx.GetDevice()->CreateComputePipelineState(&psoDesc, IID_PPV_ARGS(&pipelineState_));
 }
 
-uint32_t PipelineMipmap::GetHeapSize(const std::span<DX12Image> images)
+uint32_t PipelineMipmap::GetHeapSize(const std::span<DX12Image> images) const
 {
 	uint32_t mipmapCount = 0;
-	for (uint32_t i = 0; i < images.size(); ++i)
+	for (const auto& image : images)
 	{
-		if (images[i].mipmapCount_ <= 1)
+		if (image.mipmapCount_ <= 1)
 		{
 			continue;
 		}
-		mipmapCount += (images[i].mipmapCount_ - 1);
+		mipmapCount += (image.mipmapCount_ - 1);
 	}
 	return mipmapCount;
 }
 
-void PipelineMipmap::GenerateMipmap(DX12Context& ctx, const std::span<DX12Image> images)
+void PipelineMipmap::GenerateMipmap(DX12Context& ctx, const std::span<DX12Image> images) const
 {
 	uint32_t heapSize = GetHeapSize(images);
 	if (heapSize == 0)
@@ -93,10 +93,10 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, const std::span<DX12Image>
 		.NumDescriptors = 2 * heapSize,
 		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
 	};
-	ID3D12DescriptorHeap* descriptorHeap;
+	ID3D12DescriptorHeap* descriptorHeap{};
 	ctx.GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&descriptorHeap));
 
-	UINT incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	const uint32_t incrementSize = ctx.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	// CPU handles for generating SRV and UAV
 	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandleStart = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
@@ -114,36 +114,36 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, const std::span<DX12Image>
 	commandList->SetPipelineState(pipelineState_);
 	commandList->SetDescriptorHeaps(1, &descriptorHeap);
 
-	for (uint32_t i = 0; i < images.size(); ++i)
+	for (auto& image : images)
 	{
 		// Prepare the shader resource view description for the source texture
 		D3D12_SHADER_RESOURCE_VIEW_DESC srvSrcDesc =
 		{
-			.Format = images[i].format_,
+			.Format = image.format_,
 			.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D,
 			.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
 		};
 		srvSrcDesc.Texture2D.MipLevels = 1;
 
 		// Prepare the unordered access view description for the destination texture
-		D3D12_UNORDERED_ACCESS_VIEW_DESC uavDstDesc = images[i].buffer_.GetUAVDescription(0);
+		D3D12_UNORDERED_ACCESS_VIEW_DESC uavDstDesc = image.buffer_.GetUAVDescription(0);
 
-		images[i].TransitionCommand(commandList, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+		image.TransitionCommand(commandList, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 
-		for (uint32_t currMipLevel = 0; currMipLevel < images[i].mipmapCount_ - 1; ++currMipLevel)
+		for (uint32_t currMipLevel = 0; currMipLevel < image.mipmapCount_ - 1; ++currMipLevel)
 		{
 			// Mipmap dimensions
-			uint32_t dstWidth = std::max(images[i].width_ >> (currMipLevel + 1), 1u);
-			uint32_t dstHeight = std::max(images[i].height_ >> (currMipLevel + 1), 1u);
+			uint32_t dstWidth = std::max(image.width_ >> (currMipLevel + 1), 1u);
+			uint32_t dstHeight = std::max(image.height_ >> (currMipLevel + 1), 1u);
 
 			// SRV for source texture
 			srvSrcDesc.Texture2D.MostDetailedMip = currMipLevel;
-			ctx.GetDevice()->CreateShaderResourceView(images[i].GetResource(), &srvSrcDesc, cpuHandle);
+			ctx.GetDevice()->CreateShaderResourceView(image.GetResource(), &srvSrcDesc, cpuHandle);
 			cpuHandle.Offset(1, incrementSize); // Add offset
 
 			// UAV for destination texture
 			uavDstDesc.Texture2D.MipSlice = currMipLevel + 1;
-			ctx.GetDevice()->CreateUnorderedAccessView(images[i].GetResource(), nullptr, &uavDstDesc, cpuHandle);
+			ctx.GetDevice()->CreateUnorderedAccessView(image.GetResource(), nullptr, &uavDstDesc, cpuHandle);
 			cpuHandle.Offset(1, incrementSize); // Add offset
 
 			uint32_t rootParamIndex = 0;
@@ -173,9 +173,9 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, const std::span<DX12Image>
 				1u);
 
 			// Barrier
-			images[i].UAVBarrier(commandList);
+			image.UAVBarrier(commandList);
 		}
-		images[i].TransitionCommand(commandList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+		image.TransitionCommand(commandList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	}
 
 	ctx.SubmitCommandListAndWaitForGPU();
@@ -183,7 +183,7 @@ void PipelineMipmap::GenerateMipmap(DX12Context& ctx, const std::span<DX12Image>
 	descriptorHeap->Release();
 }
 
-void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image)
+void PipelineMipmap::GenerateMipmap(DX12Context& ctx, DX12Image* image) const
 {
 	if (image->mipmapCount_ <= 1)
 	{
