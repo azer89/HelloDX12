@@ -74,14 +74,14 @@ void PipelineSimple::CreateIndirectCommand(DX12Context& ctx)
 
 void PipelineSimple::CreateConstantBuffers(DX12Context& ctx)
 {
-	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
+	for (auto& buffer : constBuffCamera_)
 	{
-		constBuffCamera_[i].CreateConstantBuffer(ctx, sizeof(CCamera));
+		buffer.CreateConstantBuffer(ctx, sizeof(CCamera));
 	}
 
-	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
+	for (auto& buffer : constBuffPBR_)
 	{
-		constBuffPBR_[i].CreateConstantBuffer(ctx, sizeof(CPBR));
+		buffer.CreateConstantBuffer(ctx, sizeof(CPBR));
 	}
 }
 
@@ -163,7 +163,7 @@ void PipelineSimple::CreateDescriptors(DX12Context& ctx)
 	};
 
 	// t4
-	DX12DescriptorArray descriptorArray =  scene_->GetImageDescriptors(); 
+	const DX12DescriptorArray descriptorArray =  scene_->GetImageDescriptors(); 
 
 	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
 	{
@@ -239,7 +239,7 @@ void PipelineSimple::CreateGraphicsPipeline(DX12Context& ctx)
 
 void PipelineSimple::Update(DX12Context& ctx, UIData& uiData)
 {
-	uint32_t frameIndex = ctx.GetFrameIndex();
+	const uint32_t frameIndex = ctx.GetFrameIndex();
 
 	// TODO find a way without transpose
 	CCamera* pCamera = constBuffCamera_[frameIndex].As<CCamera>();
