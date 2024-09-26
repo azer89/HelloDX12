@@ -36,9 +36,9 @@ void PipelineSkybox::Destroy()
 
 void PipelineSkybox::CreateConstantBuffer(DX12Context& ctx)
 {
-	for (uint32_t i = 0; i < AppConfig::FrameCount; ++i)
+	for (auto& buffer : constBuffCamera_)
 	{
-		constBuffCamera_[i].CreateConstantBuffer(ctx, sizeof(CCamera));
+		buffer.CreateConstantBuffer(ctx, sizeof(CCamera));
 	}
 }
 
@@ -119,7 +119,7 @@ void PipelineSkybox::CreatePipeline(DX12Context& ctx)
 
 void PipelineSkybox::Update(DX12Context& ctx, UIData& uiData)
 {
-	CCamera cb{
+	const CCamera cb{
 		.viewMatrix = glm::transpose(glm::mat4(glm::mat3(camera_->GetViewMatrix()))),
 		.projectionMatrix = glm::transpose(camera_->GetProjectionMatrix()),
 		.cameraPosition = camera_->Position()
