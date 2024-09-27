@@ -30,7 +30,7 @@ void PipelineSpecularMap::Execute(DX12Context& ctx,
 
 	// Start recording 
 	ctx.ResetCommandList();
-	auto commandList = ctx.GetCommandList();
+	const auto commandList = ctx.GetCommandList();
 
 	environmentMap->TransitionCommand(commandList, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 	specularMap->TransitionCommand(commandList, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
@@ -45,7 +45,7 @@ void PipelineSpecularMap::Execute(DX12Context& ctx,
 	for (int i = static_cast<int>(mipmapCount - 1u); i >= 0; --i)
 	{
 		uint32_t rootParamIndex = 0;
-		float roughness = static_cast<float>(i) / static_cast<float>(mipmapCount - 1);
+		const float roughness = static_cast<float>(i) / static_cast<float>(mipmapCount - 1);
 		commandList->SetComputeRoot32BitConstant(
 			rootParamIndex++,
 			RootConstParam(roughness).uint_,
