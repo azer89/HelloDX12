@@ -22,8 +22,8 @@ ResourcesIBL::ResourcesIBL(DX12Context& ctx, const std::string& hdrFile)
 	environmentCubemap_.buffer_.SetName("Environment_Cubemap");
 	PipelineEquirect2Cube pipE2C(ctx);
 	pipE2C.GenerateCubemapFromHDR(ctx, &hdrImage_, &environmentCubemap_);
-	bool isTextureArray = true;
-	PipelineMipmap pipMipmap(ctx, isTextureArray);
+	constexpr bool isTextureArray = true;
+	const PipelineMipmap pipMipmap(ctx, isTextureArray);
 	pipMipmap.GenerateMipmap(ctx, &environmentCubemap_);
 
 	// Specular (prefilter) map
