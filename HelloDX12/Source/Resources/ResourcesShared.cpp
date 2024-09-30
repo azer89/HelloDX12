@@ -154,7 +154,7 @@ void ResourcesShared::CreateSingleSampledRTV(DX12Context& ctx)
 	singleSampledImage_.SetName("Single_Sampled_Image");
 
 	// Handle
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(singleSampledRTVHeap_->GetCPUDescriptorHandleForHeapStart());
+	const CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(singleSampledRTVHeap_->GetCPUDescriptorHandleForHeapStart());
 	ctx.GetDevice()->CreateRenderTargetView(singleSampledImage_.GetResource(), nullptr, rtvHandle);
 
 	singleSampledRTVHandle_ = CD3DX12_CPU_DESCRIPTOR_HANDLE(

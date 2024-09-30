@@ -59,8 +59,8 @@ void Model::Load(
 		sceneData);
 
 	// Create mipmaps for all textures
-	bool isTextureArray = false;
-	PipelineMipmap pipMipmap(ctx, isTextureArray);
+	constexpr bool isTextureArray = false;
+	const PipelineMipmap pipMipmap(ctx, isTextureArray);
 	pipMipmap.GenerateMipmap(ctx, textures_);
 }
 
@@ -133,7 +133,7 @@ std::vector<VertexData> Model::GetMeshVertices(const aiMesh* mesh, const glm::ma
 	std::vector<VertexData> vertices(mesh->mNumVertices);
 	for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
 	{
-		glm::vec3 position = 
+		const glm::vec3 position = 
 			glm::vec3(transform *
 				glm::vec4(
 					mesh->mVertices[i].x,
@@ -141,7 +141,7 @@ std::vector<VertexData> Model::GetMeshVertices(const aiMesh* mesh, const glm::ma
 					mesh->mVertices[i].z,
 					1));
 
-		glm::vec3 normal = 
+		const glm::vec3 normal = 
 			glm::vec3(transform *
 				glm::vec4(
 					mesh->mNormals[i].x,
@@ -149,7 +149,7 @@ std::vector<VertexData> Model::GetMeshVertices(const aiMesh* mesh, const glm::ma
 					mesh->mNormals[i].z,
 					0));
 
-		glm::vec2 uv = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+		const glm::vec2 uv = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 
 		vertices[i] = VertexData(position, normal, uv);
 	}
