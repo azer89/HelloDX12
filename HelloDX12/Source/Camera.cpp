@@ -5,8 +5,6 @@
 #include "glm/glm.hpp"
 #include "glm/ext.hpp"
 
-#include <iostream>
-
 Camera::Camera(
 	glm::vec3 position,
 	glm::vec3 worldUp,

@@ -2,7 +2,6 @@
 
 #include <windows.h>
 #include <winnt.h>
-#include <wtypes.h>
 
 #include <stdexcept>
 #include <algorithm>
@@ -17,7 +16,7 @@ inline void Win32Call(BOOL retVal)
 
 void Timer::Init()
 {
-	LARGE_INTEGER largeInt;
+	LARGE_INTEGER largeInt{};
 	Win32Call(QueryPerformanceFrequency(&largeInt));
 	frequency_ = largeInt.QuadPart;
 	frequencyFloat_ = static_cast<float>(frequency_);
@@ -31,9 +30,9 @@ void Timer::Init()
 
 void Timer::Update()
 {
-	LARGE_INTEGER largeInt;
+	LARGE_INTEGER largeInt{};
 	Win32Call(QueryPerformanceCounter(&largeInt));
-	uint32_t currentTime = static_cast<uint32_t>(largeInt.QuadPart - startTime_);
+	const uint32_t currentTime = static_cast<uint32_t>(largeInt.QuadPart - startTime_);
 	delta_ = currentTime - elapsed_;
 	deltaSecondsFloat_ = delta_ / frequencyFloat_;
 	elapsed_ = currentTime;
