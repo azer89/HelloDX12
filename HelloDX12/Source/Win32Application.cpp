@@ -25,14 +25,14 @@ int Win32Application::Run(AppBase* pSample, HINSTANCE hInstance, int nCmdShow)
 	LocalFree(argv);
 
 	// Initialize the window class.
-	WNDCLASSEX windowClass =
+	const WNDCLASSEX windowClass =
 	{ 
 		.cbSize = sizeof(WNDCLASSEX),
 		.style = CS_HREDRAW | CS_VREDRAW,
 		.lpfnWndProc = WindowProc,
 		.hInstance = hInstance,
-		.hCursor = LoadCursor(NULL, IDC_ARROW),
-		.lpszClassName = L"DXSampleClass",
+		.hCursor = LoadCursor(nullptr, IDC_ARROW),
+		.lpszClassName = L"HelloDX12",
 	};
 	RegisterClassEx(&windowClass);
 
@@ -63,7 +63,7 @@ int Win32Application::Run(AppBase* pSample, HINSTANCE hInstance, int nCmdShow)
 	while (msg.message != WM_QUIT)
 	{
 		// Process any messages in the queue.
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);

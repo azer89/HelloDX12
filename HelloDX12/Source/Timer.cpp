@@ -34,7 +34,7 @@ void Timer::Update()
 	Win32Call(QueryPerformanceCounter(&largeInt));
 	const uint32_t currentTime = static_cast<uint32_t>(largeInt.QuadPart - startTime_);
 	delta_ = currentTime - elapsed_;
-	deltaSecondsFloat_ = delta_ / frequencyFloat_;
+	deltaSecondsFloat_ = static_cast<float>(delta_) / frequencyFloat_;
 	elapsed_ = currentTime;
 	fpsCurrent_ = 1.0f / deltaSecondsFloat_;
 
