@@ -28,12 +28,12 @@ void DX12Buffer::CreateHostVisibleBuffer(DX12Context& ctx, uint32_t elementCount
 	state_ = D3D12_RESOURCE_STATE_GENERIC_READ;
 	srvDescription_ = GetSRVDescriptionFromBuffer(elementCount, stride);
 
-	constexpr D3D12MA::ALLOCATION_DESC constantBufferUploadAllocDesc =
+	constexpr D3D12MA::ALLOCATION_DESC constantBufferUploadAllocDesc
 	{
 		.HeapType = D3D12_HEAP_TYPE_UPLOAD
 	};
 
-	const D3D12_RESOURCE_DESC resourceDesc =
+	const D3D12_RESOURCE_DESC resourceDesc
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,
@@ -78,12 +78,12 @@ void DX12Buffer::CreateDeviceOnlyBuffer(
 	state_ = D3D12_RESOURCE_STATE_COMMON;
 	srvDescription_ = GetSRVDescriptionFromBuffer(elementCount, stride);
 
-	constexpr D3D12MA::ALLOCATION_DESC allocDesc =
+	constexpr D3D12MA::ALLOCATION_DESC allocDesc
 	{
 		.HeapType = D3D12_HEAP_TYPE_DEFAULT
 	};
 
-	const D3D12_RESOURCE_DESC resourceDesc =
+	const D3D12_RESOURCE_DESC resourceDesc
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,
@@ -115,7 +115,7 @@ void DX12Buffer::CreateDeviceOnlyBuffer(
 	D3D12MA::Allocation* bufferUploadHeapAllocation{};
 	CreateUploadHeap(ctx, static_cast<uint64_t>(bufferSize_), 1, &bufferUploadHeap, &bufferUploadHeapAllocation);
 
-	const D3D12_SUBRESOURCE_DATA subresourceData =
+	const D3D12_SUBRESOURCE_DATA subresourceData
 	{
 		.pData = reinterpret_cast<BYTE*>(data), // Pointer to our vertex array
 		.RowPitch = static_cast<LONG_PTR>(bufferSize_), // Size of all our triangle vertex data
@@ -153,12 +153,12 @@ void DX12Buffer::CreateConstantBuffer(DX12Context& ctx, uint64_t bufferSize)
 	constantBufferSize_ = GetConstantBufferByteSize(bufferSize_);
 	state_ = D3D12_RESOURCE_STATE_GENERIC_READ;
 
-	constexpr D3D12MA::ALLOCATION_DESC constantBufferUploadAllocDesc =
+	constexpr D3D12MA::ALLOCATION_DESC constantBufferUploadAllocDesc
 	{
 		.HeapType = D3D12_HEAP_TYPE_UPLOAD
 	};
 
-	const D3D12_RESOURCE_DESC constantBufferResourceDesc =
+	const D3D12_RESOURCE_DESC constantBufferResourceDesc
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,
@@ -202,12 +202,12 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t buffe
 	bufferSize_ = bufferSize;
 	state_ = D3D12_RESOURCE_STATE_COMMON;
 
-	constexpr D3D12MA::ALLOCATION_DESC allocDesc =
+	constexpr D3D12MA::ALLOCATION_DESC allocDesc
 	{
 		.HeapType = D3D12_HEAP_TYPE_DEFAULT
 	};
 
-	const D3D12_RESOURCE_DESC resourceDesc =
+	const D3D12_RESOURCE_DESC resourceDesc
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,
@@ -216,7 +216,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t buffe
 		.DepthOrArraySize = 1,
 		.MipLevels = 1,
 		.Format = DXGI_FORMAT_UNKNOWN,
-		.SampleDesc =
+		.SampleDesc
 		{
 			.Count = 1,
 			.Quality = 0
@@ -240,7 +240,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t buffe
 	CreateUploadHeap(ctx, static_cast<uint64_t>(bufferSize_), 1, &bufferUploadHeap, &bufferUploadHeapAllocation);
 
 	// Store vertex buffer in upload heap
-	const D3D12_SUBRESOURCE_DATA subresourceData =
+	const D3D12_SUBRESOURCE_DATA subresourceData
 	{
 		.pData = reinterpret_cast<BYTE*>(data), // Pointer to our vertex array
 		.RowPitch = static_cast<LONG_PTR>(bufferSize_), // Size of all our triangle vertex data
@@ -274,7 +274,7 @@ void DX12Buffer::CreateVertexBuffer(DX12Context& ctx, void* data, uint64_t buffe
 	bufferUploadHeapAllocation->Release();
 
 	// Create view
-	vertexBufferView_ =
+	vertexBufferView_ = 
 	{
 		.BufferLocation = resource_->GetGPUVirtualAddress(),
 		.SizeInBytes = static_cast<uint32_t>(bufferSize_),
@@ -288,12 +288,12 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t buffer
 	state_ = D3D12_RESOURCE_STATE_COMMON;
 
 	// Create default heap to hold index buffer
-	constexpr D3D12MA::ALLOCATION_DESC allocDesc =
+	constexpr D3D12MA::ALLOCATION_DESC allocDesc
 	{
 		.HeapType = D3D12_HEAP_TYPE_DEFAULT
 	};
 
-	const D3D12_RESOURCE_DESC resourceDesc =
+	const D3D12_RESOURCE_DESC resourceDesc
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,
@@ -326,7 +326,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t buffer
 	CreateUploadHeap(ctx, static_cast<uint64_t>(bufferSize_), 1, &bufferUploadHeap, &bufferUploadHeapAllocation);
 
 	// Store index buffer in upload heap
-	const D3D12_SUBRESOURCE_DATA subresourceData =
+	const D3D12_SUBRESOURCE_DATA subresourceData
 	{
 		.pData = data, // Pointer to our index array
 		.RowPitch = static_cast<LONG_PTR>(bufferSize_), // Size of all our index buffer
@@ -378,7 +378,7 @@ void DX12Buffer::CreateImage(
 	state_ = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 	srvDescription_ = GetSRVDescriptionFromImage(imageFormat, layerCount, mipmapCount);
 
-	const D3D12_RESOURCE_DESC textureDesc =
+	const D3D12_RESOURCE_DESC textureDesc
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
 		.Alignment = 0,
@@ -396,7 +396,7 @@ void DX12Buffer::CreateImage(
 		.Flags = flags
 	};
 
-	constexpr D3D12MA::ALLOCATION_DESC textureAllocDesc =
+	constexpr D3D12MA::ALLOCATION_DESC textureAllocDesc
 	{
 		.HeapType = D3D12_HEAP_TYPE_DEFAULT
 	};
@@ -422,7 +422,7 @@ void DX12Buffer::CreateColorAttachment(
 	state_ = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 	srvDescription_ = GetSRVDescriptionFromImage(imageFormat, 1, mipmapCount);
 
-	const D3D12_RESOURCE_DESC textureDesc =
+	const D3D12_RESOURCE_DESC textureDesc
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
 		.Alignment = 0,
@@ -431,7 +431,7 @@ void DX12Buffer::CreateColorAttachment(
 		.DepthOrArraySize = 1,
 		.MipLevels = static_cast<uint16_t>(mipmapCount),
 		.Format = imageFormat,
-		.SampleDesc =
+		.SampleDesc
 		{
 			.Count = msaaCount,
 			.Quality = 0
@@ -451,7 +451,7 @@ void DX12Buffer::CreateColorAttachment(
 			AppConfig::ClearColor[3]}
 	};
 
-	constexpr D3D12MA::ALLOCATION_DESC textureAllocDesc =
+	constexpr D3D12MA::ALLOCATION_DESC textureAllocDesc
 	{
 		.HeapType = D3D12_HEAP_TYPE_DEFAULT
 	};
@@ -476,18 +476,18 @@ void DX12Buffer::CreateDepthAttachment(
 	srvDescription_ = GetSRVDescriptionFromImage(imageFormat, 1, 1);
 
 	constexpr float defaultDepthValue{ 0.0f }; // 0.0f for reverse z, 1.0f otherwise
-	D3D12_CLEAR_VALUE clearValue =
+	D3D12_CLEAR_VALUE clearValue
 	{
 		.Format = imageFormat
 	};
 	clearValue.DepthStencil.Depth = defaultDepthValue;
 	clearValue.DepthStencil.Stencil = 0;
 
-	constexpr D3D12MA::ALLOCATION_DESC depthStencilAllocDesc =
+	constexpr D3D12MA::ALLOCATION_DESC depthStencilAllocDesc
 	{
 		.HeapType = D3D12_HEAP_TYPE_DEFAULT
 	};
-	const D3D12_RESOURCE_DESC depthStencilResourceDesc =
+	const D3D12_RESOURCE_DESC depthStencilResourceDesc
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
 		.Alignment = 0,
@@ -496,7 +496,7 @@ void DX12Buffer::CreateDepthAttachment(
 		.DepthOrArraySize = 1,
 		.MipLevels = 1,
 		.Format = imageFormat,
-		.SampleDesc =
+		.SampleDesc
 		{
 			.Count = msaaCount,
 			.Quality = 0
@@ -529,7 +529,7 @@ DX12Context& ctx,
 	state_ = D3D12_RESOURCE_STATE_COPY_DEST;
 	srvDescription_ = GetSRVDescriptionFromImage(imageFormat, 1, mipmapCount);
 
-	const D3D12_RESOURCE_DESC textureDesc =
+	const D3D12_RESOURCE_DESC textureDesc
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
 		.Alignment = 0,
@@ -547,7 +547,7 @@ DX12Context& ctx,
 		.Flags = flags
 	};
 
-	constexpr D3D12MA::ALLOCATION_DESC textureAllocDesc =
+	constexpr D3D12MA::ALLOCATION_DESC textureAllocDesc
 	{
 		.HeapType = D3D12_HEAP_TYPE_DEFAULT
 	};
@@ -576,7 +576,7 @@ DX12Context& ctx,
 	CreateUploadHeap(ctx, bufferSize_, 1, &bufferUploadHeap, &bufferUploadHeapAllocation);
 
 	const uint32_t imageBytesPerRow{ width * bytesPerPixel };
-	const D3D12_SUBRESOURCE_DATA subresourceData =
+	const D3D12_SUBRESOURCE_DATA subresourceData
 	{
 		.pData = imageData,
 		.RowPitch = imageBytesPerRow,
@@ -620,12 +620,12 @@ void DX12Buffer::CreateUploadHeap(DX12Context& ctx,
 	ID3D12Resource** bufferUploadHeap,
 	D3D12MA::Allocation** bufferUploadHeapAllocation)
 {
-	constexpr D3D12MA::ALLOCATION_DESC uploadAllocDesc =
+	constexpr D3D12MA::ALLOCATION_DESC uploadAllocDesc
 	{
 		.HeapType = D3D12_HEAP_TYPE_UPLOAD
 	};
 
-	const D3D12_RESOURCE_DESC uploadResourceDesc =
+	const D3D12_RESOURCE_DESC uploadResourceDesc
 	{
 		.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment = 0,
@@ -634,7 +634,7 @@ void DX12Buffer::CreateUploadHeap(DX12Context& ctx,
 		.DepthOrArraySize = 1,
 		.MipLevels = static_cast<uint16_t>(mipLevel),
 		.Format = DXGI_FORMAT_UNKNOWN,
-		.SampleDesc =
+		.SampleDesc
 		{
 			.Count = 1,
 			.Quality = 0
@@ -689,7 +689,7 @@ void DX12Buffer::TransitionCommand(
 D3D12_SHADER_RESOURCE_VIEW_DESC DX12Buffer::GetSRVDescriptionFromBuffer(uint32_t elementCount, uint32_t stride) const
 {
 	// SRV Description
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc =
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc
 	{
 		.Format = DXGI_FORMAT_UNKNOWN,
 		.ViewDimension = D3D12_SRV_DIMENSION_BUFFER,
@@ -717,7 +717,7 @@ D3D12_SHADER_RESOURCE_VIEW_DESC DX12Buffer::GetSRVDescriptionFromImage(DXGI_FORM
 		default: srvDim = D3D12_SRV_DIMENSION_TEXTURE2DARRAY; break;
 	}
 
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc =
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc
 	{
 		.Format = format, // Image format
 		.ViewDimension = srvDim,
