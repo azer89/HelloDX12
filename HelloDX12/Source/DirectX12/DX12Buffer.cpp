@@ -42,7 +42,7 @@ void DX12Buffer::CreateHostVisibleBuffer(DX12Context& ctx, uint32_t elementCount
 		.DepthOrArraySize = 1,
 		.MipLevels = 1,
 		.Format = DXGI_FORMAT_UNKNOWN,
-		.SampleDesc =
+		.SampleDesc
 		{
 			.Count = 1,
 			.Quality = 0
@@ -92,7 +92,7 @@ void DX12Buffer::CreateDeviceOnlyBuffer(
 		.DepthOrArraySize = 1,
 		.MipLevels = 1,
 		.Format = DXGI_FORMAT_UNKNOWN,
-		.SampleDesc =
+		.SampleDesc
 		{
 			.Count = 1,
 			.Quality = 0
@@ -167,7 +167,7 @@ void DX12Buffer::CreateConstantBuffer(DX12Context& ctx, uint64_t bufferSize)
 		.DepthOrArraySize = 1,
 		.MipLevels = 1,
 		.Format = DXGI_FORMAT_UNKNOWN,
-		.SampleDesc =
+		.SampleDesc
 		{
 			.Count = 1,
 			.Quality = 0
@@ -302,7 +302,7 @@ void DX12Buffer::CreateIndexBuffer(DX12Context& ctx, void* data, uint64_t buffer
 		.DepthOrArraySize = 1,
 		.MipLevels = 1,
 		.Format = DXGI_FORMAT_UNKNOWN,
-		.SampleDesc =
+		.SampleDesc
 		{
 			.Count = 1,
 			.Quality = 0
@@ -387,7 +387,7 @@ void DX12Buffer::CreateImage(
 		.DepthOrArraySize = static_cast<uint16_t>(layerCount),
 		.MipLevels = static_cast<uint16_t>(mipmapCount),
 		.Format = imageFormat,
-		.SampleDesc =
+		.SampleDesc
 		{
 			.Count = 1,
 			.Quality = 0
@@ -538,7 +538,7 @@ DX12Context& ctx,
 		.DepthOrArraySize = 1,
 		.MipLevels = static_cast<uint16_t>(mipmapCount),
 		.Format = imageFormat,
-		.SampleDesc =
+		.SampleDesc
 		{
 			.Count = 1,
 			.Quality = 0
